@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pişti – Pembe Tema Blog Sayfası</title>
+  <meta name="description" content="Pembe temalı Pişti blog sayfası: oyun ekranı, kurallar, puanlama ve strateji rehberi.">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 100%);
+      color: #5a2a41;
+    }
+    header {
+      background-color: #ff8fb2;
+      color: #fff;
+      padding: 20px 16px;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      letter-spacing: .2px;
+    }
+    main {
+      max-width: 900px;
+      margin: 32px auto 48px;
+      background: #ffe6ee;
+      padding: 28px 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      text-align: left; /* başlık ve metin sola hizalı */
+    }
+    h1, h2, h3 {
+      margin: 0 0 12px;
+      line-height: 1.25;
+      letter-spacing: .2px; /* kelimeler arası okuma rahatlığı */
+    }
+    h1 { font-size: 30px; text-align: center; color: #c2185b; }
+    h2 { font-size: 22px; color: #d63384; border-bottom: 2px solid #ffa6c9; padding-bottom: 6px; }
+    h3 { font-size: 18px; color: #a81e63; }
+    p, li {
+      font-size: 16px;
+      line-height: 1.7;
+      word-break: normal;
+    }
+    ul, ol { padding-left: 18px; margin: 0 0 14px; }
+    .center { text-align: center; }
+    img {
+      width: 100%;
+      max-width: 860px;
+      display: block;
+      margin: 10px auto 18px;
+      border-radius: 14px;
+      box-shadow: 0 8px 16px rgba(0,0,0,.12);
+    }
+    table { width: 100%; border-collapse: collapse; margin: 6px 0 16px; font-variant-numeric: tabular-nums; }
+    th, td { padding: 10px 12px; border-bottom: 1px dashed #f3b3c7; }
+    th { text-align: left; color: #b01863; background: #ffd8e6; }
+    footer {
+      margin: 0 auto; max-width: 900px; background: #ff8fb2; color: #fff; padding: 14px 16px; border-radius: 0 0 20px 20px; text-align: center; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>💖 Pişti Blog</header>
+  <main>
+    <h1>Pişti – Pembe Temalı Rehber</h1>
+    <p class="center">Bu sayfa, <strong>Pişti</strong> oyununun kurallarını, puanlamasını, stratejilerini ve yapay zekâ yaklaşımlarını derli toplu biçimde sunar.</p>
+
+    <img src="pişti.PNG" alt="Pişti oyunu ekran görüntüsü" />
+
+    <h2>1) Oyunun Tanımı</h2>
+    <p>Pişti; 52 kartlık standart bir desteyle, genellikle <strong>iki oyuncu</strong> arasında oynanan, yerdeki kartları <em>rütbe eşleşmesi</em> veya <strong>Vale (J)</strong> ile toplayarak puan kazanmayı hedefleyen bir kart oyunudur. Amaç, el sonunda en yüksek puanı toplamaktır.</p>
+
+    <h2>2) Deste, Dağıtım ve Başlangıç</h2>
+    <ul>
+      <li><strong>Deste:</strong> Joker kullanılmaz.</li>
+      <li><strong>Dağıtım:</strong> Her oyuncuya 4'er kart; ortaya desteden 3 kapalı + 1 açık kart bırakılır.</li>
+      <li><strong>Oyun Sırası:</strong> Oyuncular sırayla birer kart atar. Herkesin 4 kartı bittiğinde tekrar 4'er kart dağıtılır; deste bitince tur kapanır.</li>
+    </ul>
+
+    <h2>3) Kurallar ve Oynanış</h2>
+    <ol>
+      <li>Atılan kartın rütbesi, yerdeki en üst kartın rütbesiyle <strong>eşleşirse</strong> yerdeki tüm kartlar alınır.</li>
+      <li><strong>Vale (J)</strong>, yerde kart varsa tek başına ortayı alır.</li>
+      <li>Yerde <strong>tek kart</strong> varken eşleşme ya da J ile almak <strong>pişti</strong> sayılır ve ekstra puan kazandırır.</li>
+      <li>Eşleşme yoksa kart yerde kalır ve yığın büyür.</li>
+      <li>Deste bittiğinde yerde kalan son yığın, <em>son alan</em> oyuncuya verilir ve puanlar hesaplanır.</li>
+    </ol>
+
+    <h2>4) Puanlama</h2>
+    <table>
+      <thead>
+        <tr><th>Öğe</th><th>Puan</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>As (A)</td><td>+1</td><td>Her As 1 puan eder.</td></tr>
+        <tr><td>Vale (J)</td><td>+1</td><td>Her Vale 1 puan eder.</td></tr>
+        <tr><td>♦10 (karo on)</td><td>+3</td><td>Özel yüksek kart.</td></tr>
+        <tr><td>♣2 (sinek iki)</td><td>+2</td><td>Özel yüksek kart.</td></tr>
+        <tr><td><strong>Pişti</strong></td><td>+10</td><td>Yerde tek kart varken eşleşme ile alma.</td></tr>
+        <tr><td><strong>Vale ile pişti</strong></td><td>+20</td><td>Yerde tek kart varken J ile alma.</td></tr>
+        <tr><td>Son ortayı alma</td><td>+3</td><td>Eldeki kartlar bittiğinde yerde kalanlar son alan tarafa verilir.</td></tr>
+        <tr><td>Fazla kart</td><td>+3</td><td>Toplam alınan kart sayısı rakipten fazlaysa (varyanta bağlı).</td></tr>
+      </tbody>
+    </table>
+
+    <h2>5) Stratejik İpuçları</h2>
+    <ul>
+      <li><strong>Piştiyi koru:</strong> Yerde tek kart bırakacaksan, rakibin o rütbeyi elinde tutma olasılığını hesaba kat.</li>
+      <li><strong>Değerli kartları sakla:</strong> ♦10 ve ♣2'yi garanti olmayan pozisyonda ortaya bırakma.</li>
+      <li><strong>Bilgi takibi:</strong> Çıkan As/J sayısını ve görünen rütbeleri takip et.</li>
+      <li><strong>J zamanlaması:</strong> 20 puanlık J ile pişti nadirdir; doğru ana sakla.</li>
+      <li><strong>Son yığın planı:</strong> El sonunda son ortayı almak kritik fark yaratabilir.</li>
+    </ul>
+
+    <h2>6) Yapay Zekâ Yaklaşımları</h2>
+    <ul>
+      <li><strong>Basit bot:</strong> Alabiliyorsa al; değilse düşük değerli kart bırak.</li>
+      <li><strong>Arama tabanlı:</strong> Kalan gizli kartları örnekleyip sınırlı derinlikte <em>minimax</em> / alpha–beta uygula.</li>
+      <li><strong>Monte Carlo / MCTS:</strong> Çok sayıda rastgele tamamlama ile beklenen puanı maksimize et.</li>
+      <li><strong>Heuristik değerlendirme:</strong> Anlık kazanç, pişti olasılığı, değerli kart kaybı ve son yığın bileşenlerini ağırlıklandır.</li>
+    </ul>
+
+    <h2>7) Kısa Tarihçe</h2>
+    <p>Pişti; Türkiye'de yaygınlaşmış, Basra tipi toplama oyunlarıyla akraba bir kart oyunudur. Bölgesel puanlama farkları bulunabilir; bu rehberde en yaygın kurallar esas alınmıştır.</p>
+  </main>
+  <footer>© 2025 Pişti Blog – Tüm Hakları Saklıdır</footer>
+</body>
+</html>
