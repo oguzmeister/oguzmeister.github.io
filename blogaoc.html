@@ -8,13 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0e1111;--fg:#eaf1ed;--mut:#9fb0a9;--card:#141818;--brd:#202626;
-  --brand:#00c07a;--brand2:#36e3b0;--accent:#7ff0d2;--r:16px;--max:1320px;--shadow:0 20px 40px rgba(0,0,0,.35)
-}
-@media (prefers-color-scheme: light){
-  :root{--bg:#f6f9f8;--fg:#0f1412;--mut:#5f6c67;--card:#ffffff;--brd:#e6eeeb;--shadow:0 14px 28px rgba(16,24,40,.08)}
-}
+:root{--bg:#0e1111;--fg:#eaf1ed;--mut:#9fb0a9;--card:#141818;--brd:#202626;--brand:#00c07a;--brand2:#36e3b0;--accent:#7ff0d2;--r:16px;--max:1320px;--shadow:0 20px 40px rgba(0,0,0,.35)}
+@media (prefers-color-scheme: light){:root{--bg:#f6f9f8;--fg:#0f1412;--mut:#5f6c67;--card:#ffffff;--brd:#e6eeeb;--shadow:0 14px 28px rgba(16,24,40,.08)}}
 *{box-sizing:border-box}html,body{margin:0}
 body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7}
 a{color:var(--accent);text-decoration:none}
@@ -32,28 +27,22 @@ a{color:var(--accent);text-decoration:none}
 .orb:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,192,122,.4)}
 .ribbon{position:relative;display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(120deg,#1a1f1e,#111514);border:1px solid var(--brd);color:var(--fg);font-weight:700}
 .ribbon .spark{width:10px;height:10px;border-radius:50%;background:radial-gradient(100% 100% at 30% 30%,var(--accent),var(--brand));box-shadow:0 0 18px var(--accent)}
-
-.hero{border-bottom:1px solid var(--brd);background:
-radial-gradient(1200px 500px at -10% -10%,#00c07a20,transparent 60%),
-radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
+.hero{border-bottom:1px solid var(--brd);background:radial-gradient(1200px 500px at -10% -10%,#00c07a20,transparent 60%),radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
 .herogrid{display:grid;gap:28px;grid-template-columns:1.2fr .8fr;align-items:center;padding:48px 0}
 .hero h1{font-size:clamp(2rem,3vw,3rem);line-height:1.1;margin:8px 0 8px;font-weight:900;letter-spacing:-.02em}
 .hero p{color:var(--mut);max-width:62ch}
 .hero .media{border:1px solid var(--brd);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
 .hero img{width:100%;display:block}
-
 .shell{display:grid;grid-template-columns:260px minmax(0,1fr) 320px;gap:18px;padding:26px 0}
 @media(max-width:1200px){.shell{grid-template-columns:220px minmax(0,1fr)}.right{display:none}}
 .left,.main,.right{background:var(--card);border:1px solid var(--brd);border-radius:16px}
 .left,.right{position:sticky;top:84px;height:max-content}
 .main{overflow:hidden}
-
 .dock{padding:14px}
 .dock h4{margin:0 0 8px;font-size:.95rem;opacity:.9}
 .dock a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;color:var(--mut)}
 .dock a:hover,.dock a.active{background:color-mix(in oklab,var(--brand) 16%,transparent);color:var(--fg)}
 .kbd{padding:2px 6px;border:1px solid var(--brd);border-radius:6px;font-size:.8rem;color:var(--mut)}
-
 .section{padding:24px;border-bottom:1px solid var(--brd)}
 .section:last-child{border-bottom:0}
 .section h2{font-size:clamp(1.3rem,2.2vw,1.8rem);margin:0 0 8px;font-weight:800}
@@ -64,18 +53,14 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
 .card{border:1px solid var(--brd);border-radius:14px;padding:16px;background:linear-gradient(160deg, color-mix(in oklab,var(--card) 96%, transparent), color-mix(in oklab,var(--card) 86%, transparent));box-shadow:var(--shadow)}
 .card h3{margin:6px 0 6px;font-size:1.05rem}
 .mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace}
-
 .right .block{padding:14px;border-bottom:1px solid var(--brd)}
 .right .block:last-child{border-bottom:0}
 .quick a{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;background:linear-gradient(180deg, color-mix(in oklab, var(--card) 94%, transparent), color-mix(in oklab, var(--card) 86%, transparent))}
 .quick a span{color:var(--mut)}
-
 .footer{border-top:1px solid var(--brd);background:color-mix(in oklab,var(--card) 96%, transparent)}
 .frow{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:18px 0}
 .subnav{display:flex;gap:14px}
-
 .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--brd);border-radius:999px;padding:6px 10px;color:var(--mut);font-weight:700;font-size:.9rem;background:color-mix(in oklab,var(--card) 92%,transparent)}
-
 .uml-wrap{border:1px solid var(--brd);border-radius:14px;background:linear-gradient(180deg, color-mix(in oklab, var(--card) 96%, transparent), color-mix(in oklab, var(--card) 88%, transparent));box-shadow:var(--shadow);overflow:hidden}
 .uml-toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--brd)}
 .ctl{display:flex;gap:8px}
@@ -88,11 +73,10 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
 </style>
 </head>
 <body>
-
 <header class="header">
   <div class="container hrow">
     <div class="brand"><div class="logo">Ç</div>Age of Çotanak</div>
-    <nav class="nav" aria-label="Gezinme">
+    <nav class="nav">
       <a class="link" href="#oyun-hakkinda">Oyun</a>
       <a class="link" href="#oyun-teorisi-kavramlari">Teori</a>
       <a class="link" href="#algoritmik-analiz">Algoritmalar</a>
@@ -105,7 +89,7 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
       <a class="link" href="#puf">Püf</a>
     </nav>
     <div class="actions">
-      <button class="orb" id="cmdBtn" title="Komut Paleti (⌘/Ctrl+K)">⌘K</button>
+      <button class="orb" id="cmdBtn">⌘K</button>
       <button class="ribbon" id="theme"><span class="spark"></span> Tema</button>
     </div>
   </div>
@@ -122,7 +106,7 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
         <a class="ribbon" href="#uml"><span class="spark"></span> UML Mimari</a>
       </div>
     </div>
-    <div class="media"><img src="cover.jpg" alt="Age of Çotanak tanıtım"></div>
+    <div class="media"><img src="aocgame.png" alt="Age of Çotanak tanıtım"></div>
   </div>
 </section>
 
@@ -141,7 +125,7 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
       <p class="lead">İki fraksiyonlu, deterministik ve sıfır-toplamlı bir strateji oyunu. Amaç; gelir noktalarını güvenceye almak, alan üstünlüğü kurmak ve ana yapıları korumak.</p>
       <div class="grid3">
         <div class="card"><h3>Çekirdek</h3><p>Hücresel harita, arazi maliyetleri, üretim zincirleri ve temposu yüksek turlar.</p></div>
-        <div class="card"><h3>Teknoloji</h3><p>Saf JS/HTML/CSS; SVG ile lightweight sprite’lar; hızlı yeniden çizim.</p></div>
+        <div class="card"><h3>Teknoloji</h3><p>Saf JS/HTML/CSS; SVG ile hafif sprite’lar; hızlı yeniden çizim.</p></div>
         <div class="card"><h3>Hedef</h3><p>Ekonomiyi büyütürken boğazları elde tutmak; risk–ödül dengesini yönetmek.</p></div>
       </div>
     </section>
@@ -164,13 +148,24 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
         <div class="card"><h3>Arama</h3><p>Iterative deepening, hamle sıralama ve budama ile zaman yönetimi.</p></div>
         <div class="card"><h3>Heuristik</h3><p>Skor farkı, mobilite, boğaz kontrolü ve köşe/merkez ağırlıkları.</p></div>
       </div>
+      <div class="card mono" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Örnek: BFS</strong><span class="badge">JS</span></div>
+<pre style="margin:0;white-space:pre-wrap"><code>function reachable(start, mov){
+  const Q=[[start.x,start.y,0]], seen=new Set([`${start.x},${start.y}`]), res=new Set();
+  while(Q.length){
+    const [x,y,c]=Q.shift(); if(c>mov) continue; res.add(`${x},${y}`);
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx, ny=y+dy, nc=c+moveCost(nx,ny), k=`${nx},${ny}`;
+      if(inBounds(nx,ny)&&isFree(nx,ny)&&nc<=mov&&!seen.has(k)){ seen.add(k); Q.push([nx,ny,nc]); }
+    }
+  } return res;
+}</code></pre>
+      </div>
     </section>
 
-    <!-- YENİ: UML Bölümü -->
     <section class="section" id="uml">
       <h2>Sistem Mimarisi (UML)</h2>
       <p class="lead">Çekirdek sınıflar ve ilişkiler: Oyun, HaritaKarosu, OyunNesnesi ve alt tipleri (Birim/Bina) ile akış yöntemleri.</p>
-
       <div class="uml-wrap">
         <div class="uml-toolbar">
           <div class="ctl">
@@ -180,11 +175,11 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
             <button id="umlFullscreen">Tam Ekran</button>
           </div>
           <div class="ctl">
-            <a id="umlDownload" href="Untitled diagram-2025-11-01-210344.png" download="Age-of-Cotanak-UML.png">İndir</a>
+            <a id="umlDownload" href="aocdiagram.png" download="Age-of-Cotanak-UML.png">İndir</a>
           </div>
         </div>
         <div class="uml-stage" id="umlStage">
-          <img id="umlImg" src="Untitled diagram-2025-11-01-210344.png" alt="Age of Çotanak UML diyagramı" style="transform:scale(1);">
+          <img id="umlImg" src="aocdiagram.png" alt="Age of Çotanak UML diyagramı" style="transform:scale(1);">
         </div>
       </div>
       <small style="display:block;margin-top:8px;color:var(--mut)">Görüntüyü yakınlaştırabilir, tam ekranda inceleyebilir veya indirebilirsiniz.</small>
@@ -195,7 +190,7 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
       <div class="grid3">
         <div class="card"><h3>Durum</h3><p>s, A(s), T(s,a)→s′ ve U(s) ile formülasyon.</p></div>
         <div class="card"><h3>Ödül</h3><p>U(s)=α·Skor+β·Gelir+γ·Mobilite−δ·Risk.</p></div>
-        <div class="card"><h3>Değer</h3><p>V(s) = max–min arama; terminalde ±∞ ataması.</p></div>
+        <div class="card"><h3>Değer</h3><p>V(s)=max–min arama; terminalde ±∞ ataması.</p></div>
       </div>
     </section>
 
@@ -264,7 +259,7 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
 <footer class="footer">
   <div class="container frow">
     <div>© 2025 Age of Çotanak</div>
-    <nav class="subnav" aria-label="Alt menü">
+    <nav class="subnav">
       <a href="#oyun-hakkinda">Oyun</a>
       <a href="#algoritmik-analiz">Teknik</a>
       <a href="#uml">UML</a>
@@ -277,33 +272,23 @@ radial-gradient(900px 380px at 110% -10%,#36e3b020,transparent 60%)}
 <script>
 const links=[...document.querySelectorAll('.nav .link')];
 addEventListener('scroll',()=>{const Y=scrollY;let cur=null;document.querySelectorAll('main .section').forEach(s=>{if(s.offsetTop-100<=Y)cur=s.id});links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur))},{passive:true});
-
 const theme=document.getElementById('theme'),k='aoc-theme',saved=localStorage.getItem(k);
 if(saved==='light')document.documentElement.classList.add('light');
 theme.onclick=()=>{document.documentElement.classList.toggle('light');localStorage.setItem(k,document.documentElement.classList.contains('light')?'light':'dark')};
-
 const toc=document.getElementById('toc');
 [...document.querySelectorAll('main .section h2')].forEach(h=>{const id=h.parentElement.id;const a=document.createElement('a');a.href='#'+id;a.textContent=h.textContent;toc.appendChild(a)});
-
 const share=document.getElementById('shareBtn');
 share&&share.addEventListener('click',async e=>{e.preventDefault();if(navigator.share){await navigator.share({title:document.title,url:location.href})}});
-
-const img=document.getElementById('umlImg'),stage=document.getElementById('umlStage');
+const img=document.getElementById('umlImg');
 let scale=1;
 const apply=()=>{img.style.transform=`scale(${scale})`};
 document.getElementById('umlZoomIn').onclick=()=>{scale=Math.min(3,scale+0.1);apply()};
 document.getElementById('umlZoomOut').onclick=()=>{scale=Math.max(0.5,scale-0.1);apply()};
 document.getElementById('umlReset').onclick=()=>{scale=1;apply()};
-document.getElementById('umlFullscreen').onclick=()=>{
-  const lb=document.getElementById('umlLightbox');lb.style.display='grid';
-  lb.querySelector('img').src=img.src;
-};
+document.getElementById('umlFullscreen').onclick=()=>{const lb=document.getElementById('umlLightbox');lb.style.display='grid';lb.querySelector('img').src=img.src};
 document.getElementById('umlLightbox').addEventListener('click',e=>{if(e.target.id==='umlLightbox')e.currentTarget.style.display='none'});
-
-// Komut Paleti (hızlı arama)
 const cmdBtn=document.getElementById('cmdBtn');
-cmdBtn.addEventListener('click',()=>{const items=[...document.querySelectorAll('main .section')].map(s=>({id:s.id,t:s.querySelector('h2').textContent}));
-const q=prompt('Bölüm ara:'); if(!q) return; const hit=items.find(i=>i.t.toLowerCase().includes(q.toLowerCase())); if(hit) location.hash=hit.id;});
+cmdBtn.addEventListener('click',()=>{const items=[...document.querySelectorAll('main .section')].map(s=>({id:s.id,t:s.querySelector('h2').textContent}));const q=prompt('Bölüm ara:');if(!q)return;const hit=items.find(i=>i.t.toLowerCase().includes(q.toLowerCase()));if(hit)location.hash=hit.id;});
 </script>
 </body>
 </html>
