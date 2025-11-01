@@ -3,110 +3,226 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Age of Çotanak — Profesyonel Site</title>
-<meta name="description" content="Age of Çotanak strateji oyunu resmi tanıtım ve teknik sayfası. Oyun teorisi, algoritmalar, UML mimarisi ve matematiksel model.">
+<title>Age of Çotanak — Resmi Tanıtım ve Teknik Sayfa</title>
+<meta name="description" content="Age of Çotanak: modern sıra tabanlı strateji oyunu. Tarihçe, oyun teorisi, algoritmalar, matematiksel model, strateji ipuçları ve UML mimarisi.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e1111;--fg:#eaf1ed;--mut:#9fb0a9;--card:#141818;--brd:#202626;--brand:#00c07a;--brand2:#36e3b0}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--brd);z-index:10}
-header h1{font-size:1.3rem;margin:0;color:var(--brand)}
-nav a{color:var(--fg);text-decoration:none;margin:0 10px;padding:6px 8px;border-radius:6px}
-nav a:hover{background:color-mix(in oklab,var(--brand) 15%,transparent)}
-.hero{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:60px 32px;border-bottom:1px solid var(--brd)}
-.hero img{width:480px;max-width:100%;border-radius:12px;border:1px solid var(--brd)}
-.hero div{max-width:600px}
-.hero h2{font-size:2rem;margin:0 0 10px}
-section{padding:50px 32px;border-bottom:1px solid var(--brd)}
-section h2{font-size:1.6rem;margin-bottom:10px;color:var(--brand)}
-.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
-.card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:16px}
-footer{padding:20px 32px;text-align:center;font-size:.9rem;color:var(--mut);border-top:1px solid var(--brd)}
+:root{--bg:#0e1111;--fg:#eaf1ed;--mut:#9fb0a9;--card:#141818;--brd:#202626;--brand:#00c07a;--brand2:#36e3b0;--accent:#7ff0d2;--max:1240px}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.75}
+a{color:var(--accent);text-decoration:none}
+.container{max-width:var(--max);margin:auto;padding:0 24px}
+.header{position:sticky;top:0;z-index:20;background:color-mix(in oklab,var(--card) 90%,transparent);backdrop-filter:saturate(150%) blur(8px);border-bottom:1px solid var(--brd)}
+.header .row{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}
+.logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg,var(--brand),var(--brand2));display:grid;place-items:center;color:#08120e}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
+.nav a{padding:8px 10px;border-radius:10px;color:var(--fg);opacity:.9}
+.nav a:hover,.nav a.active{background:color-mix(in oklab,var(--brand) 18%,transparent);opacity:1}
+.hero{border-bottom:1px solid var(--brd);background:
+radial-gradient(1100px 420px at -10% -20%,#00c07a22,transparent 60%),
+radial-gradient(900px 340px at 110% -20%,#36e3b022,transparent 60%)}
+.hero .grid{display:grid;gap:28px;grid-template-columns:1.2fr .8fr;align-items:center;padding:56px 0}
+.hero h1{font-size:clamp(2rem,3.2vw,3rem);line-height:1.1;margin:8px 0 12px;font-weight:900;letter-spacing:-.02em}
+.hero p{color:var(--mut);max-width:64ch}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--brd);border-radius:999px;padding:6px 10px;color:var(--mut);font-weight:700;background:color-mix(in oklab,var(--card) 92%,transparent)}
+.hero img{width:100%;display:block;border:1px solid var(--brd);border-radius:14px}
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;padding:26px 0}
+@media(max-width:1024px){.shell{grid-template-columns:1fr}}
+.side{position:sticky;top:84px;height:max-content;border:1px solid var(--brd);border-radius:14px;background:var(--card);padding:14px}
+.side h4{margin:0 0 8px;font-size:.95rem}
+.side nav a{display:block;padding:8px 10px;border-radius:10px;color:var(--mut)}
+.side nav a:hover,.side nav a.active{background:color-mix(in oklab,var(--brand) 16%,transparent);color:var(--fg)}
+.main{border:1px solid var(--brd);border-radius:14px;background:var(--card);overflow:hidden}
+.section{padding:28px;border-bottom:1px solid var(--brd)}
+.section:last-child{border-bottom:0}
+.section h2{font-size:clamp(1.35rem,2.2vw,1.9rem);margin:0 0 10px;color:var(--brand);font-weight:800}
+.section h3{margin:16px 0 8px;font-size:1.1rem;color:#c9fff0}
+.lead{color:var(--mut);margin:0 0 12px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.card{border:1px solid var(--brd);border-radius:12px;padding:14px;background:linear-gradient(180deg,color-mix(in oklab,var(--card) 96%,transparent),color-mix(in oklab,var(--card) 86%,transparent))}
+blockquote{margin:14px 0;padding:12px 14px;border-left:3px solid var(--brand);background:color-mix(in oklab,var(--card) 90%,transparent);border-radius:8px}
 .uml{display:flex;flex-direction:column;align-items:center;gap:12px}
-.uml img{width:90%;max-width:900px;border-radius:12px;border:1px solid var(--brd);cursor:pointer}
+.uml img{width:94%;max-width:980px;border-radius:12px;border:1px solid var(--brd);cursor:pointer}
+.footer{border-top:1px solid var(--brd);padding:18px 0;text-align:center;color:var(--mut)}
+small.dim{color:var(--mut)}
+hr.sep{border:0;border-top:1px dashed var(--brd);margin:16px 0}
 </style>
 </head>
 <body>
-<header>
-  <h1>Age of Çotanak</h1>
-  <nav>
-    <a href="#oyun-hakkinda">Oyun</a>
-    <a href="#oyun-teorisi">Teori</a>
-    <a href="#algoritmik-analiz">Algoritmalar</a>
-    <a href="#uml">UML</a>
-    <a href="#matematik">Model</a>
-    <a href="#uygulamalar">Uygulama</a>
-  </nav>
+
+<header class="header">
+  <div class="container row">
+    <div class="brand"><div class="logo">Ç</div>Age of Çotanak</div>
+    <nav class="nav" id="topnav">
+      <a href="#oyun-hakkinda">Oyun</a>
+      <a href="#tarihce">Tarihçe</a>
+      <a href="#oyun-teorisi">Teori</a>
+      <a href="#algoritmik-analiz">Algoritmalar</a>
+      <a href="#matematik">Model</a>
+      <a href="#kurallar">Kurallar</a>
+      <a href="#strateji">Strateji</a>
+      <a href="#uygulamalar">Uygulamalar</a>
+      <a href="#uml">UML</a>
+      <a href="#puf">Püf</a>
+    </nav>
+  </div>
 </header>
 
 <section class="hero">
-  <div>
-    <h2>Modern Strateji Deneyimi</h2>
-    <p>Age of Çotanak, karar teorisi ve algoritmik denge üzerine kurulmuş sıra tabanlı bir strateji oyunudur. Gerçek zamanlı hesaplamalar, minimal tasarım ve güçlü yapay zekâ altyapısı ile stratejik derinlik sağlar.</p>
-  </div>
-  <img src="./aocgame.PNG" alt="Age of Çotanak tanıtım">
-</section>
-
-<section id="oyun-hakkinda">
-  <h2>Oyun Hakkında</h2>
-  <div class="grid">
-    <div class="card"><h3>Temel Yapı</h3><p>Hücresel harita, kaynak yönetimi ve taktiksel birim dengesiyle geliştirilmiştir.</p></div>
-    <div class="card"><h3>Teknoloji</h3><p>Saf JavaScript ile yazılmıştır; harita ve UI işlemleri için SVG/Canvas kullanılır.</p></div>
-    <div class="card"><h3>Amacı</h3><p>Rakip ekonomisini çökertmek, haritayı kontrol etmek ve ana yapıları korumaktır.</p></div>
-  </div>
-</section>
-
-<section id="oyun-teorisi">
-  <h2>Oyun Teorisi Kavramları</h2>
-  <div class="grid">
-    <div class="card"><h3>Nash Dengesi</h3><p>İki oyuncunun stratejik kararlarda tek taraflı sapma ile kazanç elde edemediği denge durumudur.</p></div>
-    <div class="card"><h3>Bilgi Setleri</h3><p>Her oyuncunun mevcut durumda erişebildiği bilgiye göre karar alma süreci tanımlanır.</p></div>
-    <div class="card"><h3>Beklenen Fayda</h3><p>Her hamlenin kazanç–kayıp oranı, beklenen fayda fonksiyonu ile hesaplanır.</p></div>
+  <div class="container grid">
+    <div>
+      <span class="badges">
+        <span class="badge">Sıra Tabanlı</span>
+        <span class="badge">Tam Bilgi</span>
+        <span class="badge">Saf JavaScript</span>
+      </span>
+      <h1>Age of Çotanak</h1>
+      <p>Karar teorisi, alan kontrolü ve kaynak ekonomisi üzerine inşa edilmiş modern bir strateji deneyimi. Erişilebilir web teknolojileriyle geliştirildi; kurumsal kalite, ölçeklenebilir mimari ve şeffaf tasarım ilkeleriyle sunulur.</p>
+      <p class="lead">Bu sayfa; oyunun tarihçesini, kurallarını, teorik temelini ve uygulanan algoritmaları kurumsal bir anlatım ve teknik netlikle bir araya getirir.</p>
+    </div>
+    <div><img src="./aocgame.PNG" alt="Age of Çotanak tanıtım"></div>
   </div>
 </section>
 
-<section id="algoritmik-analiz">
-  <h2>Algoritmik Analiz</h2>
-  <div class="grid">
-    <div class="card"><h3>Hareket Hesabı</h3><p>Birimler BFS tabanlı ulaşılabilirlik fonksiyonu ile hesaplanır.</p></div>
-    <div class="card"><h3>Arama</h3><p>Minimax + Alpha-Beta pruning ile optimize edilmiş karar ağacı.</p></div>
-    <div class="card"><h3>Heuristik</h3><p>Mobilite, pozisyon değeri ve ekonomik farkın ağırlıklı birleşimi.</p></div>
-  </div>
-</section>
+<div class="container shell">
+  <aside class="side">
+    <h4>İçindekiler</h4>
+    <nav id="toc"></nav>
+  </aside>
 
-<section id="uml">
-  <h2>Sistem Mimarisi (UML)</h2>
-  <div class="uml">
-    <img src="./aocdiagram.png" alt="Age of Çotanak UML diyagramı" id="umlImage">
-    <a href="./aocdiagram.png" download="Age-of-Cotanak-UML.png" style="color:var(--brand2)">Diyagramı İndir</a>
-  </div>
-</section>
+  <main class="main">
+    <section class="section" id="oyun-hakkinda">
+      <h2>Oyun Hakkında</h2>
+      <p class="lead">İki fraksiyonun karşı karşıya geldiği, deterministik ve sıfır-toplamlı bir strateji. Amaç; gelir noktalarını güvenceye almak, kritik geçitleri tutmak ve rakibin ana yapısını düşürmektir.</p>
+      <div class="grid">
+        <div class="card"><h3>Çekirdek Deneyim</h3><p>Hücresel harita üzerinde hareket puanı, menzil ve arazi maliyeti dinamikleri. Tempo; hamle sıralaması ve kaynak akışıyla belirlenir.</p></div>
+        <div class="card"><h3>Teknik Yığın</h3><p>Saf JS/HTML/CSS. Render katmanı için SVG; animasyon ve vurgulamalar için hafif sınıflar. Bağımlılık minimizasyonu ile hızlı yükleme.</p></div>
+        <div class="card"><h3>Ürün İlkeleri</h3><p>Okunabilirlik, sezgisel etkileşim ve kara-kutu olmayan yapay zekâ. Eşit şartlarda şeffaf ve ölçülebilir kararlar.</p></div>
+      </div>
+    </section>
 
-<section id="matematik">
-  <h2>Matematiksel Model</h2>
-  <div class="grid">
-    <div class="card"><h3>Durum Fonksiyonu</h3><p>Oyun durumu s, eylem a, geçiş T(s,a) → s′, fayda U(s).</p></div>
-    <div class="card"><h3>Ödül Fonksiyonu</h3><p>U(s) = α·Skor + β·Kaynak + γ·Mobilite − δ·Risk</p></div>
-    <div class="card"><h3>Değerleme</h3><p>V(s) = max-min algoritmasıyla arama derinliği boyunca değerlendirilir.</p></div>
-  </div>
-</section>
+    <section class="section" id="tarihce">
+      <h2>Oyunun Tarihçesi</h2>
+      <p class="lead">Age of Çotanak, Karadeniz mitolojisinin sembolik motiflerinden ilham alan bir prototipten; kurumsal yapıda planlanan bir strateji ürününe evrildi.</p>
+      <h3>Erken Prototipler</h3>
+      <p>İlk sürümler, tek ekranlı bir harita ve yalnızca “gelir–asker” döngüsünü test eden minimal kurallardan oluşuyordu. Amaç; oyuncunun karar kalitesini ölçebilecek metrikleri (hamle verimliliği, kayıp/gelir oranı, mobilite skoru) kalibre etmekti.</p>
+      <h3>Denge ve Ekonomi</h3>
+      <p>Orta dönem çalışmalarda, geçit kontrolleri ve arazi maliyetleri oyunun ritmini belirleyen temel unsurlar haline geldi. Ekonomi eğrisi; açılışta düşük fakat güvenli, ortada hızlanan, sonda ise dar boğazların baskın olduğu bir kurguya ulaştı.</p>
+      <h3>Kurumsal Hazırlık</h3>
+      <p>Teknik borcun azaltılması, veri modellerinin sadeleştirilmesi ve test senaryolarının otomatize edilmesiyle; yapay zekâ karşılaşmaları tutarlı bir referans çizgisine kavuştu. Bu aşama, oyunun öğretilebilir ve sürdürülebilir hale gelmesini sağladı.</p>
+      <blockquote>“Derinlik, kural çokluğunda değil; sonuçların okunabilirliğinde başlar.”</blockquote>
+    </section>
 
-<section id="uygulamalar">
-  <h2>Gerçek Dünya Uygulamaları</h2>
-  <div class="grid">
-    <div class="card"><h3>Karar Sistemleri</h3><p>Kaynak tahsisi ve risk analizi algoritmalarına temel oluşturur.</p></div>
-    <div class="card"><h3>Eğitim</h3><p>Stratejik düşünme ve optimizasyon konularında örnek vakalar sağlar.</p></div>
-    <div class="card"><h3>Yapay Zekâ</h3><p>Oyun ağacı arama ve reinforcement learning test ortamı olarak kullanılabilir.</p></div>
-  </div>
-</section>
+    <section class="section" id="oyun-teorisi">
+      <h2>Oyun Teorisi Kavramları</h2>
+      <p class="lead">Age of Çotanak; tam bilgi ve deterministik yapısıyla, klasik oyun teorisi araçlarının doğrudan uygulanabildiği bir ortam sunar.</p>
+      <h3>Nash Dengesi</h3>
+      <p>Her iki oyuncunun strateji profili, tek taraflı değişimle iyileşmiyorsa dengededir. Oyunda bu denge, alan kontrolü ile gelir akışı arasında kurulan hassas kayıtlarda gözlenir: ekonomik üstünlük, konumsal riskleri artırıyorsa balans kaçırılmış olabilir.</p>
+      <h3>Bilgi Setleri</h3>
+      <p>İşleyiş tam bilgidir; belirsizlik, yalnızca hesaplama derinliğinden kaynaklanır. Bu nedenle karar kalitesi; kullanılan arama derinliği ve değerlendirme fonksiyonunun doğruluğuyla sınırlanır.</p>
+      <h3>Beklenen Fayda</h3>
+      <p>Deterministik yapıda beklenen fayda; heuristik değerle eşleşir. Gelir, kayıp ve mobilite bileşenleri; bir pozisyonun kısa ve orta vadeli getirilerini temsil edecek şekilde ağırlıklandırılır.</p>
+    </section>
 
-<footer>
-  © 2025 Age of Çotanak — Tüm Hakları Saklıdır
+    <section class="section" id="algoritmik-analiz">
+      <h2>Algoritmik Analiz</h2>
+      <p class="lead">Hareket fiziği için BFS, karar verme için Minimax + Alpha-Beta; performans ölçümleri için isteğe bağlı MCTS playoutları.</p>
+      <h3>Hareket ve Erişilebilirlik</h3>
+      <p>Birimlerin gidebileceği hücreler; arazi maliyetlerini de içeren BFS ile hesaplanır. Bu, oyuncuya ve yapay zekâya simetrik bir görünürlük sağlar.</p>
+      <h3>Arama ve Budama</h3>
+      <p>Minimax karar ağacı, Alpha-Beta budama ile hızlandırılır. Hamle sıralama, geçit ve merkez ağırlıklarıyla desteklenir; derinlik artarken dallanma faktörü yönetilir.</p>
+      <h3>Heuristik Tasarım</h3>
+      <p>Skor farkı, gelir trendi, mobilite, boğaz kontrolü ve yapı güvenliği birleşik bir değer fonksiyonu üretir. Parametreler; yapay zekâ aleyhine stres testleriyle tune edilir.</p>
+      <hr class="sep">
+      <h3>Örnek (JS) — BFS Ulaşılabilirlik</h3>
+      <pre style="background:#111; border:1px solid var(--brd); border-radius:10px; padding:14px; overflow:auto"><code style="color:#e8efe9">function reachable(start,mov){
+  const Q=[[start.x,start.y,0]], seen=new Set([`${start.x},${start.y}`]), res=new Set();
+  while(Q.length){
+    const [x,y,c]=Q.shift(); if(c>mov) continue; res.add(`${x},${y}`);
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx, ny=y+dy, nc=c+moveCost(nx,ny), k=`${nx},${ny}`;
+      if(inBounds(nx,ny)&&isFree(nx,ny)&&nc<=mov&&!seen.has(k)){ seen.add(k); Q.push([nx,ny,nc]); }
+    }
+  } return res;
+}</code></pre>
+    </section>
+
+    <section class="section" id="matematik">
+      <h2>Matematiksel Model</h2>
+      <p class="lead">Durum s, eylem kümesi A(s), geçiş T(s,a)→s′ ve fayda U(s) ile tanımlanır; değerleme V(s) arama ile yaklaştırılır.</p>
+      <h3>Ödül Fonksiyonu</h3>
+      <p>U(s)=α·Skor + β·Gelir + γ·Mobilite − δ·Risk. Ağırlıklar, oyun evresine göre dinamik olarak değiştirilebilir; açılışta mobilite, sonda yapı güvenliği daha baskın olabilir.</p>
+      <h3>Ekonomi Dinamiği</h3>
+      <p>Gold<sub>t+1</sub> = Gold<sub>t</sub> + income(s<sub>t</sub>) − cost(a<sub>t</sub>). Gelir kaynaklarının uzamsal dağılımı, strateji uzayını belirler.</p>
+    </section>
+
+    <section class="section" id="kurallar">
+      <h2>Oyunun Tanımı ve Kuralları</h2>
+      <h3>Tur Akışı</h3>
+      <p>Her tur; hareket ve eylem fazlarından oluşur. Pas, yalnızca taktik gerekçelerle yapılır. Zincirleme yakalamalar konumsal risk doğuruyorsa sistem geri tepme penceresi açar.</p>
+      <h3>Hareket</h3>
+      <p>Arazi maliyeti; düz, orman, yamaç gibi kategorilerle belirlenir. Hareket puanı; birimin türüne ve duruma göre sınırlandırılır.</p>
+      <h3>Yakalama ve Savunma</h3>
+      <p>Menzil içi hedefler saldırı alır; belirli durumlarda karşı taarruz gerçekleşebilir. Yapıların zırh katsayıları, erken çöküşleri engeller.</p>
+    </section>
+
+    <section class="section" id="strateji">
+      <h2>Oyununun Stratejik Özellikleri</h2>
+      <h3>Açılış</h3>
+      <p>İlk beş turda güvenli iki gelir noktasını garanti altına almak esastır. Genişleme; geçitleri boş bırakmadan, ikincil kuvvetlerle desteklenmelidir.</p>
+      <h3>Orta Oyun</h3>
+      <p>Boğaz kontrolü ve tempo; rakibin hamle pencerelerini daraltır. Zincirleme saldırıdan önce karşı taarruz ihtimali sayısal olarak değerlendirilmelidir.</p>
+      <h3>Son Oyun</h3>
+      <p>Küçük üstünlükler; takas ve manevra ile kalıcı avantaja dönüştürülür. Mobilite kaybı, birimin nominal gücünden daha yıkıcı olabilir.</p>
+    </section>
+
+    <section class="section" id="uygulamalar">
+      <h2>Gerçek Dünya Uygulamaları</h2>
+      <div class="grid">
+        <div class="card"><h3>Karar Destek</h3><p>Kısıtlı kaynaklarla alan hakimiyeti; engelleme ve tahkim planlarının optimizasyonu.</p></div>
+        <div class="card"><h3>Eğitim</h3><p>Asimetrik rekabet, kuşatma–yarma taktikleri ve risk yönetimi üzerine etkileşimli örnekler.</p></div>
+        <div class="card"><h3>AI Araştırma</h3><p>Heuristik tasarımı, arama stratejileri ve parametre süpürmeleri için tekrarlanabilir bir çerçeve.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="uml">
+      <h2>Sistem Mimarisi (UML)</h2>
+      <p class="lead">Çekirdek sınıflar: Oyun, HaritaKarosu, OyunNesnesi (Birim/Bina), Kurallar, Değerlendirici ve Girdi katmanları. Aşağıdaki diyagram; bağımlılıkları ve veri akışını özetler.</p>
+      <div class="uml">
+        <img src="./aocdiagram.png" alt="Age of Çotanak UML diyagramı" id="umlImage">
+        <small class="dim">Tam boy görmek için görsele tıklayın</small>
+        <a href="./aocdiagram.png" download="Age-of-Cotanak-UML.png" style="color:var(--brand2)">Diyagramı indir</a>
+      </div>
+    </section>
+
+    <section class="section" id="puf">
+      <h2>Püf Noktaları</h2>
+      <h3>Kaynak Önceliği</h3>
+      <p>Gelir kaynağına tek birim göndermek yerine, koruma–toplama ikilisiyle ilerleyin. Bağlantısız gelir, rakip tempo kazandığında kaybolur.</p>
+      <h3>Zincir Zamanlaması</h3>
+      <p>Zincirleme yakalamadan önce rakibin en yakın üç hamledeki tehdit penceresini hesaplayın. Kısa vadeli kazanç, konumsal çöküşe yol açmamalı.</p>
+      <h3>Konum Disiplini</h3>
+      <p>Dar hatlara tek eksenden girmeyin; baskıyı iki yönden kurmak, mobiliteyi rakip aleyhine eritmenin en kısa yoludur.</p>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="container">© 2025 Age of Çotanak • Tüm Hakları Saklıdır</div>
 </footer>
 
 <script>
-const uml=document.getElementById("umlImage");
-uml.addEventListener("click",()=>window.open(uml.src,"_blank"));
+const sections=[...document.querySelectorAll('.main .section')];
+const leftToc=document.getElementById('toc');
+sections.forEach(s=>{const a=document.createElement('a');a.href='#'+s.id;a.textContent=s.querySelector('h2').textContent;leftToc.appendChild(a)});
+const spy=(links,rootMargin)=>{const io=new IntersectionObserver((ents)=>{ents.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('active',l.hash==='#'+e.target.id))}})},{rootMargin});sections.forEach(s=>io.observe(s))};
+spy([...document.querySelectorAll('.nav a')],'0px 0px -70% 0px');
+spy([...document.querySelectorAll('#toc a')],'0px 0px -70% 0px');
+const uml=document.getElementById('umlImage');uml.addEventListener('click',()=>window.open(uml.src,'_blank'));
 </script>
 </body>
 </html>
