@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Age of Çotanak: Legends</title>
+<title>Age of Çotanak: Cinematic</title>
 <style>
   :root{
     --ui-bg: rgba(18, 22, 28, 0.98);
@@ -13,28 +13,33 @@
   }
   body{margin:0;overflow:hidden;background:#0f172a;font-family:var(--font);user-select:none; color:#e2e8f0;}
   
-  #game-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; transition: filter 0.5s; }
-  /* Oyun bittiğinde arka planı bulanıklaştıracağız */
-  body.game-finished #game-container { filter: blur(8px); }
-
+  #game-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
   canvas { position: absolute; inset: 0; pointer-events: none; }
   #game-stage { position: absolute; inset: 0; z-index: 1; cursor: crosshair; }
   #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
   .interactive { pointer-events: auto; }
 
-  /* --- INTRO EKRANI --- */
+  /* --- INTRO EKRANI (YENİ) --- */
   #intro-screen {
-    position: fixed; inset: 0; z-index: 9999;
+    position: fixed; inset: 0; z-index: 300;
     background: #000;
-    display: flex; justify-content: center; align-items: center;
-    transition: opacity 1.5s ease-in-out;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 1s ease-in-out;
   }
-  #intro-logo-img {
-    max-width: 60%; max-height: 60%;
+  .intro-logo {
+    font-size: 60px; font-weight: 900; color: #d97706;
+    text-transform: uppercase; letter-spacing: 10px;
+    text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
     opacity: 0; transform: scale(0.8);
     transition: all 1.5s ease-out;
   }
-  .intro-active #intro-logo-img { opacity: 1; transform: scale(1.0); }
+  .intro-sub {
+    margin-top: 10px; font-size: 16px; color: #64748b; letter-spacing: 5px;
+    opacity: 0; transition: opacity 1.5s ease 0.5s;
+  }
+  /* Animasyon için aktif sınıflar */
+  .intro-active .intro-logo { opacity: 1; transform: scale(1.1); }
+  .intro-active .intro-sub { opacity: 1; }
 
   /* ÜST PANEL */
   .top-hud {
@@ -92,40 +97,30 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-  /* MENÜLER VE MODALLER */
-  .modal-overlay { 
-    position: fixed; inset: 0; z-index: 500; 
-    background: rgba(0,0,0,0.8); 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    pointer-events: auto; 
-    backdrop-filter: blur(5px);
-  }
-  .modal { 
-    background: #0f172a; padding: 40px; border-radius: 4px; border: 2px solid #334155; 
-    text-align: center; width: 450px; color: #fff; 
-    box-shadow: 0 0 50px rgba(0,0,0,0.8); 
-    transform: translateY(20px); opacity: 0; transition: all 0.5s;
-  }
-  .modal-show { transform: translateY(0); opacity: 1; }
-
-  .btn-start { width: 100%; margin: 15px 0; padding: 15px; background: #b45309; color: white; font-weight: bold; border: none; border-radius: 2px; cursor: pointer; font-size: 16px; transition: .2s; text-transform: uppercase; letter-spacing: 2px; }
+  /* MENU & END SCREEN */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; }
+  .modal { background: #0f172a; padding: 40px; border-radius: 4px; border: 1px solid #334155; text-align: center; width: 400px; color: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+  .btn-start { width: 100%; margin: 15px 0; padding: 15px; background: #b45309; color: white; font-weight: bold; border: none; border-radius: 2px; cursor: pointer; font-size: 16px; transition: .2s; text-transform: uppercase; letter-spacing: 2px; pointer-events: auto; }
   .btn-start:hover { background: #d97706; }
   .diff-select { display:flex; gap:10px; margin-bottom:20px; }
   .diff-btn { flex:1; padding:10px; background:#1e293b; border:1px solid #334155; color:#94a3b8; cursor:pointer; border-radius:2px; font-weight: bold; }
   .diff-btn.active { background:var(--accent); color:#000; border-color:var(--accent); }
   
-  .game-over-title { font-size: 48px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 5px; font-family: monospace; }
+  .game-over-title { font-size: 42px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 5px; font-family: monospace; opacity: 0; transform: scale(0.5); transition: all 1s; }
+  .game-over-show .game-over-title { opacity: 1; transform: scale(1); }
   .win { color: #22c55e; text-shadow: 0 0 30px #22c55e; }
   .lose { color: #ef4444; text-shadow: 0 0 30px #ef4444; }
 </style>
 </head>
 <body>
 
-<div id="intro-screen">
-  <img src="aoclogo.png" id="intro-logo-img" alt="ÇOTANAK GAMES">
-</div>
-
 <div id="game-container">
+  
+  <div id="intro-screen">
+      <div class="intro-logo">ÇOTANAK<br>GAMES</div>
+      <div class="intro-sub">PRESENTS</div>
+  </div>
+
   <div id="game-stage">
     <svg id="game-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -197,8 +192,7 @@
     </div>
   </div>
 
-  <div id="start-screen" class="modal-overlay" style="display:none;">
-    <div class="modal">
+  <div id="start-screen" class="modal-overlay interactive" style="display:none;"> <div class="modal">
       <h1 style="color:#d97706; margin:0 0 10px 0; text-shadow:0 3px 0 #000;">AGE OF ÇOTANAK</h1>
       <p style="color:#94a3b8; font-size:12px; margin-bottom:20px; letter-spacing:3px;">WARLORDS</p>
       
@@ -213,7 +207,7 @@
     </div>
   </div>
 
-  <div id="end-screen" class="modal-overlay" style="display:none;">
+  <div id="end-screen" class="modal-overlay interactive" style="display:none;">
       <div class="modal">
           <h1 id="end-title" class="game-over-title"></h1>
           <button class="btn-start" onclick="location.reload()">TEKRAR OYNA</button>
@@ -231,7 +225,7 @@ const NS = "http://www.w3.org/2000/svg";
 const ICONS = {
     GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
     WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
-    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="url(#grad-hazel)" stroke="#3f1d04"/></svg>`,
+    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
     UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
     SWORD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
     BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
@@ -275,37 +269,27 @@ let GAME = {
 
 // --- AÇILIŞ MANTIĞI ---
 window.onload = function() {
+    // Önce intro ekranını göster
     const intro = document.getElementById('intro-screen');
     const start = document.getElementById('start-screen');
     const svg = document.getElementById('game-svg');
-    const logoImg = document.getElementById('intro-logo-img');
     
     // Canvas ayarı
     if(svg) { svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%'); }
     
-    // INTRO AKIŞI
+    // Intro animasyonunu başlat
     if(intro){
-        // Resim yüklendiyse veya yüklenmezse de devam et
-        let logoLoaded = false;
-        logoImg.onload = () => { logoLoaded = true; runIntro(); };
-        logoImg.onerror = () => { console.log("Logo bulunamadı"); runIntro(); };
-        // Çok beklemesin
-        setTimeout(() => { if(!logoLoaded) runIntro(); }, 100);
-
-        function runIntro(){
+        setTimeout(() => {
             intro.classList.add('intro-active');
+            // 2.5 sn sonra intro gitsin, menü gelsin
             setTimeout(() => {
                 intro.style.opacity = '0';
                 setTimeout(() => {
                     intro.style.display = 'none';
-                    if(start) {
-                        start.style.display = 'flex';
-                        // Modal animasyonu
-                        start.querySelector('.modal').classList.add('modal-show');
-                    }
+                    if(start) start.style.display = 'flex';
                 }, 1000);
-            }, 2500); // 2.5 sn logo görünür
-        }
+            }, 2500);
+        }, 100);
     } else {
         if(start) start.style.display = 'flex';
     }
@@ -396,6 +380,7 @@ function createProp(type, x, y, r){
        svg += `<path d="M-15,10 L-5,-10 L15,10 Z" fill="#64748b"/><path d="M-5,10 L5,-15 L15,5 Z" fill="#94a3b8"/>
                <circle cx="-5" cy="5" r="5" fill="url(#grad-gold)"/><circle cx="8" cy="0" r="4" fill="url(#grad-gold)"/>`;
     } else { 
+       // FINDIK İKONU (Kahverengi)
        svg += `<g transform="scale(1.2)"><path d="M0,0 Q5,0 5,10 Q5,20 0,20 Q-5,20 -5,10 Q-5,0 0,0" fill="#8b4513"/>
                <path d="M0,0 L0,-5" stroke="#3f1d04" stroke-width="2"/><circle cx="2" cy="5" r="2" fill="#a0522d"/></g>`;
     }
@@ -466,6 +451,7 @@ function getUnitSVG(type, team){
   let b = '', w = '';
 
   if(type === 'VILLAGER'){
+    // KÖYLÜ (SADE HALİ)
     b = `<rect x="-6" y="-12" width="12" height="14" fill="${c}" rx="3"/><circle cx="0" cy="-16" r="5" fill="url(#grad-skin)"/>`;
     w = `<g class="w-grp"><line x1="6" y1="-5" x2="12" y2="5" stroke="#78350f" stroke-width="2"/></g>`; 
   } 
@@ -478,10 +464,12 @@ function getUnitSVG(type, team){
     w = `<g class="w-grp"><path d="M4,-15 Q12,-5 4,5" fill="none" stroke="#78350f" stroke-width="2"/><line x1="4" y1="-5" x2="12" y2="-5" stroke="#cbd5e1"/></g>`;
   } 
   else if(type === 'KNIGHT'){
+    // ATLI (SAVAŞ TEMALI)
     b = `<path d="M-12,4 Q-6,-8 14,-2 L14,6 Q-6,10 -12,4" fill="#78350f"/><rect x="-2" y="-18" width="10" height="12" fill="${c}" rx="2"/><circle cx="3" cy="-20" r="4" fill="#94a3b8"/><rect x="1" y="-26" width="4" height="6" fill="${c}"/>`;
     w = `<g class="w-grp"><line x1="5" y1="-10" x2="20" y2="-15" stroke="#cbd5e1" stroke-width="3"/></g>`;
   } 
   else if(type === 'F_KNIGHT'){ 
+    // MUHAFIZ (DEVASA ZIRHLI AT)
     b = `<path d="M-14,5 Q-8,-10 16,-4 L16,6 Q-8,12 -14,5" fill="#3f6212" stroke="#1a2e05" stroke-width="2"/>`; 
     b += `<rect x="-4" y="-22" width="14" height="16" fill="#4d7c0f" stroke="#bef264" stroke-width="2" rx="4"/>`; 
     b += `<circle cx="3" cy="-26" r="6" fill="#365314"/><path d="M-2,-32 L8,-32 L3,-38 Z" fill="#ecfccb"/>`; 
@@ -640,13 +628,16 @@ function damage(e, val){
 function gameOver(win){
     GAME.over = true; const scr = document.getElementById('end-screen'); const tit = document.getElementById('end-title');
     scr.style.display = 'flex'; 
-    document.body.classList.add('game-finished'); // Blur efekti için
     if(win){ 
         tit.innerText = "ZAFER SENİN!"; 
         tit.className = "game-over-title win"; 
+        tit.parentElement.style.display = 'block'; // Animasyon için
+        setTimeout(()=>tit.classList.add('game-over-show'), 100);
     } else { 
         tit.innerText = "YENİLGİ..."; 
         tit.className = "game-over-title lose";
+        tit.parentElement.style.display = 'block';
+        setTimeout(()=>tit.classList.add('game-over-show'), 100);
     }
 }
 
@@ -684,17 +675,14 @@ function updateFairAI(dt){
         GAME.ai.prodTimer = 0;
         let houses = myBuildings.filter(b => b.type === 'HOUSE');
         let currentCap = myBuildings.filter(b=>b.constructed && (b.type==='HOUSE'||b.type==='TOWN')).reduce((a,x)=>a+x.def.cap,0);
-        
         if(myUnits.length + 2 >= currentCap && GAME.ai.wood >= 40) findBuildSpot('HOUSE', town);
         if(myUnits.filter(u=>u.def.role==='worker').length < workerCap){
             let house = houses.find(h => h.constructed && h.queue.length === 0); if(!house) house = town;
             if(house && house.queue.length===0 && GAME.ai.wood>=50) { house.queue.push({type:'VILLAGER', def:DB.UNIT.VILLAGER, prog:0}); GAME.ai.wood -= 50; return; }
         }
-
         let barr = myBuildings.filter(b => b.type==='BARRACKS');
         let maxBarr = GAME.difficulty==='HARD'?3:1;
         if(barr.length < maxBarr && GAME.ai.wood >= 150) findBuildSpot('BARRACKS', town);
-
         barr.forEach(b => { 
             if(b.queue.length<3 && GAME.ai.wood>=60 && GAME.ai.gold>=20){ queueAI(b, 'PIKEMAN', 60, 20); return; }
         });
@@ -802,16 +790,22 @@ function updatePanel(forceFull = false){
 function updateLiveUI(){ if(GAME.selection.length > 0) updatePanel(false); }
 function addBtn(p, def, cb){
     const d = document.createElement('div'); d.className='card';
-    let costStr = ''; if(def.cost.gold) costStr += `${def.cost.gold}G `; if(def.cost.wood) costStr += `${def.cost.wood}W `; if(def.cost.hazel) costStr += `${def.cost.hazel}H`;
     
-    // GÜNCELLENMİŞ SVG İKON KONTROLÜ
+    let titleHtml = `<div class="card-title">${def.name}</div>`;
     let iconSvg = ICONS.WOOD;
     if(def.visual && ICONS[def.visual]) iconSvg = ICONS[def.visual];
-    else if(def.icon && def.icon.length > 3) iconSvg = def.icon;
+    else if(def.icon && def.icon.length > 3) iconSvg = def.icon; 
     
-    d.innerHTML = `${iconSvg}<span>${costStr}</span>`;
+    let costHtml = '<div class="card-cost">';
+    if(def.cost.gold) costHtml += `<div class="cost-row" style="color:#fbbf24"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.GOLD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.gold}</div>`;
+    if(def.cost.wood) costHtml += `<div class="cost-row wood"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.WOOD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.wood}</div>`;
+    if(def.cost.hazel) costHtml += `<div class="cost-row hazel"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.HAZEL.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.hazel}</div>`;
+    costHtml += '</div>';
+
+    d.innerHTML = `${titleHtml}${iconSvg}${costHtml}`;
     d.onclick = cb; p.appendChild(d);
 }
+
 function prepBuild(type){
     if(type==='TOWN') return; GAME.ghost = {active:true, type, w:DB.BUILD[type].w, h:DB.BUILD[type].h, el:document.createElementNS(NS,'rect'), valid:false};
     GAME.ghost.el.setAttribute('width', GAME.ghost.w); GAME.ghost.el.setAttribute('height', GAME.ghost.h); GAME.ghost.el.setAttribute('fill', 'rgba(255,255,255,0.3)'); GAME.dom.layers.ui.appendChild(GAME.ghost.el);
@@ -826,8 +820,7 @@ function tryBuild(){
     } 
     const c = DB.BUILD[GAME.ghost.type].cost;
     if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0)){
-        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0);
-        updateUI();
+        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); updateUI();
         let b = spawnBuilding(GAME.ghost.type, 1, GAME.mouse.wx-GAME.ghost.w/2, GAME.mouse.wy-GAME.ghost.h/2);
         GAME.selection.forEach(u => { if(u.def.role==='worker') u.task={type:'build', id:b.id}; });
         GAME.ghost.el.remove(); GAME.ghost.active=false;
