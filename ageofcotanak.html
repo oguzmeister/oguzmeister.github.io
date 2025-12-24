@@ -74,19 +74,129 @@
   }
 
   #panel-info { width: 240px; flex-direction: column; align-items: flex-start; padding: 15px; gap: 5px; font-size: 14px; }
-  #panel-actions { min-width: 340px; gap: 6px; padding: 10px; flex-wrap: wrap; align-content: center; justify-content: flex-start; }
-  .minimap-wrapper { width: 200px; height: 140px; padding: 0; overflow: hidden; position: relative; cursor: crosshair; border: 1px solid #475569; }
-  #minimap { width: 100%; height: 100%; display: block; background: #020617; }
-  
-  /* KARTLAR */
-  .card {
-    width: 60px; height: 80px; background: #1e293b; border: 1px solid #475569; border-radius: 4px; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all .1s; position: relative;
+
+  /* =========================
+     HUD KART (ACTION) DÜZENİ
+     Taşmaları engeller, sabit boy, sığdırma ve scroll.
+     ========================= */
+  #panel-actions{
+    width: min(520px, calc(100vw - 240px - 200px - 80px)); /* info + minimap + boşluk */
+    max-width: 560px;
+    height: 140px;
+    padding: 10px;
+    gap: 8px;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+
+    overflow-y: auto;      /* dikey taşma -> scroll */
+    overflow-x: hidden;    /* yatay taşma -> yok */
+    pointer-events: auto;
+
+    /* scroll daha şık ve alan kaplamasın */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(217,119,6,.7) rgba(15,23,42,.2);
+  }
+  #panel-actions::-webkit-scrollbar{ width: 8px; }
+  #panel-actions::-webkit-scrollbar-track{ background: rgba(15,23,42,.2); border-radius: 8px; }
+  #panel-actions::-webkit-scrollbar-thumb{ background: rgba(217,119,6,.7); border-radius: 8px; }
+
+  /* KARTLAR (yeniden) */
+  .card{
+    width: 78px;
+    height: 112px;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+
+    padding: 8px 6px;
+    box-sizing: border-box;
+    transition: all .1s;
+    position: relative;
+
+    overflow: hidden; /* içerik taşmasını kes */
   }
   .card:hover { transform: translateY(-2px); background: #334155; border-color: var(--accent); }
   .card:active { transform: scale(0.95); }
+
+  /* addBtn içindeki başlık */
+  .card-title{
+    width: 100%;
+    font-size: 10px;
+    font-weight: 800;
+    color: #e2e8f0;
+    text-align: center;
+    line-height: 1.1;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* uzun isimler tek satırda kesilsin */
+  }
+
+  .card-icon-svg{
+    width: 28px;
+    height: 28px;
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  /* maliyet satırları */
+  .card-cost{
+    width: 100%;
+    margin-top: auto; /* maliyeti aşağı yapıştır */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cost-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .mini-icon{
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    flex: 0 0 auto;
+  }
+  .cost-row.wood{ color: #86efac; }
+  .cost-row.hazel{ color: #f59e0b; }
+
+  /* eski span kuralı kalabilir ama artık addBtn onu kullanmıyor */
   .card span { font-size: 10px; font-weight: 700; margin-top: 4px; color: #cbd5e1; text-align: center; }
-  .card-icon-svg { width: 28px; height: 28px; margin-bottom: 2px; display: block; fill: #e2e8f0; }
+
+  /* mobilde daha iyi sığması için */
+  @media (max-width: 720px){
+    #panel-actions{
+      width: min(420px, calc(100vw - 240px - 200px - 60px));
+    }
+    .card{ width: 72px; height: 108px; }
+  }
+  @media (max-width: 560px){
+    #panel-actions{
+      width: calc(100vw - 40px);
+      max-width: none;
+    }
+    .bottom-hud{ justify-content: flex-start; }
+  }
+
+  .minimap-wrapper { width: 200px; height: 140px; padding: 0; overflow: hidden; position: relative; cursor: crosshair; border: 1px solid #475569; }
+  #minimap { width: 100%; height: 100%; display: block; background: #020617; }
 
   #selection-box { position: absolute; border: 1px solid #fff; background: rgba(59, 130, 246, 0.2); display: none; z-index: 100; pointer-events: none; }
 
@@ -117,7 +227,7 @@
 <div id="game-container">
   
   <div id="intro-screen">
-      <div class="intro-logo">ÇOTANAK<br>GAMES</div>
+      <div class="intro-logo">OGUZMEISTER<br>GAMES</div>
       <div class="intro-sub">PRESENTS</div>
   </div>
 
@@ -791,7 +901,7 @@ function updateLiveUI(){ if(GAME.selection.length > 0) updatePanel(false); }
 function addBtn(p, def, cb){
     const d = document.createElement('div'); d.className='card';
     
-    let titleHtml = `<div class="card-title">${def.name}</div>`;
+    let titleHtml = `<div class="card-title" title="${def.name}">${def.name}</div>`;
     let iconSvg = ICONS.WOOD;
     if(def.visual && ICONS[def.visual]) iconSvg = ICONS[def.visual];
     else if(def.icon && def.icon.length > 3) iconSvg = def.icon; 
