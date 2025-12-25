@@ -230,7 +230,7 @@
 <body>
 
 <div id="game-container">
-
+  <audio id="bgm" src="bgm.mp3" preload="auto" loop></audio>
   <div id="intro-screen">
       <div class="intro-logo">
         <span>OGUZMEISTER</span>
@@ -429,6 +429,12 @@ function setDiff(d){
 }
 
 function startGame(){
+  const bgm = document.getElementById('bgm');
+  if(bgm){
+    bgm.volume = 0.35; // 0.0 - 1.0
+    bgm.play().catch(()=>{});
+  }
+
   GAME.dom = {
     svg: document.getElementById('game-svg'),
     layers: {
@@ -772,6 +778,9 @@ function damage(e, val){
 }
 
 function gameOver(win){
+  const bgm = document.getElementById('bgm');
+  if(bgm){ bgm.pause(); bgm.currentTime = 0; }
+
   GAME.over = true;
 
   const scr = document.getElementById('end-screen');
