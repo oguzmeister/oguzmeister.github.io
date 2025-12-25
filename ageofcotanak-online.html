@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Age of Çotanak: Online</title>
+<title>Age of Çotanak: Online 1v1</title>
 <link rel="icon" type="image/png" href="aoclogo.png">
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -25,88 +25,31 @@
   .interactive { pointer-events: auto; }
 
   /* --- INTRO EKRANI --- */
-  #intro-screen {
-    position: fixed; inset: 0; z-index: 300;
-    background: #000;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: opacity 1s ease-in-out;
-  }
-  .intro-logo {
-    font-size: 60px; font-weight: 900; color: #d97706;
-    text-transform: uppercase; letter-spacing: 10px;
-    text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
-    opacity: 0; transform: scale(0.8);
-    transition: all 1.5s ease-out;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .intro-sub {
-    margin-top: 10px; font-size: 16px; color: #64748b; letter-spacing: 5px;
-    opacity: 0; transition: opacity 1.5s ease 0.5s;
-  }
-  .intro-active .intro-logo { opacity: 1; transform: scale(1.1); }
-  .intro-active .intro-sub { opacity: 1; }
+  #intro-screen { position: fixed; inset: 0; z-index: 300; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease-in-out; }
+  .intro-logo { font-size: 60px; font-weight: 900; color: #d97706; text-transform: uppercase; letter-spacing: 10px; text-shadow: 0 0 20px rgba(217, 119, 6, 0.5); opacity: 0; transform: scale(0.8); transition: all 1.5s ease-out; display: flex; flex-direction: column; align-items: center; }
+  .intro-sub { margin-top: 10px; font-size: 16px; color: #64748b; letter-spacing: 5px; opacity: 0; transition: opacity 1.5s ease 0.5s; }
+  .intro-active .intro-logo { opacity: 1; transform: scale(1.1); } .intro-active .intro-sub { opacity: 1; }
 
-  /* ÜST PANEL */
-  .top-hud {
-    display: flex; gap: 15px; justify-content: center; padding: 12px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%);
-    pointer-events: none;
-  }
-  .res-chip {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #fff;
-    padding: 6px 16px; border-radius: 4px; display: flex; align-items: center; gap: 8px;
-    font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); pointer-events: auto;
-  }
+  /* UI ELEMENTLERİ */
+  .top-hud { display: flex; gap: 15px; justify-content: center; padding: 12px; background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%); pointer-events: none; }
+  .res-chip { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 16px; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); pointer-events: auto; }
   .hud-icon { width: 20px; height: 20px; display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
-
-  /* ALT PANEL */
-  .bottom-hud {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    display: flex; align-items: flex-end; justify-content: center;
-    padding: 20px; gap: 10px;
-    background: linear-gradient(0deg, #000 0%, rgba(0,0,0,0) 100%);
-    pointer-events: none;
-  }
-
-  .hud-panel {
-    background: var(--ui-bg); border: 1px solid var(--ui-border);
-    border-radius: 4px; height: 140px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9); pointer-events: auto;
-    flex-shrink: 0;
-  }
-
+  .bottom-hud { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; align-items: flex-end; justify-content: center; padding: 20px; gap: 10px; background: linear-gradient(0deg, #000 0%, rgba(0,0,0,0) 100%); pointer-events: none; }
+  .hud-panel { background: var(--ui-bg); border: 1px solid var(--ui-border); border-radius: 4px; height: 140px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.9); pointer-events: auto; flex-shrink: 0; }
   #panel-info { width: 240px; flex-direction: column; align-items: flex-start; padding: 15px; gap: 5px; font-size: 14px; }
-  #panel-actions{
-    width: min(520px, calc(100vw - 240px - 200px - 80px));
-    max-width: 560px; height: 140px; padding: 10px; gap: 8px;
-    display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: flex-start;
-    overflow-y: auto; overflow-x: hidden; pointer-events: auto;
-    scrollbar-width: thin; scrollbar-color: rgba(217,119,6,.7) rgba(15,23,42,.2);
-  }
-  #panel-actions::-webkit-scrollbar{ width: 8px; }
-  #panel-actions::-webkit-scrollbar-track{ background: rgba(15,23,42,.2); border-radius: 8px; }
-  #panel-actions::-webkit-scrollbar-thumb{ background: rgba(217,119,6,.7); border-radius: 8px; }
+  
+  #panel-actions{ width: min(520px, calc(100vw - 240px - 200px - 80px)); max-width: 560px; height: 140px; padding: 10px; gap: 8px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; pointer-events: auto; scrollbar-width: thin; scrollbar-color: rgba(217,119,6,.7) rgba(15,23,42,.2); }
+  #panel-actions::-webkit-scrollbar{ width: 8px; } #panel-actions::-webkit-scrollbar-track{ background: rgba(15,23,42,.2); border-radius: 8px; } #panel-actions::-webkit-scrollbar-thumb{ background: rgba(217,119,6,.7); border-radius: 8px; }
 
-  .card{
-    width: 78px; height: 112px; background: #1e293b; border: 1px solid #475569;
-    border-radius: 6px; cursor: pointer; display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-start; gap: 6px; padding: 8px 6px;
-    box-sizing: border-box; transition: all .1s; position: relative; overflow: hidden;
-  }
-  .card:hover { transform: translateY(-2px); background: #334155; border-color: var(--accent); }
-  .card:active { transform: scale(0.95); }
+  .card{ width: 78px; height: 112px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 8px 6px; box-sizing: border-box; transition: all .1s; position: relative; overflow: hidden; }
+  .card:hover { transform: translateY(-2px); background: #334155; border-color: var(--accent); } .card:active { transform: scale(0.95); }
   .card-title{ width: 100%; font-size: 10px; font-weight: 800; color: #e2e8f0; text-align: center; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card-icon-svg{ width: 28px; height: 28px; display: block; flex: 0 0 auto; }
   .card-cost{ width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 2px; }
   .cost-row{ display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 10px; font-weight: 800; line-height: 1; white-space: nowrap; }
   .mini-icon{ width: 12px; height: 12px; display: inline-block; flex: 0 0 auto; }
-  .cost-row.wood{ color: #86efac; }
-  .cost-row.hazel{ color: #f59e0b; }
+  .cost-row.wood{ color: #86efac; } .cost-row.hazel{ color: #f59e0b; }
+  .card span { font-size: 10px; font-weight: 700; margin-top: 4px; color: #cbd5e1; text-align: center; }
 
   @media (max-width: 720px){ #panel-actions{ width: min(420px, calc(100vw - 240px - 200px - 60px)); } .card{ width: 72px; height: 108px; } }
   @media (max-width: 560px){ #panel-actions{ width: calc(100vw - 40px); max-width: none; } .bottom-hud{ justify-content: flex-start; } }
@@ -114,19 +57,14 @@
   .minimap-wrapper { width: 200px; height: 140px; padding: 0; overflow: hidden; position: relative; cursor: crosshair; border: 1px solid #475569; }
   #minimap { width: 100%; height: 100%; display: block; background: #020617; }
   #selection-box { position: absolute; border: 1px solid #fff; background: rgba(59, 130, 246, 0.2); display: none; z-index: 100; pointer-events: none; }
-
-  .toast {
-    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9); padding: 12px 30px; border-radius: 4px; border-bottom: 2px solid var(--accent);
-    color: #fbbf24; font-weight: bold; opacity: 0; transition: .3s; pointer-events: none; z-index: 100; font-family: monospace; letter-spacing: 1px; font-size: 16px;
-  }
+  .toast { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 12px 30px; border-radius: 4px; border-bottom: 2px solid var(--accent); color: #fbbf24; font-weight: bold; opacity: 0; transition: .3s; pointer-events: none; z-index: 100; font-family: monospace; letter-spacing: 1px; font-size: 16px; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-  /* MENU & LOBBY & END SCREEN */
+  /* MENÜLER & LOBİ */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; }
   .modal { background: #0f172a; padding: 40px; border-radius: 4px; border: 1px solid #334155; text-align: center; width: 400px; color: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
   .btn-start { width: 100%; margin: 15px 0; padding: 15px; background: #b45309; color: white; font-weight: bold; border: none; border-radius: 2px; cursor: pointer; font-size: 16px; transition: .2s; text-transform: uppercase; letter-spacing: 2px; pointer-events: auto; }
-  .btn-start:hover { filter: brightness(1.2); }
+  .btn-start:hover { background: #d97706; }
   .diff-select { display:flex; gap:10px; margin-bottom:20px; }
   .diff-btn { flex:1; padding:10px; background:#1e293b; border:1px solid #334155; color:#94a3b8; cursor:pointer; border-radius:2px; font-weight: bold; }
   .diff-btn.active { background:var(--accent); color:#000; border-color:var(--accent); }
@@ -135,10 +73,7 @@
   .game-over-show .game-over-title { opacity: 1; transform: scale(1); }
   .win { color: #22c55e; text-shadow: 0 0 30px #22c55e; }
   .lose { color: #ef4444; text-shadow: 0 0 30px #ef4444; }
-
-  /* Yanıp sönme animasyonu */
-  .blink { animation: blinker 1.5s linear infinite; color: #aaa; }
-  @keyframes blinker { 50% { opacity: 0; } }
+  .blink { animation: blinker 1.5s linear infinite; color: #aaa; } @keyframes blinker { 50% { opacity: 0; } }
 </style>
 </head>
 <body>
@@ -156,38 +91,16 @@
   <div id="game-stage">
     <svg id="game-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <filter id="shadow" x="-50%" y="-20%" width="200%" height="150%">
-          <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
-        </filter>
-        <linearGradient id="grad-gold" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fcd34d"/><stop offset="100%" stop-color="#b45309"/>
-        </linearGradient>
-        <linearGradient id="grad-wood" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#78350f"/><stop offset="100%" stop-color="#451a03"/>
-        </linearGradient>
-        <linearGradient id="grad-hazel" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#8b4513"/><stop offset="100%" stop-color="#3f1d04"/>
-        </linearGradient>
-        <radialGradient id="grad-skin" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/>
-        </radialGradient>
-        <pattern id="pat-stone" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-            <rect width="8" height="8" fill="#475569"/>
-            <path d="M0 4 L8 4 M4 0 L4 8" stroke="#334155" stroke-width="0.5"/>
-        </pattern>
-        <pattern id="pat-grass" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
-            <rect width="64" height="64" fill="#141b10"/>
-            <circle cx="10" cy="10" r="1" fill="#1a2e05"/>
-            <circle cx="40" cy="50" r="1.5" fill="#1a2e05"/>
-        </pattern>
+        <filter id="shadow" x="-50%" y="-20%" width="200%" height="150%"> <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/> </filter>
+        <linearGradient id="grad-gold" x1="0" y1="0" x2="1" y2="1"> <stop offset="0%" stop-color="#fcd34d"/><stop offset="100%" stop-color="#b45309"/> </linearGradient>
+        <linearGradient id="grad-wood" x1="0" y1="0" x2="1" y2="0"> <stop offset="0%" stop-color="#78350f"/><stop offset="100%" stop-color="#451a03"/> </linearGradient>
+        <linearGradient id="grad-hazel" x1="0" y1="0" x2="1" y2="1"> <stop offset="0%" stop-color="#8b4513"/><stop offset="100%" stop-color="#3f1d04"/> </linearGradient>
+        <radialGradient id="grad-skin" cx="0.5" cy="0.5" r="0.5"> <stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/> </radialGradient>
+        <pattern id="pat-stone" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse"> <rect width="8" height="8" fill="#475569"/> <path d="M0 4 L8 4 M4 0 L4 8" stroke="#334155" stroke-width="0.5"/> </pattern>
+        <pattern id="pat-grass" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse"> <rect width="64" height="64" fill="#141b10"/> <circle cx="10" cy="10" r="1" fill="#1a2e05"/> <circle cx="40" cy="50" r="1.5" fill="#1a2e05"/> </pattern>
       </defs>
-
       <rect id="bg-rect" width="100%" height="100%" fill="url(#pat-grass)"/>
-      <g id="layer-props"></g>
-      <g id="layer-buildings"></g>
-      <g id="layer-units"></g>
-      <g id="layer-fx"></g>
-      <g id="layer-ui-world"></g>
+      <g id="layer-props"></g> <g id="layer-buildings"></g> <g id="layer-units"></g> <g id="layer-fx"></g> <g id="layer-ui-world"></g>
     </svg>
   </div>
 
@@ -196,73 +109,46 @@
   <div id="ui-layer">
     <div class="top-hud">
       <div class="res-chip" style="border-bottom: 2px solid #b45309;">
-        <svg class="hud-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#grad-gold)" stroke="#b45309" stroke-width="1.5"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#78350f" font-weight="bold">$</text></svg>
-        <span id="ui-gold">0</span>
+        <svg class="hud-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#grad-gold)" stroke="#b45309" stroke-width="1.5"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#78350f" font-weight="bold">$</text></svg> <span id="ui-gold">0</span>
       </div>
       <div class="res-chip" style="border-bottom: 2px solid #166534;">
-        <svg class="hud-icon" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" fill="url(#grad-wood)" rx="2"/><path d="M6 8 L18 8 M6 16 L18 16" stroke="#2e1402"/></svg>
-        <span id="ui-wood">0</span>
+        <svg class="hud-icon" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" fill="url(#grad-wood)" rx="2"/><path d="M6 8 L18 8 M6 16 L18 16" stroke="#2e1402"/></svg> <span id="ui-wood">0</span>
       </div>
       <div class="res-chip" style="border-bottom: 2px solid #854d0e;">
-        <svg class="hud-icon" viewBox="0 0 24 24"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="url(#grad-hazel)" stroke="#3f1d04" stroke-width="1.5"/><path d="M12 2 L12 8" stroke="#3f1d04"/></svg>
-        <span id="ui-hazel">0</span>
+        <svg class="hud-icon" viewBox="0 0 24 24"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="url(#grad-hazel)" stroke="#3f1d04" stroke-width="1.5"/><path d="M12 2 L12 8" stroke="#3f1d04"/></svg> <span id="ui-hazel">0</span>
       </div>
       <div class="res-chip" style="border-bottom: 2px solid #1e40af;">
-        <svg class="hud-icon" viewBox="0 0 24 24"><path d="M12 4 A4 4 0 0 1 16 8 A4 4 0 0 1 12 12 A4 4 0 0 1 8 8 A4 4 0 0 1 12 4 M6 22 L6 16 Q6 12 12 12 Q18 12 18 16 L18 22" fill="#cbd5e1" stroke="#334155" stroke-width="1.5"/></svg>
-        <span id="ui-pop">0/0</span>
+        <svg class="hud-icon" viewBox="0 0 24 24"><path d="M12 4 A4 4 0 0 1 16 8 A4 4 0 0 1 12 12 A4 4 0 0 1 8 8 A4 4 0 0 1 12 4 M6 22 L6 16 Q6 12 12 12 Q18 12 18 16 L18 22" fill="#cbd5e1" stroke="#334155" stroke-width="1.5"/></svg> <span id="ui-pop">0/0</span>
       </div>
     </div>
-
     <div id="toast-msg" class="toast">Savaş Başladı</div>
-
     <div class="bottom-hud">
-      <div id="panel-info" class="hud-panel"></div>
-      <div id="panel-actions" class="hud-panel"></div>
-      <div class="hud-panel minimap-wrapper">
-        <canvas id="minimap" width="200" height="140"></canvas>
-      </div>
+      <div id="panel-info" class="hud-panel"></div> <div id="panel-actions" class="hud-panel"></div>
+      <div class="hud-panel minimap-wrapper"> <canvas id="minimap" width="200" height="140"></canvas> </div>
     </div>
   </div>
 
   <div id="start-screen" class="modal-overlay interactive" style="display:none;">
     <div class="modal">
       <h1 style="color:#d97706; margin:0 0 10px 0; text-shadow:0 3px 0 #000;">AGE OF ÇOTANAK</h1>
-      <p style="color:#94a3b8; font-size:12px; margin-bottom:20px; letter-spacing:3px;">WARLORDS</p>
-
-      <div style="text-align:left; color:#ccc; font-size:12px; margin-bottom:5px;">ZORLUK:</div>
-      <div class="diff-select">
-          <button class="diff-btn" onclick="setDiff('EASY')" id="btn-easy">KOLAY</button>
-          <button class="diff-btn active" onclick="setDiff('NORMAL')" id="btn-norm">ORTA</button>
-          <button class="diff-btn" onclick="setDiff('HARD')" id="btn-hard">ZOR</button>
-      </div>
-
-      <button class="btn-start" id="btn-start-game">SAVAŞA KATIL (TEK KİŞİLİK)</button>
-      <button class="btn-start" style="background:#2563eb; margin-top:10px;" onclick="showLobby()">ONLINE ARENA (BETA)</button>
+      <p style="color:#94a3b8; font-size:12px; margin-bottom:20px; letter-spacing:3px;">ONLINE WARLORDS</p>
+      <button class="btn-start" style="background:#2563eb;" onclick="showLobby()">ONLINE ARENA'YA GİR</button>
     </div>
   </div>
 
   <div id="lobby-screen" class="modal-overlay interactive" style="display:none;">
     <div class="modal">
-      <h1 style="color:#2563eb; margin:0 0 10px 0; text-shadow:0 0 20px rgba(37,99,235,0.5);">ONLINE ARENA</h1>
-      <p style="color:#94a3b8; font-size:12px; margin-bottom:20px;">RAKİBİNİ BUL VE SAVAŞ</p>
-
+      <h1 style="color:#2563eb; margin:0 0 10px 0;">ONLINE LOBİ</h1>
       <div id="lobby-controls">
           <button class="btn-start" style="background:#0f766e;" onclick="createRoom()">ODA OLUŞTUR</button>
-          
           <div style="margin: 15px 0; color:#64748b;">- VEYA -</div>
-          
-          <input type="text" id="room-code-input" placeholder="Oda Kodunu Gir" 
-                 style="width:90%; padding:10px; background:#1e293b; border:1px solid #334155; color:#fff; text-align:center; font-weight:bold; letter-spacing:2px; margin-bottom:10px;">
-          
+          <input type="text" id="room-code-input" placeholder="Oda Kodunu Gir" style="width:90%; padding:10px; background:#1e293b; border:1px solid #334155; color:#fff; text-align:center; font-weight:bold; margin-bottom:10px;">
           <button class="btn-start" style="background:#4338ca;" onclick="joinRoom()">ODAYA KATIL</button>
       </div>
-
       <div id="lobby-waiting" style="display:none; flex-direction:column; gap:15px;">
-          <h2 style="color:#fbbf24;">ODA KODU: <span id="display-room-code" style="font-family:monospace; font-size:32px; color:#fff; background:#333; padding:5px 10px; border-radius:5px;">...</span></h2>
+          <h2 style="color:#fbbf24;">ODA: <span id="display-room-code" style="color:#fff;">...</span></h2>
           <p class="blink">Rakip Bekleniyor...</p>
-          <button class="diff-btn" onclick="location.reload()">İPTAL</button>
       </div>
-
       <button class="diff-btn" style="margin-top:20px; width:100%; border-color:transparent;" onclick="backToMenu()">GERİ DÖN</button>
     </div>
   </div>
@@ -276,7 +162,7 @@
 </div>
 
 <script>
-/* --- FIREBASE YAPILANDIRMASI (COMPAT VERSION) --- */
+/* --- FIREBASE AYARLARI --- */
 const firebaseConfig = {
   apiKey: "AIzaSyDqQhq2QiG8PDR_ieoyfGiHsB3F-Ryd94E",
   authDomain: "ageofcotanakonline.firebaseapp.com",
@@ -286,8 +172,6 @@ const firebaseConfig = {
   messagingSenderId: "129139800724",
   appId: "1:129139800724:web:39b490070eae07b5405281"
 };
-
-// Firebase Başlat
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -300,7 +184,7 @@ let myTeam = 1; // 1: Mavi, 2: Kırmızı
 let mapSeed = 0; // Harita Senkronizasyonu için
 
 /* --- SEEDED RANDOM (AYNI HARİTA İÇİN) --- */
-// Mulberry32 algoritması (Basit ve hızlı seeded random)
+let rng = Math.random; // Varsayılan (lobi öncesi)
 function seededRandom(a) {
     return function() {
       var t = a += 0x6D2B79F5;
@@ -309,7 +193,6 @@ function seededRandom(a) {
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     }
 }
-let rng = Math.random; // Varsayılan random
 
 /* --- SABİTLER --- */
 const CFG = { w: 2400, h: 2000 };
@@ -357,11 +240,6 @@ let GAME = {
   entities: { units: [], buildings: [], props: [], proj: [], particles: [] },
   selection: [], lastSelectionId: null,
   player: { gold: 300, wood: 300, hazel: 0 },
-  ai: {
-    gold: 300, wood: 300, hazel: 0,
-    timer: 0, prodTimer:0, waveLevel: 0,
-    brain: { state:'BOOM', lastStateChange:0, lastAttackCall:0, threatEMA:0, ecoEMA:0 }
-  },
   ghost: { active: false, type: null, el: null, valid: false },
   dom: {}
 };
@@ -372,6 +250,7 @@ window.onload = function() {
     const intro = document.getElementById('intro-screen');
     const start = document.getElementById('start-screen');
     const svg = document.getElementById('game-svg');
+
     if(svg) { svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%'); }
 
     if(intro){
@@ -385,13 +264,10 @@ window.onload = function() {
                 }, 1000);
             }, 2500);
         }, 100);
-    } else { if(start) start.style.display = 'flex'; }
-
-    // Tek kişilik oyun başlatma
-    document.getElementById('btn-start-game').addEventListener('click', () => {
-        isOnline = false;
-        startGame();
-    });
+    } else {
+        if(start) start.style.display = 'flex';
+    }
+    // Bot seçenekleri kaldırıldı, sadece online lobi açılır
 };
 
 /* --- LOBİ FONKSİYONLARI --- */
@@ -435,7 +311,7 @@ function joinRoom(){
     roomRef.get().then((snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
-            if(data.status !== 'waiting'){ alert("Bu oda dolu!"); return; }
+            if(data.status !== 'waiting'){ alert("Bu oda dolu veya başlamış!"); return; }
 
             roomRef.update({ guest: myPlayerId, status: 'starting' });
             mapSeed = data.seed; // Host'un haritasını al
@@ -458,810 +334,716 @@ function listenForGameStart(){
             
             // Oyunu seeded random ile başlat
             startGame();
+            listenForActions(); // Aksiyonları dinlemeye başla
         }
     });
 }
 
-function setDiff(d){
-    GAME.difficulty = d;
-    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(d==='EASY'?'btn-easy':d==='NORMAL'?'btn-norm':'btn-hard').classList.add('active');
+/* --- ACTION SYNC (AKSİYON PAYLAŞIMI) --- */
+function sendAction(data){
+    if(!isOnline) return;
+    db.ref('rooms/' + myRoomId + '/actions').push({ ...data, senderTeam: myTeam });
+}
+
+function listenForActions(){
+    db.ref('rooms/' + myRoomId + '/actions').on('child_added', (snapshot) => {
+        const action = snapshot.val();
+        if(action.senderTeam === myTeam) return; // Kendi aksiyonumuzu zaten yaptık
+        handleRemoteAction(action);
+    });
+}
+
+function handleRemoteAction(act){
+    if(act.type === 'MOVE'){
+        act.uids.forEach(id => {
+            const u = GAME.entities.units.find(x => x.id === id);
+            if(u) { u.dest = {x:act.x, y:act.y}; u.target=null; u.task=null; u.manualTarget=false; }
+        });
+    }
+    else if(act.type === 'ATTACK'){
+        const t = GAME.entities.units.find(x => x.id === act.tid) || GAME.entities.buildings.find(x => x.id === act.tid);
+        if(t){
+            act.uids.forEach(id => {
+                const u = GAME.entities.units.find(x => x.id === id);
+                if(u) { u.target = t; u.manualTarget=true; u.task=null; u.dest=null; }
+            });
+        }
+    }
+    else if(act.type === 'GATHER'){
+        const t = GAME.entities.props.find(x => x.id === act.tid);
+        if(t){
+            act.uids.forEach(id => {
+                const u = GAME.entities.units.find(x => x.id === id);
+                if(u) { u.task = {type:'gather', id:t.id}; u.manualTarget=false; u.dest=null; }
+            });
+        }
+    }
+    else if(act.type === 'BUILD'){
+         let b = spawnBuilding(act.bType, act.senderTeam, act.x, act.y, false);
+         b.id = act.bid; // ID'yi eşitle
+         act.uids.forEach(id => {
+            const u = GAME.entities.units.find(x => x.id === id);
+            if(u) u.task = {type:'build', id:b.id};
+         });
+    }
+    else if(act.type === 'TRAIN'){
+        const b = GAME.entities.buildings.find(x => x.id === act.bid);
+        if(b){
+            // ID'yi eşitleyerek kuyruğa ekle
+            b.queue.push({type: act.uType, def:DB.UNIT[act.uType], prog:0, forcedId: act.newUid});
+        }
+    }
 }
 
 function startGame(){
-  const bgm = document.getElementById('bgm');
-  if(bgm){ bgm.volume = 0.35; bgm.play().catch(()=>{}); }
+  const bgm = document.getElementById('bgm');
+  if(bgm){
+    bgm.volume = 0.35; // 0.0 - 1.0
+    bgm.play().catch(()=>{});
+  }
 
-  // Online ise AI'yı zorluk ayarlarından bağımsız olarak yapılandır
-  if(isOnline) {
-      GAME.difficulty = 'ONLINE'; 
-      // Seeded random fonksiyonunu aktif et
-      rng = seededRandom(mapSeed);
-  } else {
-      // Offline ise normal random
-      rng = Math.random;
-  }
+  // Seeded random aktif
+  rng = seededRandom(mapSeed);
 
-  GAME.dom = {
-    svg: document.getElementById('game-svg'),
-    layers: {
-      units: document.getElementById('layer-units'),
-      build: document.getElementById('layer-buildings'),
-      props: document.getElementById('layer-props'),
-      fx: document.getElementById('layer-fx'),
-      ui: document.getElementById('layer-ui-world')
-    }
-  };
+  GAME.dom = {
+    svg: document.getElementById('game-svg'),
+    layers: {
+      units: document.getElementById('layer-units'),
+      build: document.getElementById('layer-buildings'),
+      props: document.getElementById('layer-props'),
+      fx: document.getElementById('layer-fx'),
+      ui: document.getElementById('layer-ui-world')
+    }
+  };
 
-  GAME.ai.brain = { state:'BOOM', lastStateChange:0, lastAttackCall:0, threatEMA:0, ecoEMA:0 };
-  document.getElementById('start-screen').style.display = 'none';
-  document.getElementById('bg-rect').setAttribute('width', CFG.w);
-  document.getElementById('bg-rect').setAttribute('height', CFG.h);
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('bg-rect').setAttribute('width', CFG.w);
+  document.getElementById('bg-rect').setAttribute('height', CFG.h);
 
-  generateMap();
+  generateMap();
 
-  // Mavi Takım (Player 1)
-  spawnBuilding('TOWN', 1, 300, 300, true);
-  spawnBuilding('HOUSE', 1, 550, 350, true);
-  spawnUnit('VILLAGER', 1, 450, 500);
-  spawnUnit('VILLAGER', 1, 500, 550);
+  spawnBuilding('TOWN', 1, 300, 300, true);
+  spawnBuilding('HOUSE', 1, 550, 350, true);
+  spawnUnit('VILLAGER', 1, 450, 500);
+  spawnUnit('VILLAGER', 1, 500, 550);
 
-  // Kırmızı Takım (Player 2)
-  const ex = CFG.w-400, ey = CFG.h-400;
-  spawnBuilding('TOWN', 2, ex, ey, true);
+  const ex = CFG.w-400, ey = CFG.h-400;
+  spawnBuilding('TOWN', 2, ex, ey, true);
+  spawnBuilding('HOUSE', 2, ex-200, ey, true);
+  spawnUnit('VILLAGER', 2, ex-100, ey+100);
+  spawnUnit('VILLAGER', 2, ex+50, ey+150);
 
-  if(!isOnline){
-      // SADECE OFFLINE'DA AI BAŞLANGIÇ BİRİMLERİ
-      if(GAME.difficulty === 'EASY'){
-          spawnBuilding('HOUSE', 2, ex-200, ey, true);
-          spawnUnit('VILLAGER', 2, ex-100, ey+100);
-          GAME.ai.gold=100; GAME.ai.wood=100;
-      } else if(GAME.difficulty === 'NORMAL'){
-          spawnBuilding('HOUSE', 2, ex-200, ey, true);
-          spawnUnit('VILLAGER', 2, ex-100, ey+100);
-          spawnUnit('VILLAGER', 2, ex+50, ey+150);
-          GAME.ai.gold=300; GAME.ai.wood=300;
-      } else {
-          spawnBuilding('HOUSE', 2, ex-200, ey, true);
-          spawnUnit('VILLAGER', 2, ex-100, ey+100);
-          spawnUnit('VILLAGER', 2, ex+50, ey+150);
-          spawnUnit('VILLAGER', 2, ex-50, ey+120);
-          GAME.ai.gold=420; GAME.ai.wood=420; GAME.ai.hazel=40;
-      }
-  } else {
-      // ONLINE MOD: Rakip de eşit şartlarda başlasın
-      spawnBuilding('HOUSE', 2, ex-200, ey, true);
-      spawnUnit('VILLAGER', 2, ex-100, ey+100);
-      spawnUnit('VILLAGER', 2, ex+50, ey+150);
-      // Online modda başlangıç kaynakları eşit olmalı ama şimdilik sadece kendi kaynaklarımızı yönetiyoruz
-  }
-
-  // Kamera ayarı: Eğer Kırmızı takımsak (Online) kamerayı oraya odakla
-  if(isOnline && myTeam === 2){
+  // Kırmızı takımsam (Misafir) kamerayı oraya taşı
+  if(myTeam === 2){
       GAME.cam.x = CFG.w - GAME.cam.w;
       GAME.cam.y = CFG.h - GAME.cam.h;
   }
 
-  setupInputs();
-  requestAnimationFrame(loop);
+  setupInputs();
+  requestAnimationFrame(loop);
 }
 
 function generateMap(){
-  // rng() kullanıyoruz, bu sayede online modda seedli, offline'da rastgele oluyor
-  const spawnPropSafe = (type, count, r) => {
-    let attempts = 0, placed = 0;
-    while(placed < count && attempts < count * 20){
-        attempts++;
-        const x = rng() * (CFG.w - 300) + 150;
-        const y = rng() * (CFG.h - 300) + 150;
-        if(Math.hypot(x-300, y-300) < 400 || Math.hypot(x-(CFG.w-400), y-(CFG.h-400)) < 400) continue;
-        if(checkPlacement(x, y, r*2, r*2)){ createProp(type, x, y, r); placed++; }
-    }
-  };
-  spawnPropSafe('wood', 120, 30);
-  spawnPropSafe('gold', 30, 25);
-  spawnPropSafe('hazel', 20, 20);
+  const spawnPropSafe = (type, count, r) => {
+    let attempts = 0, placed = 0;
+    while(placed < count && attempts < count * 20){
+        attempts++;
+        // rng() kullanıldı
+        const x = rng() * (CFG.w - 300) + 150;
+        const y = rng() * (CFG.h - 300) + 150;
+        if(Math.hypot(x-300, y-300) < 400 || Math.hypot(x-(CFG.w-400), y-(CFG.h-400)) < 400) continue;
+        if(checkPlacement(x, y, r*2, r*2)){ createProp(type, x, y, r); placed++; }
+    }
+  };
+  spawnPropSafe('wood', 120, 30);
+  spawnPropSafe('gold', 30, 25);
+  spawnPropSafe('hazel', 20, 20);
 }
 
 function createProp(type, x, y, r){
-    const el = document.createElementNS(NS, 'g');
-    let svg = `<ellipse cx="0" cy="${r/2}" rx="${r}" ry="${r/2}" fill="rgba(0,0,0,0.3)"/>`;
-    if(type === 'wood'){
-       const s = 0.8 + rng()*0.4;
-       svg += `<g transform="scale(${s})"><path d="M-5,0 L-8,15 L8,15 L5,0 Z" fill="url(#grad-wood)"/>
-               <circle cx="0" cy="-20" r="22" fill="#14532d"/><circle cx="-12" cy="-12" r="14" fill="#166534"/>
-               <circle cx="12" cy="-12" r="14" fill="#15803d"/><circle cx="0" cy="-30" r="16" fill="#16a34a"/></g>`;
-    } else if(type === 'gold'){
-       svg += `<path d="M-15,10 L-5,-10 L15,10 Z" fill="#64748b"/><path d="M-5,10 L5,-15 L15,5 Z" fill="#94a3b8"/>
-               <circle cx="-5" cy="5" r="5" fill="url(#grad-gold)"/><circle cx="8" cy="0" r="4" fill="url(#grad-gold)"/>`;
-    } else {
-       svg += `<g transform="scale(1.2)"><path d="M0,0 Q5,0 5,10 Q5,20 0,20 Q-5,20 -5,10 Q-5,0 0,0" fill="#8b4513"/>
-               <path d="M0,0 L0,-5" stroke="#3f1d04" stroke-width="2"/><circle cx="2" cy="5" r="2" fill="#a0522d"/></g>`;
-    }
-    el.innerHTML = svg;
-    el.setAttribute('transform', `translate(${x},${y})`);
-    GAME.dom.layers.props.appendChild(el);
-    GAME.entities.props.push({id:rng(), type, x, y, amt: type==='wood'?300:600, r:r, el});
+    const el = document.createElementNS(NS, 'g');
+    let svg = `<ellipse cx="0" cy="${r/2}" rx="${r}" ry="${r/2}" fill="rgba(0,0,0,0.3)"/>`;
+    if(type === 'wood'){
+       const s = 0.8 + rng()*0.4;
+       svg += `<g transform="scale(${s})"><path d="M-5,0 L-8,15 L8,15 L5,0 Z" fill="url(#grad-wood)"/>
+               <circle cx="0" cy="-20" r="22" fill="#14532d"/><circle cx="-12" cy="-12" r="14" fill="#166534"/>
+               <circle cx="12" cy="-12" r="14" fill="#15803d"/><circle cx="0" cy="-30" r="16" fill="#16a34a"/></g>`;
+    } else if(type === 'gold'){
+       svg += `<path d="M-15,10 L-5,-10 L15,10 Z" fill="#64748b"/><path d="M-5,10 L5,-15 L15,5 Z" fill="#94a3b8"/>
+               <circle cx="-5" cy="5" r="5" fill="url(#grad-gold)"/><circle cx="8" cy="0" r="4" fill="url(#grad-gold)"/>`;
+    } else {
+       svg += `<g transform="scale(1.2)"><path d="M0,0 Q5,0 5,10 Q5,20 0,20 Q-5,20 -5,10 Q-5,0 0,0" fill="#8b4513"/>
+               <path d="M0,0 L0,-5" stroke="#3f1d04" stroke-width="2"/><circle cx="2" cy="5" r="2" fill="#a0522d"/></g>`;
+    }
+    el.innerHTML = svg;
+    el.setAttribute('transform', `translate(${x},${y})`);
+    GAME.dom.layers.props.appendChild(el);
+    // rng() ile ID oluşturuldu
+    GAME.entities.props.push({id:rng(), type, x, y, amt: type==='wood'?300:600, r:r, el});
 }
 
 function checkPlacement(x, y, w, h, ignoreSelfId=null){
-    if(x - w/2 < 0 || x + w/2 > CFG.w || y - h/2 < 0 || y + h/2 > CFG.h) return false;
-    const bx = x - w/2, by = y - h/2;
-    for(let b of GAME.entities.buildings){
-        if(b.id === ignoreSelfId || b.dead) continue;
-        if(bx < b.x + b.w && bx + w > b.x && by < b.y + b.h && by + h > b.y) return false;
-    }
-    for(let p of GAME.entities.props){
-        if(p.dead || (p.amt !== undefined && p.amt <= 0)) continue;
-        if(Math.hypot(x - p.x, y - p.y) < (Math.max(w,h)/2 + p.r)) return false;
-    }
-    return true;
+    if(x - w/2 < 0 || x + w/2 > CFG.w || y - h/2 < 0 || y + h/2 > CFG.h) return false;
+    const bx = x - w/2, by = y - h/2;
+
+    for(let b of GAME.entities.buildings){
+        if(b.id === ignoreSelfId || b.dead) continue;
+        if(bx < b.x + b.w && bx + w > b.x && by < b.y + b.h && by + h > b.y) return false;
+    }
+
+    for(let p of GAME.entities.props){
+        if(p.dead || (p.amt !== undefined && p.amt <= 0)) continue;
+        if(Math.hypot(x - p.x, y - p.y) < (Math.max(w,h)/2 + p.r)) return false;
+    }
+    return true;
 }
 
 function getBuildingSVG(type, team){
-    const def = DB.BUILD[type];
-    const c1 = team===1 ? '#2563eb' : '#dc2626';
-    const roof = '#334155';
-    let svg = '';
+    const def = DB.BUILD[type];
+    const c1 = team===1 ? '#2563eb' : '#dc2626';
+    const roof = '#334155';
+    let svg = '';
 
-    if(type === 'TOWN'){
-        svg += `<rect x="10" y="${def.h*0.3}" width="${def.w-20}" height="${def.h*0.7}" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        svg += `<rect x="${def.w/2-30}" y="${def.h-60}" width="60" height="60" fill="#1e293b"/>`;
-        svg += `<path d="M${def.w/2-30},${def.h-60} L${def.w/2-30},${def.h} M${def.w/2-10},${def.h-60} L${def.w/2-10},${def.h} M${def.w/2+10},${def.h-60} L${def.w/2+10},${def.h} M${def.w/2+30},${def.h-60} L${def.w/2+30},${def.h}" stroke="#475569" stroke-width="2"/>`;
-        svg += `<rect x="${def.w/2-40}" y="0" width="80" height="${def.h*0.3}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
-        svg += `<path d="M${def.w/2-50},${def.h*0.1} L${def.w/2},-20 L${def.w/2+50},${def.h*0.1} Z" fill="${roof}"/>`;
-        svg += `<line x1="${def.w/2}" y1="-20" x2="${def.w/2}" y2="-50" stroke="#000" stroke-width="2"/>`;
-        svg += `<path d="M${def.w/2},-50 L${def.w/2+30},-40 L${def.w/2},-30 Z" fill="${c1}"/>`;
-    }
-    else if(type === 'HOUSE'){
-        svg += `<rect x="10" y="${def.h*0.4}" width="${def.w-20}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
-        svg += `<path d="M0,${def.h*0.4} L${def.w/2},0 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
-        svg += `<rect x="${def.w/2-10}" y="${def.h-30}" width="20" height="30" fill="#3f2e20"/>`;
-    }
-    else if(type === 'BARRACKS'){
-        svg += `<rect x="5" y="${def.h*0.4}" width="${def.w-10}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
-        svg += `<path d="M0,${def.h*0.4} L20,10 L${def.w-20},10 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
-        svg += `<rect x="${def.w/2-25}" y="${def.h-40}" width="50" height="40" fill="#3f2e20"/>`;
-        svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
-    }
-    else if(type === 'STABLE'){
-        svg += `<rect x="5" y="${def.h*0.4}" width="${def.w-10}" height="${def.h*0.6}" fill="#5c2e08" stroke="#2e1402"/>`;
-        svg += `<path d="M0,${def.h*0.4} L${def.w/2},0 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
-        svg += `<rect x="20" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
-        svg += `<rect x="${def.w-50}" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
-    }
-    else if(type === 'ARCHERY'){
-        svg += `<rect x="${def.w*0.6}" y="10" width="${def.w*0.3}" height="${def.h-10}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
-        svg += `<path d="M${def.w*0.6-10},10 L${def.w*0.75},-10 L${def.w*0.9+10},10 Z" fill="${roof}"/>`;
-        svg += `<rect x="10" y="${def.h*0.5}" width="${def.w*0.5}" height="${def.h*0.5}" fill="#5c2e08"/>`;
-        svg += `<circle cx="35" cy="${def.h*0.7}" r="10" fill="#fff" stroke="#b91c1c" stroke-width="3"/>`;
-        svg += `<circle cx="35" cy="${def.h*0.7}" r="3" fill="#b91c1c"/>`;
-    }
-    return `<g filter="url(#shadow)">${svg}</g>`;
+    if(type === 'TOWN'){
+        svg += `<rect x="10" y="${def.h*0.3}" width="${def.w-20}" height="${def.h*0.7}" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
+        svg += `<rect x="${def.w/2-30}" y="${def.h-60}" width="60" height="60" fill="#1e293b"/>`;
+        svg += `<path d="M${def.w/2-30},${def.h-60} L${def.w/2-30},${def.h} M${def.w/2-10},${def.h-60} L${def.w/2-10},${def.h} M${def.w/2+10},${def.h-60} L${def.w/2+10},${def.h} M${def.w/2+30},${def.h-60} L${def.w/2+30},${def.h}" stroke="#475569" stroke-width="2"/>`;
+        svg += `<rect x="${def.w/2-40}" y="0" width="80" height="${def.h*0.3}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
+        svg += `<path d="M${def.w/2-50},${def.h*0.1} L${def.w/2},-20 L${def.w/2+50},${def.h*0.1} Z" fill="${roof}"/>`;
+        svg += `<line x1="${def.w/2}" y1="-20" x2="${def.w/2}" y2="-50" stroke="#000" stroke-width="2"/>`;
+        svg += `<path d="M${def.w/2},-50 L${def.w/2+30},-40 L${def.w/2},-30 Z" fill="${c1}"/>`;
+    }
+    else if(type === 'HOUSE'){
+        svg += `<rect x="10" y="${def.h*0.4}" width="${def.w-20}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
+        svg += `<path d="M0,${def.h*0.4} L${def.w/2},0 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
+        svg += `<rect x="${def.w/2-10}" y="${def.h-30}" width="20" height="30" fill="#3f2e20"/>`;
+    }
+    else if(type === 'BARRACKS'){
+        svg += `<rect x="5" y="${def.h*0.4}" width="${def.w-10}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
+        svg += `<path d="M0,${def.h*0.4} L20,10 L${def.w-20},10 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
+        svg += `<rect x="${def.w/2-25}" y="${def.h-40}" width="50" height="40" fill="#3f2e20"/>`;
+        svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
+    }
+    else if(type === 'STABLE'){
+        svg += `<rect x="5" y="${def.h*0.4}" width="${def.w-10}" height="${def.h*0.6}" fill="#5c2e08" stroke="#2e1402"/>`;
+        svg += `<path d="M0,${def.h*0.4} L${def.w/2},0 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
+        svg += `<rect x="20" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
+        svg += `<rect x="${def.w-50}" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
+    }
+    else if(type === 'ARCHERY'){
+        svg += `<rect x="${def.w*0.6}" y="10" width="${def.w*0.3}" height="${def.h-10}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
+        svg += `<path d="M${def.w*0.6-10},10 L${def.w*0.75},-10 L${def.w*0.9+10},10 Z" fill="${roof}"/>`;
+        svg += `<rect x="10" y="${def.h*0.5}" width="${def.w*0.5}" height="${def.h*0.5}" fill="#5c2e08"/>`;
+        svg += `<circle cx="35" cy="${def.h*0.7}" r="10" fill="#fff" stroke="#b91c1c" stroke-width="3"/>`;
+        svg += `<circle cx="35" cy="${def.h*0.7}" r="3" fill="#b91c1c"/>`;
+    }
+    return `<g filter="url(#shadow)">${svg}</g>`;
 }
 
 function getUnitSVG(type, team){
-  const c = team===1 ? COLORS.p1 : COLORS.p2;
-  const cd = team===1 ? COLORS.p1Dark : COLORS.p2Dark;
-  let b = '', w = '';
+  const c = team===1 ? COLORS.p1 : COLORS.p2;
+  const cd = team===1 ? COLORS.p1Dark : COLORS.p2Dark;
+  let b = '', w = '';
 
-  if(type === 'VILLAGER'){
-    b = `<rect x="-6" y="-12" width="12" height="14" fill="${c}" rx="3"/><circle cx="0" cy="-16" r="5" fill="url(#grad-skin)"/>`;
-    w = `<g class="w-grp"><line x1="6" y1="-5" x2="12" y2="5" stroke="#78350f" stroke-width="2"/></g>`;
-  }
-  else if(type === 'PIKEMAN'){
-    b = `<rect x="-7" y="-13" width="14" height="15" fill="#94a3b8" stroke="${cd}" stroke-width="1"/><circle cx="0" cy="-17" r="5" fill="#cbd5e1"/><path d="M-5,-18 L5,-18 L0,-24 Z" fill="${c}"/>`;
-    w = `<g class="w-grp" transform="translate(6,-5)"><line x1="0" y1="5" x2="0" y2="-25" stroke="#cbd5e1" stroke-width="2"/><path d="M-2,-25 L0,-30 L2,-25" fill="#cbd5e1"/></g>`;
-  }
-  else if(type === 'ARCHER'){
-    b = `<rect x="-6" y="-12" width="12" height="14" fill="${c}" rx="4"/><circle cx="0" cy="-16" r="4" fill="url(#grad-skin)"/><path d="M-4,-18 L4,-18" stroke="#166534" stroke-width="2"/>`;
-    w = `<g class="w-grp"><path d="M4,-15 Q12,-5 4,5" fill="none" stroke="#78350f" stroke-width="2"/><line x1="4" y1="-5" x2="12" y2="-5" stroke="#cbd5e1"/></g>`;
-  }
-  else if(type === 'KNIGHT'){
-    b = `<path d="M-12,4 Q-6,-8 14,-2 L14,6 Q-6,10 -12,4" fill="#78350f"/><rect x="-2" y="-18" width="10" height="12" fill="${c}" rx="2"/><circle cx="3" cy="-20" r="4" fill="#94a3b8"/><rect x="1" y="-26" width="4" height="6" fill="${c}"/>`;
-    w = `<g class="w-grp"><line x1="5" y1="-10" x2="20" y2="-15" stroke="#cbd5e1" stroke-width="3"/></g>`;
-  }
-  else if(type === 'F_KNIGHT'){
-    b = `<path d="M-14,5 Q-8,-10 16,-4 L16,6 Q-8,12 -14,5" fill="#3f6212" stroke="#1a2e05" stroke-width="2"/>`;
-    b += `<rect x="-4" y="-22" width="14" height="16" fill="#4d7c0f" stroke="#bef264" stroke-width="2" rx="4"/>`;
-    b += `<circle cx="3" cy="-26" r="6" fill="#365314"/><path d="M-2,-32 L8,-32 L3,-38 Z" fill="#ecfccb"/>`;
-    w = `<g class="w-grp" transform="translate(10, -15)"><line x1="0" y1="0" x2="15" y2="-10" stroke="#57534e" stroke-width="3"/><circle cx="15" cy="-10" r="6" fill="#78350f"/></g>`;
-  }
+  if(type === 'VILLAGER'){
+    b = `<rect x="-6" y="-12" width="12" height="14" fill="${c}" rx="3"/><circle cx="0" cy="-16" r="5" fill="url(#grad-skin)"/>`;
+    w = `<g class="w-grp"><line x1="6" y1="-5" x2="12" y2="5" stroke="#78350f" stroke-width="2"/></g>`;
+  }
+  else if(type === 'PIKEMAN'){
+    b = `<rect x="-7" y="-13" width="14" height="15" fill="#94a3b8" stroke="${cd}" stroke-width="1"/><circle cx="0" cy="-17" r="5" fill="#cbd5e1"/><path d="M-5,-18 L5,-18 L0,-24 Z" fill="${c}"/>`;
+    w = `<g class="w-grp" transform="translate(6,-5)"><line x1="0" y1="5" x2="0" y2="-25" stroke="#cbd5e1" stroke-width="2"/><path d="M-2,-25 L0,-30 L2,-25" fill="#cbd5e1"/></g>`;
+  }
+  else if(type === 'ARCHER'){
+    b = `<rect x="-6" y="-12" width="12" height="14" fill="${c}" rx="4"/><circle cx="0" cy="-16" r="4" fill="url(#grad-skin)"/><path d="M-4,-18 L4,-18" stroke="#166534" stroke-width="2"/>`;
+    w = `<g class="w-grp"><path d="M4,-15 Q12,-5 4,5" fill="none" stroke="#78350f" stroke-width="2"/><line x1="4" y1="-5" x2="12" y2="-5" stroke="#cbd5e1"/></g>`;
+  }
+  else if(type === 'KNIGHT'){
+    b = `<path d="M-12,4 Q-6,-8 14,-2 L14,6 Q-6,10 -12,4" fill="#78350f"/><rect x="-2" y="-18" width="10" height="12" fill="${c}" rx="2"/><circle cx="3" cy="-20" r="4" fill="#94a3b8"/><rect x="1" y="-26" width="4" height="6" fill="${c}"/>`;
+    w = `<g class="w-grp"><line x1="5" y1="-10" x2="20" y2="-15" stroke="#cbd5e1" stroke-width="3"/></g>`;
+  }
+  else if(type === 'F_KNIGHT'){
+    b = `<path d="M-14,5 Q-8,-10 16,-4 L16,6 Q-8,12 -14,5" fill="#3f6212" stroke="#1a2e05" stroke-width="2"/>`;
+    b += `<rect x="-4" y="-22" width="14" height="16" fill="#4d7c0f" stroke="#bef264" stroke-width="2" rx="4"/>`;
+    b += `<circle cx="3" cy="-26" r="6" fill="#365314"/><path d="M-2,-32 L8,-32 L3,-38 Z" fill="#ecfccb"/>`;
+    w = `<g class="w-grp" transform="translate(10, -15)"><line x1="0" y1="0" x2="15" y2="-10" stroke="#57534e" stroke-width="3"/><circle cx="15" cy="-10" r="6" fill="#78350f"/></g>`;
+  }
 
-  return `<g filter="url(#shadow)"><ellipse cx="0" cy="8" rx="8" ry="4" fill="rgba(0,0,0,0.5)"/>${b}${w}</g>`;
+  return `<g filter="url(#shadow)"><ellipse cx="0" cy="8" rx="8" ry="4" fill="rgba(0,0,0,0.5)"/>${b}${w}</g>`;
 }
 
 function loop(t){
-  if(GAME.over) return;
-  const dt = Math.min((t - GAME.last) / 1000, 0.1);
-  GAME.last = t; GAME.t += dt;
-  try {
-      updateCamera(dt);
-      updateLogic(dt);
-      
-      // ONLINE MODDA AI ÇALIŞMAZ
-      if(!isOnline) updateFairAI(dt);
-      
-      updateLiveUI();
-      render(dt);
-  } catch(e) { console.error(e); }
-  requestAnimationFrame(loop);
+  if(GAME.over) return;
+  const dt = Math.min((t - GAME.last) / 1000, 0.1);
+  GAME.last = t; GAME.t += dt;
+  try {
+      updateCamera(dt);
+      updateLogic(dt);
+      
+      // ONLINE MODDA AI ÇALIŞMAZ
+      if(!isOnline) updateFairAI(dt);
+      
+      updateLiveUI();
+      render(dt);
+  } catch(e) { console.error(e); }
+  requestAnimationFrame(loop);
 }
 
 function updateCamera(dt){
-    const s = 1200 * dt; const m = 30;
-    if(GAME.keys['w'] || GAME.keys['W']) GAME.cam.y = Math.max(0, GAME.cam.y - s);
-    if(GAME.keys['s'] || GAME.keys['S']) GAME.cam.y = Math.min(CFG.h - GAME.cam.h, GAME.cam.y + s);
-    if(GAME.keys['a'] || GAME.keys['A']) GAME.cam.x = Math.max(0, GAME.cam.x - s);
-    if(GAME.keys['d'] || GAME.keys['D']) GAME.cam.x = Math.min(CFG.w - GAME.cam.w, GAME.cam.x + s);
-    if(GAME.mouse.screenX < m && GAME.mouse.screenX > 0) GAME.cam.x = Math.max(0, GAME.cam.x - s);
-    if(GAME.mouse.screenX > window.innerWidth - m) GAME.cam.x = Math.min(CFG.w - GAME.cam.w, GAME.cam.x + s);
-    if(GAME.mouse.screenY < m && GAME.mouse.screenY > 0) GAME.cam.y = Math.max(0, GAME.cam.y - s);
-    if(GAME.mouse.screenY > window.innerHeight - m) GAME.cam.y = Math.min(CFG.h - GAME.cam.h, GAME.cam.y + s);
+    const s = 1200 * dt; const m = 30;
+    if(GAME.keys['w'] || GAME.keys['W']) GAME.cam.y = Math.max(0, GAME.cam.y - s);
+    if(GAME.keys['s'] || GAME.keys['S']) GAME.cam.y = Math.min(CFG.h - GAME.cam.h, GAME.cam.y + s);
+    if(GAME.keys['a'] || GAME.keys['A']) GAME.cam.x = Math.max(0, GAME.cam.x - s);
+    if(GAME.keys['d'] || GAME.keys['D']) GAME.cam.x = Math.min(CFG.w - GAME.cam.w, GAME.cam.x + s);
+    if(GAME.mouse.screenX < m && GAME.mouse.screenX > 0) GAME.cam.x = Math.max(0, GAME.cam.x - s);
+    if(GAME.mouse.screenX > window.innerWidth - m) GAME.cam.x = Math.min(CFG.w - GAME.cam.w, GAME.cam.x + s);
+    if(GAME.mouse.screenY < m && GAME.mouse.screenY > 0) GAME.cam.y = Math.max(0, GAME.cam.y - s);
+    if(GAME.mouse.screenY > window.innerHeight - m) GAME.cam.y = Math.min(CFG.h - GAME.cam.h, GAME.cam.y + s);
 }
 
 function updateLogic(dt){
-  GAME.entities.buildings.forEach(b => {
-    if(b.constructed && b.queue.length){
-        b.queue[0].prog += dt;
-        if(Math.random()<0.1) spawnParticle(b.x+b.w/2, b.y, '#fff', 1);
-        if(b.queue[0].prog >= b.queue[0].def.buildTime){
-            spawnUnit(b.queue[0].type, b.team, b.x+b.w/2, b.y+b.h+10);
-            b.queue.shift();
-            // Sadece kendi takımınsa mesaj ver
-            if(b.team===myTeam) { showToast("Birim Hazır!"); updatePanel(true); }
-        }
-    }
-  });
+  GAME.entities.buildings.forEach(b => {
+    if(b.constructed && b.queue.length){
+        b.queue[0].prog += dt;
+        if(Math.random()<0.1) spawnParticle(b.x+b.w/2, b.y, '#fff', 1);
+        if(b.queue[0].prog >= b.queue[0].def.buildTime){
+            spawnUnit(b.queue[0].type, b.team, b.x+b.w/2, b.y+b.h+10);
+            b.queue.shift();
+            // Sadece kendi takımınsa mesaj ver
+            if(b.team===myTeam) { showToast("Birim Hazır!"); updatePanel(true); }
+        }
+    }
+  });
 
-  const units = GAME.entities.units.filter(u => !u.dead);
-  for(let i=0; i<units.length; i++){
-      let u1 = units[i];
-      if(u1.atkAnim > 0) u1.atkAnim -= dt;
-      for(let j=i+1; j<units.length; j++){
-          let u2 = units[j];
-          if(Math.abs(u1.x-u2.x)>25 || Math.abs(u1.y-u2.y)>25) continue;
-          let d = Math.hypot(u1.x-u2.x, u1.y-u2.y);
-          if(d < 15){
-             let push = (15-d)*2*dt;
-             let ang = Math.atan2(u1.y-u2.y, u1.x-u2.x);
-             u1.x += Math.cos(ang)*push; u1.y += Math.sin(ang)*push;
-             u2.x -= Math.cos(ang)*push; u2.y -= Math.sin(ang)*push;
-          }
-      }
-  }
+  const units = GAME.entities.units.filter(u => !u.dead);
+  for(let i=0; i<units.length; i++){
+      let u1 = units[i];
+      if(u1.atkAnim > 0) u1.atkAnim -= dt;
+      for(let j=i+1; j<units.length; j++){
+          let u2 = units[j];
+          if(Math.abs(u1.x-u2.x)>25 || Math.abs(u1.y-u2.y)>25) continue;
+          let d = Math.hypot(u1.x-u2.x, u1.y-u2.y);
+          if(d < 15){
+             let push = (15-d)*2*dt;
+             let ang = Math.atan2(u1.y-u2.y, u1.x-u2.x);
+             u1.x += Math.cos(ang)*push; u1.y += Math.sin(ang)*push;
+             u2.x -= Math.cos(ang)*push; u2.y -= Math.sin(ang)*push;
+          }
+      }
+  }
 
-  units.forEach(u => {
-      if(!u.manualTarget) scanForThreats(u);
-      if(u.target){
-          if(u.target.dead || u.target.hp<=0){
-              u.target = null; u.manualTarget = false; u.dest = null; u.state = 'IDLE';
-          }
-      }
-      if(u.target) doCombat(u, dt);
-      else if(u.task) doTask(u, dt);
-      else if(u.dest) moveTo(u, u.dest.x, u.dest.y, dt);
-  });
+  units.forEach(u => {
+      if(!u.manualTarget) scanForThreats(u);
+      if(u.target){
+          if(u.target.dead || u.target.hp<=0){
+              u.target = null; u.manualTarget = false; u.dest = null; u.state = 'IDLE';
+          }
+      }
+      if(u.target) doCombat(u, dt);
+      else if(u.task) doTask(u, dt);
+      else if(u.dest) moveTo(u, u.dest.x, u.dest.y, dt);
+  });
 
-  for(let i=GAME.entities.proj.length-1; i>=0; i--){
-      let p = GAME.entities.proj[i];
-      if(!p.target || p.target.dead) { p.el.remove(); GAME.entities.proj.splice(i,1); continue; }
-      let d = Math.hypot(p.target.x-p.x, p.target.y-p.y);
-      if(d < 10){ damage(p.target, p.dmg); p.el.remove(); GAME.entities.proj.splice(i,1); }
-      else { let spd = 400*dt; p.x += ((p.target.x-p.x)/d)*spd; p.y += ((p.target.y-p.y)/d)*spd; p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); }
-  }
+  for(let i=GAME.entities.proj.length-1; i>=0; i--){
+      let p = GAME.entities.proj[i];
+      if(!p.target || p.target.dead) { p.el.remove(); GAME.entities.proj.splice(i,1); continue; }
+      let d = Math.hypot(p.target.x-p.x, p.target.y-p.y);
+      if(d < 10){ damage(p.target, p.dmg); p.el.remove(); GAME.entities.proj.splice(i,1); }
+      else { let spd = 400*dt; p.x += ((p.target.x-p.x)/d)*spd; p.y += ((p.target.y-p.y)/d)*spd; p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); }
+  }
 
-  GAME.entities.particles.forEach((p,i) => {
-      p.life-=dt; p.x+=p.vx*dt; p.y+=p.vy*dt;
-      p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); p.el.setAttribute('opacity', p.life);
-      if(p.life<=0){ p.el.remove(); GAME.entities.particles[i]=null; }
-  });
-  GAME.entities.particles = GAME.entities.particles.filter(x=>x);
+  GAME.entities.particles.forEach((p,i) => {
+      p.life-=dt; p.x+=p.vx*dt; p.y+=p.vy*dt;
+      p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); p.el.setAttribute('opacity', p.life);
+      if(p.life<=0){ p.el.remove(); GAME.entities.particles[i]=null; }
+  });
+  GAME.entities.particles = GAME.entities.particles.filter(x=>x);
 }
 
 function scanForThreats(u){
-    if(u.def.role === 'worker' && u.task) return;
-    const AGGRO_RANGE = 200;
-    let closestEnemy = null, minDist = AGGRO_RANGE;
-    for(let e of GAME.entities.units){
-        if(e.team !== u.team && !e.dead){
-            let d = Math.hypot(u.x - e.x, u.y - e.y);
-            if(d < minDist){ minDist = d; closestEnemy = e; }
-        }
-    }
-    if(closestEnemy){ u.target = closestEnemy; u.dest = null; u.task = null; }
+    if(u.def.role === 'worker' && u.task) return;
+    const AGGRO_RANGE = 200;
+    let closestEnemy = null, minDist = AGGRO_RANGE;
+    for(let e of GAME.entities.units){
+        if(e.team !== u.team && !e.dead){
+            let d = Math.hypot(u.x - e.x, u.y - e.y);
+            if(d < minDist){ minDist = d; closestEnemy = e; }
+        }
+    }
+    if(closestEnemy){ u.target = closestEnemy; u.dest = null; u.task = null; }
 }
 
 function doCombat(u, dt){
-    let t = u.target;
-    let dist = Math.hypot(u.x - (t.x+(t.w||0)/2), u.y - (t.y+(t.h||0)/2));
-    let range = u.def.range + (t.w ? Math.max(t.w,t.h)/2 : 0);
-    if(dist <= range){
-        u.dest = null; u.face = t.x > u.x ? 1 : -1; u.atkAnim = 0.5;
-        if(GAME.t > u.cd){
-            u.cd = GAME.t + (u.def.type==='heavy'? 1.5 : 1.1);
-            if(u.def.proj) spawnProj(u, t, u.def.atk); else damage(t, u.def.atk);
-        }
-    } else { moveTo(u, t.x+(t.w||0)/2, t.y+(t.h||0)/2, dt); }
+    let t = u.target;
+    let dist = Math.hypot(u.x - (t.x+(t.w||0)/2), u.y - (t.y+(t.h||0)/2));
+    let range = u.def.range + (t.w ? Math.max(t.w,t.h)/2 : 0);
+    if(dist <= range){
+        u.dest = null; u.face = t.x > u.x ? 1 : -1; u.atkAnim = 0.5;
+        if(GAME.t > u.cd){
+            u.cd = GAME.t + (u.def.type==='heavy'? 1.5 : 1.1);
+            if(u.def.proj) spawnProj(u, t, u.def.atk); else damage(t, u.def.atk);
+        }
+    } else { moveTo(u, t.x+(t.w||0)/2, t.y+(t.h||0)/2, dt); }
 }
 
 function doTask(u, dt){
-    let t = GAME.entities.props.find(p => p.id === u.task.id);
-    if(u.task.type === 'build') t = GAME.entities.buildings.find(b => b.id === u.task.id);
-    if(!t || (t.amt!==undefined && t.amt<=0) || (t.hp!==undefined && t.constructed)) { u.task=null; return; }
+    let t = GAME.entities.props.find(p => p.id === u.task.id);
+    if(u.task.type === 'build') t = GAME.entities.buildings.find(b => b.id === u.task.id);
+    if(!t || (t.amt!==undefined && t.amt<=0) || (t.hp!==undefined && t.constructed)) { u.task=null; return; }
 
-    let tx = t.x + (t.w?t.w/2:0), ty = t.y + (t.h?t.h/2:0);
-    if(Math.hypot(u.x-tx, u.y-ty) > (t.w?t.w/2+10:20)){ moveTo(u, tx, ty, dt); }
-    else {
-        u.atkAnim = 0.5;
-        if(GAME.t > u.cd){
-            let factor = 1.0;
-            if(u.team === 2){
-              if(GAME.difficulty === 'EASY') factor = 0.5;
-              else if(GAME.difficulty === 'HARD') factor = 1.25;
-            }
-            u.cd = GAME.t + (1/factor);
+    let tx = t.x + (t.w?t.w/2:0), ty = t.y + (t.h?t.h/2:0);
+    if(Math.hypot(u.x-tx, u.y-ty) > (t.w?t.w/2+10:20)){ moveTo(u, tx, ty, dt); }
+    else {
+        u.atkAnim = 0.5;
+        if(GAME.t > u.cd){
+            let factor = 1.0;
+            u.cd = GAME.t + (1/factor);
 
-            if(u.task.type==='gather'){
-                let amt = 10; t.amt -= amt; spawnParticle(u.x, u.y-10, '#fbbf24', 0.5);
-                // SADECE KENDİ TAKIMINSA EKLE
-                if(u.team===myTeam){
-                    if(t.type==='wood') GAME.player.wood+=amt; else if(t.type==='gold') GAME.player.gold+=amt; else GAME.player.hazel+=amt;
-                    updateUI();
-                } else if(!isOnline) {
-                    // AI Kaynak (Offline)
-                    if(t.type==='wood') GAME.ai.wood+=amt;
-                    else if(t.type==='gold') GAME.ai.gold+=amt;
-                    else GAME.ai.hazel+=amt;
-                }
-                if(t.amt<=0) { t.el.remove(); t.dead=true; }
-            } else {
-                t.hp += (t.def.hp/t.def.buildTime);
-                if(t.hp >= t.def.hp) { t.hp = t.def.hp; t.constructed = true; }
-            }
-        }
-    }
+            if(u.task.type==='gather'){
+                let amt = 10; t.amt -= amt; spawnParticle(u.x, u.y-10, '#fbbf24', 0.5);
+                if(u.team===myTeam){
+                    if(t.type==='wood') GAME.player.wood+=amt; else if(t.type==='gold') GAME.player.gold+=amt; else GAME.player.hazel+=amt;
+                    updateUI();
+                } 
+                // AI Kaynak toplama kodları silindi
+                if(t.amt<=0) { t.el.remove(); t.dead=true; }
+            } else {
+                t.hp += (t.def.hp/t.def.buildTime);
+                if(t.hp >= t.def.hp) { t.hp = t.def.hp; t.constructed = true; }
+            }
+        }
+    }
 }
 
 function moveTo(u, x, y, dt){
-    let ang = Math.atan2(y-u.y, x-u.x);
-    u.x += Math.cos(ang) * u.def.spd * dt;
-    u.y += Math.sin(ang) * u.def.spd * dt;
-    u.face = Math.cos(ang) > 0 ? 1 : -1;
+    let ang = Math.atan2(y-u.y, x-u.x);
+    u.x += Math.cos(ang) * u.def.spd * dt;
+    u.y += Math.sin(ang) * u.def.spd * dt;
+    u.face = Math.cos(ang) > 0 ? 1 : -1;
 }
 
 function damage(e, val){
-    e.hp -= val; spawnParticle(e.x+(e.w?e.w/2:0), e.y+(e.h?e.h/2:0), '#ef4444', 0.5);
-    if(e.hp <= 0){
-      e.dead = true;
-      if(e.el) e.el.remove();
-      if(e.ui) e.ui.remove();
-      if(e.type === 'TOWN') gameOver(e.team !== myTeam);
-    }
+    e.hp -= val; spawnParticle(e.x+(e.w?e.w/2:0), e.y+(e.h?e.h/2:0), '#ef4444', 0.5);
+    if(e.hp <= 0){
+      e.dead = true;
+      if(e.el) e.el.remove();
+      if(e.ui) e.ui.remove();
+      if(e.type === 'TOWN') gameOver(e.team !== myTeam);
+    }
 }
 
 function gameOver(win){
-  const bgm = document.getElementById('bgm');
-  if(bgm){ bgm.pause(); bgm.currentTime = 0; }
-  GAME.over = true;
-  const scr = document.getElementById('end-screen');
-  const tit = document.getElementById('end-title');
-  scr.style.display = 'flex';
-  scr.classList.remove('game-over-show');
-  void scr.offsetWidth;
-  if(win){
-    tit.innerText = "ZAFER SENİN!";
-    tit.className = "game-over-title win";
-  } else {
-    tit.innerText = "YENİLGİ...";
-    tit.className = "game-over-title lose";
-  }
-  setTimeout(() => scr.classList.add('game-over-show'), 50);
+  const bgm = document.getElementById('bgm');
+  if(bgm){ bgm.pause(); bgm.currentTime = 0; }
+  GAME.over = true;
+  const scr = document.getElementById('end-screen');
+  const tit = document.getElementById('end-title');
+  scr.style.display = 'flex';
+  scr.classList.remove('game-over-show');
+  void scr.offsetWidth;
+  if(win){
+    tit.innerText = "ZAFER SENİN!";
+    tit.className = "game-over-title win";
+  } else {
+    tit.innerText = "YENİLGİ...";
+    tit.className = "game-over-title lose";
+  }
+  setTimeout(() => scr.classList.add('game-over-show'), 50);
 }
 
-/* AI FUNCS (SAME) */
-function aiParams(diff){
-  if(diff === 'EASY'){ return { reaction: 1.5, gatherMult: 0.65, microSkill: 0.40, aggroBias: 0.25, riskTolerance: 0.25, minAttackTime: 200, expandBias: 0.90, barracksLimit: 1, archeryTime: 140, stableTime: 220, trickle: 0 }; }
-  if(diff === 'HARD'){ return { reaction: 0.25, gatherMult: 1.60, microSkill: 0.92, aggroBias: 0.95, riskTolerance: 0.80, minAttackTime: 25, expandBias: 0.45, barracksLimit: 4, archeryTime: 45, stableTime: 75, trickle: 1 }; }
-  return { reaction: 0.75, gatherMult: 1.10, microSkill: 0.70, aggroBias: 0.65, riskTolerance: 0.55, minAttackTime: 65, expandBias: 0.70, barracksLimit: 2, archeryTime: 90, stableTime: 140, trickle: 0 };
-}
-function aiCount(team){
-  const buildings = GAME.entities.buildings.filter(b=>b.team===team && !b.dead);
-  const units = GAME.entities.units.filter(u=>u.team===team && !u.dead);
-  const town = buildings.find(b=>b.type==='TOWN');
-  const houses = buildings.filter(b=>b.type==='HOUSE');
-  const barracks = buildings.filter(b=>b.type==='BARRACKS');
-  const archery = buildings.filter(b=>b.type==='ARCHERY');
-  const stable = buildings.filter(b=>b.type==='STABLE');
-  const workers = units.filter(u=>u.def.role==='worker');
-  const soldiers = units.filter(u=>u.def.role!=='worker');
-  const cap = buildings.filter(b=>b.constructed && (b.type==='HOUSE' || b.type==='TOWN')).reduce((a,x)=>a+(x.def.cap||0),0);
-  return { buildings, units, town, houses, barracks, archery, stable, workers, soldiers, cap };
-}
-function enemyCompositionEstimate(){
-  const enemy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker');
-  if(enemy.length === 0) return {inf:0.6, cav:0.2, ranged:0.2, heavy:0.0};
-  let inf=0, cav=0, ranged=0, heavy=0;
-  enemy.forEach(u=>{ if(u.def.type==='cav') cav++; else if(u.def.type==='ranged') ranged++; else if(u.def.type==='heavy') heavy++; else inf++; });
-  const n = enemy.length;
-  return { inf:inf/n, cav:cav/n, ranged:ranged/n, heavy:heavy/n };
-}
-function estimateThreatToAITown(town){
-  if(!town) return 0;
-  const ex = town.x + town.w/2, ey = town.y + town.h/2;
-  const enemy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker');
-  if(enemy.length === 0) return 0;
-  let score = 0;
-  for(const u of enemy){
-    const d = Math.hypot(u.x-ex, u.y-ey);
-    if(d < 900){ const w = (1 - clamp01(d/900)); score += w; }
-  }
-  return clamp01(score / 10);
-}
-function estimateEcoPower(){
-  const my = aiCount(2); const e = aiCount(1);
-  const myVal = (GAME.ai.wood*0.8 + GAME.ai.gold*1.0 + GAME.ai.hazel*1.3) + my.workers.length*120 + my.buildings.length*220;
-  const eVal  = (GAME.player.wood*0.8 + GAME.player.gold*1.0 + GAME.player.hazel*1.3) + e.workers.length*120 + e.buildings.length*220;
-  if(eVal <= 1) return 0.5;
-  return clamp01(myVal / eVal);
-}
-function aiTryQueueFromBuilding(b, unitType){
-  if(!b || b.dead || !b.constructed || !b.queue) return false;
-  const def = DB.UNIT[unitType]; if(!def) return false;
-  const c = def.cost || {};
-  if(GAME.ai.wood < (c.wood||0)) return false;
-  if(GAME.ai.gold < (c.gold||0)) return false;
-  if(GAME.ai.hazel < (c.hazel||0)) return false;
-  const my = aiCount(2); const curPop = my.units.length + b.queue.length;
-  if(curPop >= my.cap && my.cap > 0) return false;
-  if(b.queue.length >= 4) return false;
-  b.queue.push({type: unitType, def, prog:0});
-  GAME.ai.wood -= (c.wood||0); GAME.ai.gold -= (c.gold||0); GAME.ai.hazel -= (c.hazel||0);
-  return true;
-}
-function aiTryBuild(type, town){
-  const def = DB.BUILD[type]; if(!def || !town) return false;
-  const c = def.cost || {};
-  if(GAME.ai.wood < (c.wood||0)) return false;
-  if(GAME.ai.gold < (c.gold||0)) return false;
-  for(let i=0; i<40; i++){
-    const range = 220 + Math.random()*420;
-    const ang = Math.random()*Math.PI*2;
-    let ax = (town.x + town.w/2) + Math.cos(ang)*range;
-    let ay = (town.y + town.h/2) + Math.sin(ang)*range;
-    ax = Math.max(80, Math.min(CFG.w - def.w - 80, ax));
-    ay = Math.max(80, Math.min(CFG.h - def.h - 80, ay));
-    const cx = ax + def.w/2, cy = ay + def.h/2;
-    if(checkPlacement(cx, cy, def.w, def.h)){
-      spawnBuilding(type, 2, ax, ay, true);
-      GAME.ai.wood -= (c.wood||0); GAME.ai.gold -= (c.gold||0);
-      return true;
-    }
-  }
-  return false;
-}
-function pickAttackTarget(params){
-  const town = GAME.entities.buildings.find(b=>b.team===1 && b.type==='TOWN' && !b.dead); if(town) return town;
-  const enemyB = GAME.entities.buildings.filter(b=>b.team===1 && !b.dead); if(enemyB.length) return enemyB[Math.floor(Math.random()*enemyB.length)];
-  const enemyU = GAME.entities.units.filter(u=>u.team===1 && !u.dead); if(enemyU.length) return enemyU[Math.floor(Math.random()*enemyU.length)];
-  return null;
-}
-function callArmyToAttack(target){
-  if(!target) return;
-  const soldiers = aiCount(2).soldiers;
-  soldiers.forEach(u=>{ u.state='ATTACK'; u.target=target; u.manualTarget=true; u.task=null; u.dest=null; });
-}
-function callArmyToDefend(town){
-  if(!town) return;
-  const cx = town.x + town.w/2, cy = town.y + town.h/2;
-  const soldiers = aiCount(2).soldiers;
-  soldiers.forEach(u=>{ u.target = null; u.manualTarget = false; u.task = null; u.dest = { x: cx + (Math.random()-0.5)*120, y: cy + (Math.random()-0.5)*120 }; u.state = 'DEFEND'; });
-}
-function aiAssignIdleWorkers(params){
-  const my = aiCount(2); const workers = my.workers;
-  const props = GAME.entities.props.filter(p=>!p.dead && (p.amt===undefined || p.amt>0)); if(props.length === 0) return;
-  let want = { wood: 0.45, gold: 0.40, hazel: 0.15 };
-  if(GAME.difficulty === 'EASY')    want = { wood: 0.70, gold: 0.25, hazel: 0.05 };
-  if(GAME.difficulty === 'NORMAL')  want = { wood: 0.55, gold: 0.35, hazel: 0.10 };
-  const cur = { wood: 0, gold: 0, hazel: 0 };
-  workers.forEach(w=>{ if(w.task && w.task.type==='gather'){ const pr = GAME.entities.props.find(p=>p.id===w.task.id); if(pr && cur[pr.type] !== undefined) cur[pr.type]++; } });
-  const total = Math.max(1, workers.length);
-  const need = { wood: Math.max(0, Math.floor(total*want.wood) - cur.wood), gold: Math.max(0, Math.floor(total*want.gold) - cur.gold), hazel: Math.max(0, Math.floor(total*want.hazel) - cur.hazel) };
-  const bestPropOfType = (u, type) => {
-    let best=null, bestScore=-1;
-    for(const p of props){
-      if(p.type !== type) continue;
-      const d = Math.hypot(u.x-p.x, u.y-p.y);
-      const score = (1/Math.max(1,d)) * (0.6 + clamp01((p.amt||1)/600)*0.4);
-      if(score > bestScore){ bestScore=score; best=p; }
-    }
-    return best;
-  };
-  for(const u of workers){
-    if(u.task || u.target || u.dest) continue;
-    let chosenType = null;
-    if(need.gold > 0) chosenType = 'gold'; else if(need.wood > 0) chosenType = 'wood'; else if(need.hazel > 0) chosenType = 'hazel';
-    else { chosenType = (GAME.difficulty==='HARD') ? (Math.random()<0.55 ? 'gold' : 'wood') : (Math.random()<0.65 ? 'wood' : 'gold'); }
-    const p = bestPropOfType(u, chosenType) || bestPropOfType(u, 'wood') || bestPropOfType(u, 'gold') || bestPropOfType(u, 'hazel');
-    if(p){ u.task = { type:'gather', id: p.id }; if(need[p.type] !== undefined && need[p.type] > 0) need[p.type]--; }
-  }
-}
-function updateFairAI(dt){
-  const params = aiParams(GAME.difficulty);
-  if(params.trickle){ GAME.ai.wood += dt * 2.2; GAME.ai.gold += dt * 1.4; GAME.ai.hazel += dt * 0.35; }
-  GAME.ai.timer += dt; if(GAME.ai.timer < params.reaction) return; GAME.ai.timer = 0;
-  const my = aiCount(2); if(!my.town) return;
-  const brain = GAME.ai.brain;
-  const threat = estimateThreatToAITown(my.town); const ecoPow = estimateEcoPower();
-  brain.threatEMA = brain.threatEMA*0.70 + threat*0.30; brain.ecoEMA = brain.ecoEMA*0.80 + ecoPow*0.20;
-  const myArmy = my.soldiers.length;
-  const enemyArmy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker').length;
-  const armyAdv = clamp01((myArmy - enemyArmy + 8) / 14);
-  const timeOk = (GAME.t > params.minAttackTime);
-  const tE = brain.threatEMA;
-  const U_BOOM    = (1 - tE) * (0.55 + params.expandBias*0.45) + (1 - armyAdv)*0.10;
-  const U_DEFEND  = (tE) * 0.95 + (1 - armyAdv)*0.25;
-  const U_PRESS   = (timeOk?1:0) * (0.55 + params.aggroBias*0.45) * (0.45 + armyAdv*0.55) * (1 - tE*0.35);
-  const U_ALLIN   = (timeOk?1:0) * (params.riskTolerance) * (0.45 + armyAdv*0.55) * (0.45 + (1 - tE)*0.55);
-  let best = [ ['BOOM', U_BOOM], ['DEFEND', U_DEFEND], ['PRESSURE', U_PRESS], ['ALL_IN', U_ALLIN] ].sort((a,b)=>b[1]-a[1])[0][0];
-  if(GAME.difficulty==='HARD' && timeOk && best==='BOOM' && myArmy>=6) best='PRESSURE';
-  if(best !== brain.state && (GAME.t - brain.lastStateChange) > 6){ brain.state = best; brain.lastStateChange = GAME.t; }
-  aiAssignIdleWorkers(params);
-  const currentPop = my.units.length + my.buildings.reduce((a,x)=>a+(x.queue?x.queue.length:0),0);
-  if(my.cap > 0 && currentPop + 3 >= my.cap){ aiTryBuild('HOUSE', my.town); }
-  if(my.houses.length === 0 && GAME.ai.wood >= 40) aiTryBuild('HOUSE', my.town);
-  if(my.barracks.length < 1 && GAME.ai.wood >= 150) aiTryBuild('BARRACKS', my.town);
-  if(GAME.t > params.archeryTime && my.archery.length < 1 && GAME.ai.wood >= 150) aiTryBuild('ARCHERY', my.town);
-  if(GAME.t > params.stableTime && my.stable.length < 1 && GAME.ai.wood >= 200 && GAME.ai.gold >= 100) aiTryBuild('STABLE', my.town);
-  if(GAME.difficulty==='HARD' && GAME.t > 55 && my.barracks.length < 2 && GAME.ai.wood >= 150){ aiTryBuild('BARRACKS', my.town); }
-  const workerCap = (GAME.difficulty==='EASY'? 8 : GAME.difficulty==='NORMAL'? 14 : 24);
-  if(my.workers.length < workerCap){ if(my.town.queue.length < 1) aiTryQueueFromBuilding(my.town, 'VILLAGER'); }
-  const enemyEst = enemyCompositionEstimate();
-  const wantKnight = (GAME.difficulty==='HARD' && GAME.ai.gold > 220 && my.stable.find(s=>s.constructed));
-  const wantArcher = (my.archery.find(a=>a.constructed) && (enemyEst.inf > 0.35 || enemyEst.heavy > 0.15));
-  const wantPike   = (enemyEst.cav > 0.22 || !wantArcher);
-  const st = my.stable.find(x=>x.constructed);
-  const ar = my.archery.find(x=>x.constructed);
-  const brs = my.barracks.filter(x=>x.constructed);
-  if(brain.state === 'DEFEND'){
-    if(brs.length){ for(const b of brs) aiTryQueueFromBuilding(b, 'PIKEMAN'); } else { aiTryQueueFromBuilding(my.town, 'PIKEMAN'); }
-    if(ar && wantArcher) aiTryQueueFromBuilding(ar, 'ARCHER');
-    if(st && wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT');
-    callArmyToDefend(my.town);
-    return;
-  }
-  if(brain.state === 'BOOM'){
-    if(brs.length){ for(const b of brs){ if(Math.random()<0.55) aiTryQueueFromBuilding(b, 'PIKEMAN'); else if(ar) aiTryQueueFromBuilding(ar, 'ARCHER'); else aiTryQueueFromBuilding(b, 'PIKEMAN'); } } else { aiTryQueueFromBuilding(my.town, 'PIKEMAN'); }
-  }
-  if(brain.state === 'PRESSURE' || brain.state === 'ALL_IN'){
-    const maxB = params.barracksLimit;
-    if(brs.length < maxB && GAME.ai.wood >= 150 && (GAME.difficulty!=='EASY')){ aiTryBuild('BARRACKS', my.town); }
-    for(const b of brs){ if(wantPike) aiTryQueueFromBuilding(b, 'PIKEMAN'); else aiTryQueueFromBuilding(b, 'PIKEMAN'); }
-    if(ar) aiTryQueueFromBuilding(ar, 'ARCHER');
-    if(st){ if(GAME.difficulty==='HARD' && GAME.ai.hazel >= 150 && GAME.ai.gold >= 100) aiTryQueueFromBuilding(st, 'F_KNIGHT'); else if(wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT'); }
-    const cooldown = (GAME.difficulty==='HARD' ? 6 : GAME.difficulty==='NORMAL' ? 12 : 20);
-    if(timeOk && (GAME.t - brain.lastAttackCall) > cooldown){
-      const target = pickAttackTarget(params);
-      if(target){
-        const soldiers = aiCount(2).soldiers;
-        let ratio = (brain.state==='ALL_IN') ? 0.85 : 0.70;
-        if(GAME.difficulty!=='HARD') ratio = (brain.state==='ALL_IN') ? 0.75 : 0.55;
-        const sendCount = Math.max(5, Math.floor(soldiers.length * ratio));
-        soldiers.slice(0, sendCount).forEach(u=>{ u.state='ATTACK'; u.target=target; u.manualTarget=true; u.task=null; u.dest=null; });
-        if(GAME.difficulty==='HARD') GAME.ai.waveLevel += 2; else GAME.ai.waveLevel += 1;
-        brain.lastAttackCall = GAME.t;
-        showToast(`Düşman Baskısı! (${sendCount} Birim)`);
-      }
-    }
-  }
-  if(GAME.difficulty==='HARD' && timeOk && myArmy >= 8 && tE < 0.35){
-    const target = pickAttackTarget(params);
-    if(target && (GAME.t - brain.lastAttackCall) > 10){ callArmyToAttack(target); brain.lastAttackCall = GAME.t; showToast(`Düşman Saldırısı! (${myArmy} Birim)`); }
-  }
-}
+// Bot Modülü fonksiyonları (aiParams, aiCount vs.) tamamen silindi.
 
 function render(dt){
-  const vx=GAME.cam.x, vy=GAME.cam.y;
-  GAME.dom.svg.setAttribute('viewBox', `${vx} ${vy} ${GAME.cam.w} ${GAME.cam.h}`);
-  GAME.entities.units.forEach(u => {
-    if(u.dead) return;
-    const grp = u.el.querySelector('.w-grp');
-    if(grp){ if(u.atkAnim > 0) { let speed = u.type === 'F_KNIGHT' ? 10 : 20; grp.setAttribute('transform', `rotate(${-45 * Math.sin(GAME.t * speed)}, 5, 5)`); } else { grp.setAttribute('transform', 'none'); } }
-    u.el.setAttribute('transform', `translate(${u.x},${u.y}) scale(${u.face},1)`);
-    let showHp = GAME.selection.includes(u);
-    u.el.querySelector('.hp-fill').style.display = showHp ? 'block' : 'none';
-    if(showHp) u.el.querySelector('.hp-fill').setAttribute('width', Math.max(0,(u.hp/u.def.hp)*20));
-  });
-  GAME.entities.buildings.forEach(b => {
-      if(b.dead) return;
-      if(b.ui){
-          let show = GAME.selection.includes(b) || !b.constructed; b.ui.style.display = show ? 'block' : 'none';
-          if(show){
-            b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
-            b.ui.querySelector('.hp-fill').setAttribute('width', Math.max(0, (b.hp/b.def.hp)*b.w));
-            b.ui.querySelector('.prod-fill').setAttribute('width', b.queue.length ? (b.queue[0].prog/b.queue[0].def.buildTime)*b.w : 0);
-          }
-      }
-  });
-  if(GAME.ghost.active && GAME.ghost.el){
-      let gx = GAME.mouse.wx - GAME.ghost.w/2, gy = GAME.mouse.wy - GAME.ghost.h/2;
-      GAME.ghost.el.setAttribute('transform', `translate(${gx},${gy})`);
-      GAME.ghost.valid = checkPlacement(gx+GAME.ghost.w/2, gy+GAME.ghost.h/2, GAME.ghost.w, GAME.ghost.h);
-      GAME.ghost.el.setAttribute('stroke', GAME.ghost.valid ? '#22c55e':'#ef4444');
-  }
-  if(GAME.mouse.down){
-      let w = GAME.mouse.wx - GAME.mouse.dragStart.wx, h = GAME.mouse.wy - GAME.mouse.dragStart.wy;
-      let sb = document.getElementById('selection-box');
-      sb.style.left = (w<0?GAME.mouse.wx:GAME.mouse.dragStart.wx)-vx+'px';
-      sb.style.top = (h<0?GAME.mouse.wy:GAME.mouse.dragStart.wy)-vy+'px';
-      sb.style.width=Math.abs(w)+'px'; sb.style.height=Math.abs(h)+'px';
-      sb.style.display='block';
-  } else document.getElementById('selection-box').style.display='none';
-  updateMiniMap();
+  const vx=GAME.cam.x, vy=GAME.cam.y;
+  GAME.dom.svg.setAttribute('viewBox', `${vx} ${vy} ${GAME.cam.w} ${GAME.cam.h}`);
+
+  GAME.entities.units.forEach(u => {
+    if(u.dead) return;
+    const grp = u.el.querySelector('.w-grp');
+    if(grp){
+      if(u.atkAnim > 0) {
+        let speed = u.type === 'F_KNIGHT' ? 10 : 20;
+        grp.setAttribute('transform', `rotate(${-45 * Math.sin(GAME.t * speed)}, 5, 5)`);
+      } else { grp.setAttribute('transform', 'none'); }
+    }
+    u.el.setAttribute('transform', `translate(${u.x},${u.y}) scale(${u.face},1)`);
+    let showHp = GAME.selection.includes(u);
+    u.el.querySelector('.hp-fill').style.display = showHp ? 'block' : 'none';
+    if(showHp) u.el.querySelector('.hp-fill').setAttribute('width', Math.max(0,(u.hp/u.def.hp)*20));
+  });
+
+  GAME.entities.buildings.forEach(b => {
+      if(b.dead) return;
+      if(b.ui){
+          let show = GAME.selection.includes(b) || !b.constructed; b.ui.style.display = show ? 'block' : 'none';
+          if(show){
+            b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
+            b.ui.querySelector('.hp-fill').setAttribute('width', Math.max(0, (b.hp/b.def.hp)*b.w));
+            b.ui.querySelector('.prod-fill').setAttribute('width', b.queue.length ? (b.queue[0].prog/b.queue[0].def.buildTime)*b.w : 0);
+          }
+      }
+  });
+
+  if(GAME.ghost.active && GAME.ghost.el){
+      let gx = GAME.mouse.wx - GAME.ghost.w/2, gy = GAME.mouse.wy - GAME.ghost.h/2;
+      GAME.ghost.el.setAttribute('transform', `translate(${gx},${gy})`);
+      GAME.ghost.valid = checkPlacement(gx+GAME.ghost.w/2, gy+GAME.ghost.h/2, GAME.ghost.w, GAME.ghost.h);
+      GAME.ghost.el.setAttribute('stroke', GAME.ghost.valid ? '#22c55e':'#ef4444');
+  }
+
+  if(GAME.mouse.down){
+      let w = GAME.mouse.wx - GAME.mouse.dragStart.wx, h = GAME.mouse.wy - GAME.mouse.dragStart.wy;
+      let sb = document.getElementById('selection-box');
+      sb.style.left = (w<0?GAME.mouse.wx:GAME.mouse.dragStart.wx)-vx+'px';
+      sb.style.top = (h<0?GAME.mouse.wy:GAME.mouse.dragStart.wy)-vy+'px';
+      sb.style.width=Math.abs(w)+'px'; sb.style.height=Math.abs(h)+'px';
+      sb.style.display='block';
+  } else document.getElementById('selection-box').style.display='none';
+
+  updateMiniMap();
 }
 
 function updateMiniMap(){
-    const canvas = document.getElementById('minimap');
-    if(canvas.width !== canvas.offsetWidth) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    const ctx = canvas.getContext('2d'); const cw = canvas.width, ch = canvas.height;
-    ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,cw,ch); const sx = cw/CFG.w, sy = ch/CFG.h;
-    GAME.entities.props.forEach(p => { ctx.fillStyle = p.type==='hazel'?'#65a30d' : p.type==='gold'?'#fbbf24':'#15803d'; ctx.fillRect(p.x*sx, p.y*sy, 3, 3); });
-    GAME.entities.buildings.forEach(b => { if(b.dead) return; ctx.fillStyle = b.team===1?'#3b82f6':'#ef4444'; ctx.fillRect(b.x*sx, b.y*sy, 6, 6); });
-    GAME.entities.units.forEach(u => { if(u.dead) return; ctx.fillStyle = u.team===1?'#93c5fd':'#fca5a5'; ctx.fillRect(u.x*sx, u.y*sy, 3, 3); });
-    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.strokeRect(GAME.cam.x*sx, GAME.cam.y*sy, GAME.cam.w*sx, GAME.cam.h*sy);
+    const canvas = document.getElementById('minimap');
+    if(canvas.width !== canvas.offsetWidth) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    const ctx = canvas.getContext('2d'); const cw = canvas.width, ch = canvas.height;
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,cw,ch); const sx = cw/CFG.w, sy = ch/CFG.h;
+    GAME.entities.props.forEach(p => { ctx.fillStyle = p.type==='hazel'?'#65a30d' : p.type==='gold'?'#fbbf24':'#15803d'; ctx.fillRect(p.x*sx, p.y*sy, 3, 3); });
+    GAME.entities.buildings.forEach(b => { if(b.dead) return; ctx.fillStyle = b.team===1?'#3b82f6':'#ef4444'; ctx.fillRect(b.x*sx, b.y*sy, 6, 6); });
+    GAME.entities.units.forEach(u => { if(u.dead) return; ctx.fillStyle = u.team===1?'#93c5fd':'#fca5a5'; ctx.fillRect(u.x*sx, u.y*sy, 3, 3); });
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.strokeRect(GAME.cam.x*sx, GAME.cam.y*sy, GAME.cam.w*sx, GAME.cam.h*sy);
 }
 
-function spawnUnit(type, team, x, y){
-  const def = DB.UNIT[type];
-  const el = document.createElementNS(NS, 'g'); el.innerHTML = getUnitSVG(type, team);
-  el.innerHTML += `<rect class="hp-fill" x="-10" y="-25" width="20" height="3" fill="${team===1?'#0f0':'#f00'}" style="display:none"/>`;
-  GAME.dom.layers.units.appendChild(el);
-  // Online modda ID'yi şimdilik rastgele tutuyoruz ama ileride senkronize etmeliyiz
-  const u = {id:rng(), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
-  GAME.entities.units.push(u);
-  if(team===myTeam) updateUI();
-  return u;
+function spawnUnit(type, team, x, y, forcedId=null){
+  const def = DB.UNIT[type];
+  const el = document.createElementNS(NS, 'g'); el.innerHTML = getUnitSVG(type, team);
+  el.innerHTML += `<rect class="hp-fill" x="-10" y="-25" width="20" height="3" fill="${team===1?'#0f0':'#f00'}" style="display:none"/>`;
+  GAME.dom.layers.units.appendChild(el);
+  // forcedId varsa onu kullan (online sync), yoksa rng()
+  const u = {id: forcedId || rng(), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
+  GAME.entities.units.push(u);
+  if(team===myTeam) updateUI(); // Sadece kendi UI'mızı güncelle
+  return u;
 }
+
 function spawnBuilding(type, team, x, y, built=false){
-  const def = DB.BUILD[type];
-  const el = document.createElementNS(NS, 'g'); el.innerHTML = getBuildingSVG(type, team);
-  el.setAttribute('transform', `translate(${x},${y})`);
-  GAME.dom.layers.build.appendChild(el);
-  const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
-  ui.style.display='none';
-  GAME.dom.layers.ui.appendChild(ui);
-  const b = {id:rng(), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false};
-  GAME.entities.buildings.push(b);
-  if(team===myTeam) updateUI();
-  return b;
+  const def = DB.BUILD[type];
+  const el = document.createElementNS(NS, 'g'); el.innerHTML = getBuildingSVG(type, team);
+  el.setAttribute('transform', `translate(${x},${y})`);
+  GAME.dom.layers.build.appendChild(el);
+
+  const ui = document.createElementNS(NS, 'g');
+  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  ui.style.display='none';
+  GAME.dom.layers.ui.appendChild(ui);
+
+  const b = {id:rng(), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false};
+  GAME.entities.buildings.push(b);
+  if(team===myTeam) updateUI();
+  return b;
 }
+
 function spawnParticle(x, y, c, op){
-    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 2+rng()*3); el.setAttribute('fill', c);
-    GAME.dom.layers.fx.appendChild(el);
-    GAME.entities.particles.push({x, y, vx:(rng()-0.5)*20, vy:-30-rng()*20, life:op, el});
+    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 2+rng()*3); el.setAttribute('fill', c);
+    GAME.dom.layers.fx.appendChild(el);
+    GAME.entities.particles.push({x, y, vx:(rng()-0.5)*20, vy:-30-rng()*20, life:op, el});
 }
+
 function spawnProj(u, t, dmg){
-    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 3); el.setAttribute('fill', '#000');
-    GAME.dom.layers.fx.appendChild(el);
-    GAME.entities.proj.push({x:u.x, y:u.y, target:t, dmg, el});
+    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 3); el.setAttribute('fill', '#000');
+    GAME.dom.layers.fx.appendChild(el);
+    GAME.entities.proj.push({x:u.x, y:u.y, target:t, dmg, el});
 }
+
 function updatePanel(forceFull = false){
-    const pi = document.getElementById('panel-info');
-    const pa = document.getElementById('panel-actions');
-    if(!GAME.selection.length) { pi.innerHTML=''; pa.innerHTML=''; GAME.lastSelectionId=null; return; }
-    const h = GAME.selection[0];
-    if(GAME.lastSelectionId === h.id && !forceFull){ const hpSpan = document.getElementById('ui-hp-val'); if(hpSpan) hpSpan.innerText = Math.floor(h.hp); return; }
-    GAME.lastSelectionId = h.id;
-    let color = h.team===1 ? '#22c55e' : '#ef4444';
-    pi.innerHTML = `<div style="color:${color};font-weight:bold;font-size:16px;">${h.def.name}</div><div style="font-size:12px; color:#94a3b8;">${h.def.desc || ''}</div><div style="margin-top:5px;">HP: <span id="ui-hp-val" style="color:#fff; font-weight:bold;">${Math.floor(h.hp)}</span> / ${h.def.hp}</div>`;
-    pa.innerHTML = '';
-    // Sadece kendi takımınsa kontrol et
-    if(h.team !== myTeam) return;
+    const pi = document.getElementById('panel-info');
+    const pa = document.getElementById('panel-actions');
+    if(!GAME.selection.length) { pi.innerHTML=''; pa.innerHTML=''; GAME.lastSelectionId=null; return; }
+    const h = GAME.selection[0];
+    if(GAME.lastSelectionId === h.id && !forceFull){
+      const hpSpan = document.getElementById('ui-hp-val');
+      if(hpSpan) hpSpan.innerText = Math.floor(h.hp);
+      return;
+    }
+    GAME.lastSelectionId = h.id;
+    let color = h.team===1 ? '#22c55e' : '#ef4444';
+    pi.innerHTML = `<div style="color:${color};font-weight:bold;font-size:16px;">${h.def.name}</div><div style="font-size:12px; color:#94a3b8;">${h.def.desc || ''}</div><div style="margin-top:5px;">HP: <span id="ui-hp-val" style="color:#fff; font-weight:bold;">${Math.floor(h.hp)}</span> / ${h.def.hp}</div>`;
+    pa.innerHTML = '';
+    if(h.team !== myTeam) return; // Sadece kendi takımın
 
-    if(h.def.role === 'worker'){
-        addBtn(pa, DB.BUILD.HOUSE, ()=>prepBuild('HOUSE'));
-        addBtn(pa, DB.BUILD.BARRACKS, ()=>prepBuild('BARRACKS'));
-        addBtn(pa, DB.BUILD.ARCHERY, ()=>prepBuild('ARCHERY'));
-        addBtn(pa, DB.BUILD.STABLE, ()=>prepBuild('STABLE'));
-    } else if(h.queue){
-        if(h.type === 'HOUSE') addBtn(pa, DB.UNIT.VILLAGER, ()=>queueUnit(h, 'VILLAGER'));
-        if(h.type === 'BARRACKS') addBtn(pa, DB.UNIT.PIKEMAN, ()=>queueUnit(h, 'PIKEMAN'));
-        if(h.type === 'ARCHERY') addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
-        if(h.type === 'STABLE') { addBtn(pa, DB.UNIT.KNIGHT, ()=>queueUnit(h, 'KNIGHT')); addBtn(pa, DB.UNIT.F_KNIGHT, ()=>queueUnit(h, 'F_KNIGHT')); }
-    }
+    if(h.def.role === 'worker'){
+        addBtn(pa, DB.BUILD.HOUSE, ()=>prepBuild('HOUSE'));
+        addBtn(pa, DB.BUILD.BARRACKS, ()=>prepBuild('BARRACKS'));
+        addBtn(pa, DB.BUILD.ARCHERY, ()=>prepBuild('ARCHERY'));
+        addBtn(pa, DB.BUILD.STABLE, ()=>prepBuild('STABLE'));
+    } else if(h.queue){
+        if(h.type === 'HOUSE') addBtn(pa, DB.UNIT.VILLAGER, ()=>queueUnit(h, 'VILLAGER'));
+        if(h.type === 'BARRACKS') addBtn(pa, DB.UNIT.PIKEMAN, ()=>queueUnit(h, 'PIKEMAN'));
+        if(h.type === 'ARCHERY') addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
+        if(h.type === 'STABLE') {
+          addBtn(pa, DB.UNIT.KNIGHT, ()=>queueUnit(h, 'KNIGHT'));
+          addBtn(pa, DB.UNIT.F_KNIGHT, ()=>queueUnit(h, 'F_KNIGHT'));
+        }
+    }
 }
+
 function updateLiveUI(){ if(GAME.selection.length > 0) updatePanel(false); }
-function addBtn(p, def, cb){
-    const d = document.createElement('div'); d.className='card';
-    let titleHtml = `<div class="card-title" title="${def.name}">${def.name}</div>`;
-    let iconSvg = ICONS.WOOD; if(def.visual && ICONS[def.visual]) iconSvg = ICONS[def.visual]; else if(def.icon && def.icon.length > 3) iconSvg = def.icon;
-    let costHtml = '<div class="card-cost">';
-    if(def.cost.gold) costHtml += `<div class="cost-row" style="color:#fbbf24"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.GOLD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.gold}</div>`;
-    if(def.cost.wood) costHtml += `<div class="cost-row wood"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.WOOD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.wood}</div>`;
-    if(def.cost.hazel) costHtml += `<div class="cost-row hazel"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.HAZEL.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.hazel}</div>`;
-    costHtml += '</div>';
-    d.innerHTML = `${titleHtml}${iconSvg}${costHtml}`; d.onclick = cb; p.appendChild(d);
-}
-function prepBuild(type){
-    if(type==='TOWN') return;
-    GAME.ghost = {active:true, type, w:DB.BUILD[type].w, h:DB.BUILD[type].h, el:document.createElementNS(NS,'rect'), valid:false};
-    GAME.ghost.el.setAttribute('width', GAME.ghost.w); GAME.ghost.el.setAttribute('height', GAME.ghost.h);
-    GAME.ghost.el.setAttribute('fill', 'rgba(255,255,255,0.3)'); GAME.dom.layers.ui.appendChild(GAME.ghost.el);
-}
-function tryBuild(){
-    if(!GAME.ghost.valid) { showToast("Geçersiz Konum"); if(GAME.ghost.el) GAME.ghost.el.remove(); GAME.ghost.active = false; GAME.ghost.el = null; return; }
-    const c = DB.BUILD[GAME.ghost.type].cost;
-    if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0)){
-        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); updateUI();
-        let b = spawnBuilding(GAME.ghost.type, 1, GAME.mouse.wx-GAME.ghost.w/2, GAME.mouse.wy-GAME.ghost.h/2);
-        GAME.selection.forEach(u => { if(u.def.role==='worker') u.task={type:'build', id:b.id}; });
-        GAME.ghost.el.remove(); GAME.ghost.active=false;
-    } else showToast("Yetersiz Kaynak");
-}
-function queueUnit(b, type){
-    const c = DB.UNIT[type].cost;
-    let houseCap = GAME.entities.buildings.filter(x=>x.team===1 && x.constructed && (x.type==='HOUSE'||x.type==='TOWN')).reduce((a,x)=>a+x.def.cap,0);
-    let curPop = GAME.entities.units.filter(u=>u.team===1 && !u.dead).length + b.queue.length;
-    if(curPop >= houseCap) { showToast("Nüfus Limiti Dolu! Ev Yap."); return; }
-    if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0) && GAME.player.hazel >= (c.hazel||0)){
-        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); GAME.player.hazel-=(c.hazel||0); updateUI();
-        b.queue.push({type, def:DB.UNIT[type], prog:0}); updatePanel(true);
-    } else showToast("Yetersiz Kaynak");
-}
-function updateUI(){
-    document.getElementById('ui-gold').innerText = Math.floor(GAME.player.gold);
-    document.getElementById('ui-wood').innerText = Math.floor(GAME.player.wood);
-    document.getElementById('ui-hazel').innerText = Math.floor(GAME.player.hazel);
-    let houseCap = GAME.entities.buildings.filter(x=>x.team===myTeam && x.constructed && (x.type==='HOUSE'||x.type==='TOWN')).reduce((a,x)=>a+x.def.cap,0);
-    let curPop = GAME.entities.units.filter(u=>u.team===myTeam && !u.dead).length;
-    document.getElementById('ui-pop').innerText = `${curPop}/${houseCap}`;
-}
-function showToast(m){ const t=document.getElementById('toast-msg'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000); }
-function setupInputs(){
-    window.onkeydown = e => GAME.keys[e.key]=true;
-    window.onkeyup = e => GAME.keys[e.key]=false;
-    window.onmousemove = e => { GAME.mouse.screenX = e.clientX; GAME.mouse.screenY = e.clientY; GAME.mouse.wx = GAME.cam.x + e.clientX; GAME.mouse.wy = GAME.cam.y + e.clientY; };
-    const stg = document.getElementById('game-stage');
-    stg.onmousedown = e => { if(e.button===0){ if(GAME.ghost.active) tryBuild(); else { GAME.mouse.down=true; GAME.mouse.dragStart={wx:GAME.mouse.wx, wy:GAME.mouse.wy}; } } else if(e.button===2){ e.preventDefault(); handleRightClick(); } };
-    stg.onmouseup = e => { if(e.button===0 && GAME.mouse.down){ GAME.mouse.down=false; if(Math.hypot(GAME.mouse.wx-GAME.mouse.dragStart.wx, GAME.mouse.wy-GAME.mouse.dragStart.wy)<5) selectPoint(); else selectBox(); } };
-    stg.oncontextmenu = e => e.preventDefault();
-    const mm = document.querySelector('.minimap-wrapper');
-    const onMinimap = (e) => { const rect = mm.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; GAME.cam.x = (x / rect.width * CFG.w) - GAME.cam.w/2; GAME.cam.y = (y / rect.height * CFG.h) - GAME.cam.h/2; GAME.cam.x = Math.max(0, Math.min(GAME.cam.x, CFG.w - GAME.cam.w)); GAME.cam.y = Math.max(0, Math.min(GAME.cam.y, CFG.h - GAME.cam.h)); };
-    mm.onmousedown = (e) => { onMinimap(e); const move = (ev) => onMinimap(ev); const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
-}
-function selectPoint(){
-    const mx = GAME.mouse.wx, my = GAME.mouse.wy; GAME.selection = [];
-    let u = GAME.entities.units.find(u => !u.dead && Math.hypot(u.x-mx, u.y-my) < 30); if(u) GAME.selection.push(u);
-    else { let b = GAME.entities.buildings.find(b => !b.dead && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h); if(b) GAME.selection.push(b); }
-    updatePanel(true);
-}
-function selectBox(){
-    const x1 = Math.min(GAME.mouse.dragStart.wx, GAME.mouse.wx), x2 = Math.max(GAME.mouse.dragStart.wx, GAME.mouse.wx);
-    const y1 = Math.min(GAME.mouse.dragStart.wy, GAME.mouse.wy), y2 = Math.max(GAME.mouse.dragStart.wy, GAME.mouse.wy);
-    GAME.selection = GAME.entities.units.filter(u => !u.dead && u.team===myTeam && u.x>x1 && u.x<x2 && u.y>y1 && u.y<y2);
-    updatePanel(true);
-}
-function handleRightClick(){
-    // Online modda henüz sadece kendi birimlerini hareket ettir
-    const mx = GAME.mouse.wx, my = GAME.mouse.wy;
-    let t = GAME.entities.units.find(u => !u.dead && u.team!==myTeam && Math.hypot(u.x-mx, u.y-my)<30)
-      || GAME.entities.buildings.find(b => !b.dead && b.team!==myTeam && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h)
-      || GAME.entities.props.find(p => !p.dead && Math.hypot(p.x-mx, p.y-my)<30)
-      || GAME.entities.buildings.find(b => !b.dead && b.team===myTeam && !b.constructed && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h);
 
-    GAME.selection.forEach(u => {
-        if(u.team !== myTeam) return;
-        if(u.def.role === 'worker'){
-            if(t && t.amt) { u.task={type:'gather', id:t.id}; u.manualTarget=false; }
-            else if(t && t.team===myTeam && !t.constructed) { u.task={type:'build', id:t.id}; u.manualTarget=false; }
-            else if(t && t.team!==myTeam) { u.task=null; u.target=t; u.manualTarget=true; }
-            else { u.task=null; u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
-        } else {
-            if(t && t.team!==myTeam) { u.target=t; u.manualTarget=true; }
-            else { u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
-        }
-    });
+function addBtn(p, def, cb){
+    const d = document.createElement('div'); d.className='card';
+
+    let titleHtml = `<div class="card-title" title="${def.name}">${def.name}</div>`;
+    let iconSvg = ICONS.WOOD;
+    if(def.visual && ICONS[def.visual]) iconSvg = ICONS[def.visual];
+    else if(def.icon && def.icon.length > 3) iconSvg = def.icon;
+
+    let costHtml = '<div class="card-cost">';
+    if(def.cost.gold) costHtml += `<div class="cost-row" style="color:#fbbf24"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.GOLD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.gold}</div>`;
+    if(def.cost.wood) costHtml += `<div class="cost-row wood"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.WOOD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.wood}</div>`;
+    if(def.cost.hazel) costHtml += `<div class="cost-row hazel"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.HAZEL.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.hazel}</div>`;
+    costHtml += '</div>';
+
+    d.innerHTML = `${titleHtml}${iconSvg}${costHtml}`;
+    d.onclick = cb; p.appendChild(d);
+}
+
+function prepBuild(type){
+    if(type==='TOWN') return;
+    GAME.ghost = {active:true, type, w:DB.BUILD[type].w, h:DB.BUILD[type].h, el:document.createElementNS(NS,'rect'), valid:false};
+    GAME.ghost.el.setAttribute('width', GAME.ghost.w);
+    GAME.ghost.el.setAttribute('height', GAME.ghost.h);
+    GAME.ghost.el.setAttribute('fill', 'rgba(255,255,255,0.3)');
+    GAME.dom.layers.ui.appendChild(GAME.ghost.el);
+}
+
+function tryBuild(){
+    if(!GAME.ghost.valid) {
+        showToast("Geçersiz Konum");
+        if(GAME.ghost.el) GAME.ghost.el.remove();
+        GAME.ghost.active = false;
+        GAME.ghost.el = null;
+        return;
+    }
+    const c = DB.BUILD[GAME.ghost.type].cost;
+    if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0)){
+        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); updateUI();
+        let b = spawnBuilding(GAME.ghost.type, 1, GAME.mouse.wx-GAME.ghost.w/2, GAME.mouse.wy-GAME.ghost.h/2);
+        GAME.selection.forEach(u => { if(u.def.role==='worker') u.task={type:'build', id:b.id}; });
+        GAME.ghost.el.remove(); GAME.ghost.active=false;
+    } else showToast("Yetersiz Kaynak");
+}
+
+function queueUnit(b, type){
+    const c = DB.UNIT[type].cost;
+    let houseCap = GAME.entities.buildings
+      .filter(x=>x.team===myTeam && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
+      .reduce((a,x)=>a+x.def.cap,0);
+    let curPop = GAME.entities.units.filter(u=>u.team===myTeam && !u.dead).length + b.queue.length;
+    if(curPop >= houseCap) { showToast("Nüfus Limiti Dolu! Ev Yap."); return; }
+    if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0) && GAME.player.hazel >= (c.hazel||0)){
+        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); GAME.player.hazel-=(c.hazel||0); updateUI();
+        b.queue.push({type, def:DB.UNIT[type], prog:0}); updatePanel(true);
+    } else showToast("Yetersiz Kaynak");
+}
+
+function updateUI(){
+    document.getElementById('ui-gold').innerText = Math.floor(GAME.player.gold);
+    document.getElementById('ui-wood').innerText = Math.floor(GAME.player.wood);
+    document.getElementById('ui-hazel').innerText = Math.floor(GAME.player.hazel);
+    let houseCap = GAME.entities.buildings
+      .filter(x=>x.team===1 && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
+      .reduce((a,x)=>a+x.def.cap,0);
+    let curPop = GAME.entities.units.filter(u=>u.team===1 && !u.dead).length;
+    document.getElementById('ui-pop').innerText = `${curPop}/${houseCap}`;
+}
+
+function showToast(m){
+  const t=document.getElementById('toast-msg');
+  t.innerText=m;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+function setupInputs(){
+    window.onkeydown = e => GAME.keys[e.key]=true;
+    window.onkeyup = e => GAME.keys[e.key]=false;
+    window.onmousemove = e => {
+      GAME.mouse.screenX = e.clientX; GAME.mouse.screenY = e.clientY;
+      GAME.mouse.wx = GAME.cam.x + e.clientX; GAME.mouse.wy = GAME.cam.y + e.clientY;
+    };
+    const stg = document.getElementById('game-stage');
+    stg.onmousedown = e => {
+      if(e.button===0){
+        if(GAME.ghost.active) tryBuild();
+        else { GAME.mouse.down=true; GAME.mouse.dragStart={wx:GAME.mouse.wx, wy:GAME.mouse.wy}; }
+      } else if(e.button===2){
+        e.preventDefault(); handleRightClick();
+      }
+    };
+    stg.onmouseup = e => {
+      if(e.button===0 && GAME.mouse.down){
+        GAME.mouse.down=false;
+        if(Math.hypot(GAME.mouse.wx-GAME.mouse.dragStart.wx, GAME.mouse.wy-GAME.mouse.dragStart.wy)<5) selectPoint();
+        else selectBox();
+      }
+    };
+    stg.oncontextmenu = e => e.preventDefault();
+
+    const mm = document.querySelector('.minimap-wrapper');
+    const onMinimap = (e) => {
+        const rect = mm.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        GAME.cam.x = (x / rect.width * CFG.w) - GAME.cam.w/2;
+        GAME.cam.y = (y / rect.height * CFG.h) - GAME.cam.h/2;
+        GAME.cam.x = Math.max(0, Math.min(GAME.cam.x, CFG.w - GAME.cam.w));
+        GAME.cam.y = Math.max(0, Math.min(GAME.cam.y, CFG.h - GAME.cam.h));
+    };
+    mm.onmousedown = (e) => {
+        onMinimap(e);
+        const move = (ev) => onMinimap(ev);
+        const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+    };
+}
+
+function selectPoint(){
+    const mx = GAME.mouse.wx, my = GAME.mouse.wy; GAME.selection = [];
+    let u = GAME.entities.units.find(u => !u.dead && Math.hypot(u.x-mx, u.y-my) < 30);
+    if(u) GAME.selection.push(u);
+    else {
+      let b = GAME.entities.buildings.find(b => !b.dead && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h);
+      if(b) GAME.selection.push(b);
+    }
+    updatePanel(true);
+}
+
+function selectBox(){
+    const x1 = Math.min(GAME.mouse.dragStart.wx, GAME.mouse.wx), x2 = Math.max(GAME.mouse.dragStart.wx, GAME.mouse.wx);
+    const y1 = Math.min(GAME.mouse.dragStart.wy, GAME.mouse.wy), y2 = Math.max(GAME.mouse.dragStart.wy, GAME.mouse.wy);
+    GAME.selection = GAME.entities.units.filter(u => !u.dead && u.team===1 && u.x>x1 && u.x<x2 && u.y>y1 && u.y<y2);
+    updatePanel(true);
+}
+
+function handleRightClick(){
+    const mx = GAME.mouse.wx, my = GAME.mouse.wy;
+    let t = GAME.entities.units.find(u => !u.dead && u.team!==1 && Math.hypot(u.x-mx, u.y-my)<30)
+      || GAME.entities.buildings.find(b => !b.dead && b.team!==1 && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h)
+      || GAME.entities.props.find(p => !p.dead && Math.hypot(p.x-mx, p.y-my)<30)
+      || GAME.entities.buildings.find(b => !b.dead && b.team===1 && !b.constructed && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h);
+
+    GAME.selection.forEach(u => {
+        if(u.team !== 1) return;
+        if(u.def.role === 'worker'){
+            if(t && t.amt) { u.task={type:'gather', id:t.id}; u.manualTarget=false; }
+            else if(t && t.team===1 && !t.constructed) { u.task={type:'build', id:t.id}; u.manualTarget=false; }
+            else if(t && t.team!==1) { u.task=null; u.target=t; u.manualTarget=true; }
+            else { u.task=null; u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
+        } else {
+            if(t && t.team!==1) { u.target=t; u.manualTarget=true; }
+            else { u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
+        }
+    });
 }
 </script>
 </body>
