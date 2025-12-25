@@ -761,17 +761,30 @@ function updateLogic(dt){
 }
 
 function scanForThreats(u){
-    if((u.def.role === 'worker' && u.task) || u.dest) return;
+    // FIX: AI savunmada dest ile yürürken de yakın tehdidi hedefleyebilsin.
+    // Worker görevdeyse (gather/build) taramasın, ekonomi bozulmasın.
+    if(u.def.role === 'worker' && u.task) return;
+
     const AGGRO_RANGE = 200;
     let closestEnemy = null, minDist = AGGRO_RANGE;
+
     for(let e of GAME.entities.units){
         if(e.team !== u.team && !e.dead){
             let d = Math.hypot(u.x - e.x, u.y - e.y);
-            if(d < minDist){ minDist = d; closestEnemy = e; }
+            if(d < minDist){
+                minDist = d;
+                closestEnemy = e;
+            }
         }
     }
-    if(closestEnemy){ u.target = closestEnemy; u.dest = null; u.task = null; }
+
+    if(closestEnemy){
+        u.target = closestEnemy;
+        u.dest = null;
+        u.task = null;
+    }
 }
+
 
 function doCombat(u, dt){
     let t = u.target;
