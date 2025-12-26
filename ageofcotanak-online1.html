@@ -80,6 +80,7 @@
 
 <div id="game-container">
   <audio id="bgm" src="bgm.mp3" preload="auto" loop></audio>
+
   <div id="intro-screen">
       <div class="intro-logo">
         <span>OGUZMEISTER</span>
@@ -199,29 +200,25 @@ const CFG = { w: 2400, h: 2000 };
 const COLORS = { p1: '#2563eb', p2: '#dc2626', p1Dark: '#1e3a8a', p2Dark: '#7f1d1d' };
 const NS = "http://www.w3.org/2000/svg";
 
-/* --- ENTITY ID (ONLINE DESYNC ÖNLEME) ---
-   Daha önce rng() ile id üretimi, oyun içi efektler/particles rng'yi kaydırıp
-   iki tarafta farklı id'ler doğurabiliyordu (TRAIN/BUILD lookup kırılıyordu).
-   Bu yüzden entity id'leri deterministic bir sayaçtan üretiliyor.
-*/
+/* --- ENTITY ID (ONLINE DESYNC ÖNLEME) --- */
 let ENTITY_SEQ = 1;
 function genEntityId(prefix){ return prefix + "_" + (ENTITY_SEQ++); }
 
 /* --- SVG İKONLAR --- */
 const ICONS = {
-    GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
-    WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
-    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
-    UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
-    SWORD: `<svg viewBox="0 0 24 24" classclass="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
-    BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
-    HORSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-horse-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#7c2d12"/></linearGradient></defs><path d="M6 19c-.7 0-1.2-.5-1.2-1.2 0-.4.2-.8.5-1l2.2-1.7 1.7-2.9c.2-.4.7-.6 1.1-.4l1.9.8 2.1-1.2c.3-.2.7-.2 1 0l2.2 1.4c.4.2.5.8.2 1.2l-1.3 2.1.8 2.5c.2.6-.2 1.1-.8 1.1h-1.6c-.4 0-.7-.2-.9-.6l-.6-1.1-1.9.9c-.3.1-.7.1-1-.1l-1.3-1-1 1.2c-.2.3-.6.5-1 .5H6z" fill="url(#grad-horse-1)" stroke="#1f2937" stroke-width="1" filter="url(#shadow)"/><path d="M13.8 9.5l1.1-2.4c.2-.5.7-.7 1.2-.5l1.9.8c.4.2.6.7.4 1.1l-.8 2.1" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-linecap="round"/><circle cx="16.9" cy="7.9" r="0.9" fill="#0f172a"/></svg>`,
-    SHIELD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 4 L20 4 L18 16 Q12 22 6 16 Z" fill="#15803d" stroke="#fff" stroke-width="1"/></svg>`,
-    WORKER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 20 L20 4 M4 4 L8 8" stroke="#cbd5e1" stroke-width="3"/></svg>`,
-    HOUSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-house-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient><linearGradient id="grad-roof-1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M4 11.5L12 4l8 7.5" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.8V20h11V10.8" fill="url(#grad-house-1)" stroke="#1f2937" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M12 4l8 7.5H4L12 4z" fill="url(#grad-roof-1)" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/><rect x="11" y="14" width="3" height="6" rx="1" fill="#0f172a" opacity="0.75"/><rect x="8" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/><rect x="14.2" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/></svg>`,
-    BARRACKS: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-barr-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient><linearGradient id="grad-flag-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs><path d="M5 10.5l7-5 7 5" fill="#0f172a" opacity="0.35"/><path d="M6 11v9h12v-9" fill="url(#grad-barr-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6 11l6-4.5L18 11" fill="#334155" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><rect x="9" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="12.8" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="11" y="17" width="3" height="3" rx="0.8" fill="#0f172a" opacity="0.75"/><path d="M12 6.2V3.8" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round"/><path d="M12 4.2h5l-1.2 1.4L17 7h-5" fill="url(#grad-flag-1)" stroke="#0b1220" stroke-width="1" stroke-linejoin="round"/></svg>`,
-    TOWER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-tower-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient><linearGradient id="grad-stone-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient></defs><path d="M7 20V9.5L12 6l5 3.5V20" fill="url(#grad-stone-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6.2 9.8L12 5.7l5.8 4.1" fill="#475569" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><path d="M9.2 12.5l2.8-1.8 2.8 1.8-2.8 1.8-2.8-1.8z" fill="url(#grad-tower-1)" stroke="#0b1220" stroke-width="1"/><circle cx="12" cy="12.5" r="1.1" fill="#0f172a" opacity="0.55"/><path d="M8.5 20l3.5-6 3.5 6" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/></svg>`,
-    CATAPULT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 18h16" stroke="#cbd5e1" stroke-width="2"/><path d="M7 18l2-8h6l2 8" fill="#78350f" stroke="#451a03" stroke-width="1.5"/><path d="M11 10l-2-4" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="6" r="2" fill="#64748b"/><circle cx="7" cy="18" r="2" fill="#334155"/><circle cx="17" cy="18" r="2" fill="#334155"/></svg>`
+  GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
+  WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
+  HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
+  UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
+  SWORD: `<svg viewBox="0 0 24 24" classclass="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
+  BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
+  HORSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-horse-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#7c2d12"/></linearGradient></defs><path d="M6 19c-.7 0-1.2-.5-1.2-1.2 0-.4.2-.8.5-1l2.2-1.7 1.7-2.9c.2-.4.7-.6 1.1-.4l1.9.8 2.1-1.2c.3-.2.7-.2 1 0l2.2 1.4c.4.2.5.8.2 1.2l-1.3 2.1.8 2.5c.2.6-.2 1.1-.8 1.1h-1.6c-.4 0-.7-.2-.9-.6l-.6-1.1-1.9.9c-.3.1-.7.1-1-.1l-1.3-1-1 1.2c-.2.3-.6.5-1 .5H6z" fill="url(#grad-horse-1)" stroke="#1f2937" stroke-width="1" filter="url(#shadow)"/><path d="M13.8 9.5l1.1-2.4c.2-.5.7-.7 1.2-.5l1.9.8c.4.2.6.7.4 1.1l-.8 2.1" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-linecap="round"/><circle cx="16.9" cy="7.9" r="0.9" fill="#0f172a"/></svg>`,
+  SHIELD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 4 L20 4 L18 16 Q12 22 6 16 Z" fill="#15803d" stroke="#fff" stroke-width="1"/></svg>`,
+  WORKER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 20 L20 4 M4 4 L8 8" stroke="#cbd5e1" stroke-width="3"/></svg>`,
+  HOUSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-house-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient><linearGradient id="grad-roof-1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M4 11.5L12 4l8 7.5" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.8V20h11V10.8" fill="url(#grad-house-1)" stroke="#1f2937" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M12 4l8 7.5H4L12 4z" fill="url(#grad-roof-1)" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/><rect x="11" y="14" width="3" height="6" rx="1" fill="#0f172a" opacity="0.75"/><rect x="8" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/><rect x="14.2" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/></svg>`,
+  BARRACKS: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-barr-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient><linearGradient id="grad-flag-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs><path d="M5 10.5l7-5 7 5" fill="#0f172a" opacity="0.35"/><path d="M6 11v9h12v-9" fill="url(#grad-barr-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6 11l6-4.5L18 11" fill="#334155" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><rect x="9" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="12.8" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="11" y="17" width="3" height="3" rx="0.8" fill="#0f172a" opacity="0.75"/><path d="M12 6.2V3.8" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round"/><path d="M12 4.2h5l-1.2 1.4L17 7h-5" fill="url(#grad-flag-1)" stroke="#0b1220" stroke-width="1" stroke-linejoin="round"/></svg>`,
+  TOWER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-tower-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient><linearGradient id="grad-stone-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient></defs><path d="M7 20V9.5L12 6l5 3.5V20" fill="url(#grad-stone-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6.2 9.8L12 5.7l5.8 4.1" fill="#475569" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><path d="M9.2 12.5l2.8-1.8 2.8 1.8-2.8 1.8-2.8-1.8z" fill="url(#grad-tower-1)" stroke="#0b1220" stroke-width="1"/><circle cx="12" cy="12.5" r="1.1" fill="#0f172a" opacity="0.55"/><path d="M8.5 20l3.5-6 3.5 6" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/></svg>`,
+  CATAPULT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 18h16" stroke="#cbd5e1" stroke-width="2"/><path d="M7 18l2-8h6l2 8" fill="#78350f" stroke="#451a03" stroke-width="1.5"/><path d="M11 10l-2-4" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="6" r="2" fill="#64748b"/><circle cx="7" cy="18" r="2" fill="#334155"/><circle cx="17" cy="18" r="2" fill="#334155"/></svg>`
 };
 
 const DB = {
@@ -231,8 +228,6 @@ const DB = {
     ARCHER:   { name: 'Okçu', hp: 80, atk: 9, range: 240, spd: 110, cost: {wood:50, gold:40}, buildTime: 10, role: 'soldier', type:'ranged', proj: true, visual:'BOW' },
     KNIGHT:   { name: 'Süvari', hp: 280, atk: 18, range: 30, spd: 190, cost: {wood:40, gold:90}, buildTime: 15, role: 'soldier', type:'cav', visual:'HORSE' },
     F_KNIGHT: { name: 'Muhafız', hp: 600, atk: 45, range: 35, spd: 140, cost: {gold:100, hazel:150}, buildTime: 25, role: 'soldier', type:'heavy', visual:'SHIELD' },
-
-    /* YENİ: MANCINIK (Kışladan) */
     CATAPULT: { name: 'Mancınık', hp: 220, atk: 40, range: 380, spd: 65, cost: {wood:140, gold:80}, buildTime: 18, role: 'soldier', type:'siege', proj: true, visual:'CATAPULT' }
   },
   BUILD: {
@@ -240,10 +235,7 @@ const DB = {
     BARRACKS: { name: 'Kışla', hp: 1200, w: 140, h: 140, cost: {wood:150, gold:20}, buildTime: 20, visual:'BARRACKS', desc:'Piyade + Mancınık' },
     ARCHERY:  { name: 'Okçu Alanı', hp: 1000, w: 130, h: 130, cost: {wood:150, gold:20}, buildTime: 20, visual:'TOWER', desc:'Okçu' },
     STABLE:   { name: 'Ahır', hp: 1500, w: 160, h: 150, cost: {wood:200, gold:100}, buildTime: 25, visual:'HORSE', desc:'Süvari' },
-
-    /* YENİ: OKÇU KULESİ */
     ATOWER:   { name: 'Okçu Kulesi', hp: 1400, w: 110, h: 150, cost: {wood:220, gold:80}, buildTime: 22, visual:'TOWER', desc:'Otomatik savunma' },
-
     TOWN:     { name: 'Kale', hp: 5000, w: 220, h: 200, cost: {wood:9999}, cap: 10, buildTime: 999, visual:'TOWN', unique:true }
   }
 };
@@ -253,7 +245,7 @@ let GAME = {
   cam: { x: 0, y: 0, w: window.innerWidth, h: window.innerHeight },
   mouse: { wx: 0, wy: 0, screenX:0, screenY:0, down: false, dragStart: null },
   keys: {},
-  entities: { units: [], buildings: [], props: [], proj: [], particles: [] },
+  entities: { units: [], buildings: [], props: [], proj: [], particles: [], fxlines: [] },
   selection: [], lastSelectionId: null,
   player: { gold: 300, wood: 300, hazel: 0 },
   ghost: { active: false, type: null, el: null, valid: false },
@@ -356,14 +348,25 @@ function listenForGameStart(){
 /* --- ACTION SYNC (AKSİYON PAYLAŞIMI) --- */
 function sendAction(data){
     if(!isOnline) return;
-    db.ref('rooms/' + myRoomId + '/actions').push({ ...data, senderTeam: myTeam });
+    // küçük timestamp: debug + sıralama
+    db.ref('rooms/' + myRoomId + '/actions').push({ ...data, senderTeam: myTeam, ts: Date.now() });
 }
 
 function listenForActions(){
     db.ref('rooms/' + myRoomId + '/actions').on('child_added', (snapshot) => {
         const action = snapshot.val();
-        if(action.senderTeam === myTeam) return; // Kendi aksiyonumuzu zaten yaptık
-        handleRemoteAction(action);
+
+        // Gecikmeyi azaltmak için host, işlenen action'ları DB'den temizler (node şişmesin).
+        // (silme sadece host'ta: diğer tarafın okuması daha güvenli)
+        const shouldCleanup = amIHost;
+
+        if(action.senderTeam !== myTeam){
+          handleRemoteAction(action);
+        }
+
+        if(shouldCleanup){
+          snapshot.ref.remove().catch(()=>{});
+        }
     });
 }
 
@@ -393,7 +396,6 @@ function handleRemoteAction(act){
         }
     }
     else if(act.type === 'BUILD'){
-        // Yeni bina (id: act.bid)
         let b = spawnBuilding(act.bType, act.senderTeam, act.x, act.y, false, act.bid);
         act.uids.forEach(id => {
             const u = GAME.entities.units.find(x => x.id === id);
@@ -401,7 +403,6 @@ function handleRemoteAction(act){
         });
     }
     else if(act.type === 'TRAIN'){
-        // Bina id'leri iki tarafta kayabiliyorsa diye fallback ile bul
         let b = GAME.entities.buildings.find(x => x.id === act.bid);
         if(!b && act.bType && act.bx !== undefined && act.by !== undefined){
             const near = GAME.entities.buildings
@@ -416,9 +417,43 @@ function handleRemoteAction(act){
     }
 }
 
+/* --- FX: KISA OK İBARESİ (KULE ATIŞI) --- */
+function spawnFxLine(x1,y1,x2,y2,life=0.12){
+  const el = document.createElementNS(NS, 'line');
+  el.setAttribute('x1', x1); el.setAttribute('y1', y1);
+  el.setAttribute('x2', x2); el.setAttribute('y2', y2);
+  el.setAttribute('stroke', '#e2e8f0');
+  el.setAttribute('stroke-width', '2');
+  el.setAttribute('stroke-linecap', 'round');
+  el.setAttribute('opacity', '0.95');
+  GAME.dom.layers.fx.appendChild(el);
+
+  // küçük ok başı (mini V)
+  const ang = Math.atan2(y2-y1, x2-x1);
+  const L = 10;
+  const a1 = ang + Math.PI * 0.80;
+  const a2 = ang - Math.PI * 0.80;
+  const hx1 = x2 + Math.cos(a1)*L, hy1 = y2 + Math.sin(a1)*L;
+  const hx2 = x2 + Math.cos(a2)*L, hy2 = y2 + Math.sin(a2)*L;
+
+  const head = document.createElementNS(NS, 'path');
+  head.setAttribute('d', `M ${hx1} ${hy1} L ${x2} ${y2} L ${hx2} ${hy2}`);
+  head.setAttribute('fill','none');
+  head.setAttribute('stroke','#e2e8f0');
+  head.setAttribute('stroke-width','2');
+  head.setAttribute('stroke-linecap','round');
+  head.setAttribute('stroke-linejoin','round');
+  head.setAttribute('opacity','0.95');
+  GAME.dom.layers.fx.appendChild(head);
+
+  GAME.entities.fxlines.push({life, el, head});
+}
+
 /* --- PROJEKTİL (GENEL) --- */
-function spawnProjAt(x, y, t, dmg){
-    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 3); el.setAttribute('fill', '#000');
+function spawnProjAt(x, y, t, dmg, color='#000'){
+    const el = document.createElementNS(NS, 'circle');
+    el.setAttribute('r', 3);
+    el.setAttribute('fill', color);
     GAME.dom.layers.fx.appendChild(el);
     GAME.entities.proj.push({x, y, target:t, dmg, el});
 }
@@ -431,8 +466,6 @@ function startGame(){
   }
 
   rng = seededRandom(mapSeed);
-
-  // Entity id sayaçları her iki tarafta aynı sırada başlayabilsin diye reset
   ENTITY_SEQ = 1;
 
   GAME.dom = {
@@ -452,7 +485,6 @@ function startGame(){
 
   generateMap();
 
-  // Başlangıç entity'leri: id'ler artık genEntityId ile deterministik
   spawnBuilding('TOWN', 1, 300, 300, true);
   spawnBuilding('HOUSE', 1, 550, 350, true);
   spawnUnit('VILLAGER', 1, 450, 500);
@@ -664,7 +696,7 @@ function updateLogic(dt){
     if(GAME.t < (b.cd || 0)) return;
 
     const enemyTeam = (b.team === 1 ? 2 : 1);
-    const bx = b.x + b.w/2, by = b.y + 20;
+    const bx = b.x + b.w/2, by = b.y + 18; // kule ucu gibi
     const range = 360;
     let best = null, bestD = range;
 
@@ -676,8 +708,10 @@ function updateLogic(dt){
 
     if(best){
       b.cd = GAME.t + 1.2;
-      spawnProjAt(bx, by, best, 14);
-      spawnParticle(bx, by, '#e2e8f0', 0.35);
+      // ok ibaresi + açık renk projectile
+      spawnFxLine(bx, by, best.x, best.y, 0.10);
+      spawnProjAt(bx, by, best, 14, '#e2e8f0');
+      spawnParticle(bx, by, '#e2e8f0', 0.25);
     }
   });
 
@@ -728,6 +762,20 @@ function updateLogic(dt){
       if(p.life<=0){ p.el.remove(); GAME.entities.particles[i]=null; }
   });
   GAME.entities.particles = GAME.entities.particles.filter(x=>x);
+
+  /* FX LINES */
+  GAME.entities.fxlines.forEach((f,i)=>{
+    f.life -= dt;
+    const op = Math.max(0, Math.min(1, f.life/0.12));
+    if(f.el) f.el.setAttribute('opacity', op);
+    if(f.head) f.head.setAttribute('opacity', op);
+    if(f.life<=0){
+      if(f.el) f.el.remove();
+      if(f.head) f.head.remove();
+      GAME.entities.fxlines[i]=null;
+    }
+  });
+  GAME.entities.fxlines = GAME.entities.fxlines.filter(x=>x);
 }
 
 function scanForThreats(u){
@@ -766,8 +814,7 @@ function doTask(u, dt){
     else {
         u.atkAnim = 0.5;
         if(GAME.t > u.cd){
-            let factor = 1.0;
-            u.cd = GAME.t + (1/factor);
+            u.cd = GAME.t + 1;
 
             if(u.task.type==='gather'){
                 let amt = 10; t.amt -= amt; spawnParticle(u.x, u.y-10, '#fbbf24', 0.5);
@@ -845,7 +892,10 @@ function render(dt){
   GAME.entities.buildings.forEach(b => {
       if(b.dead) return;
       if(b.ui){
-          let show = GAME.selection.includes(b) || !b.constructed; b.ui.style.display = show ? 'block' : 'none';
+          // FIX: Rakip yeni bina (constructed=false) üzerinde sürekli siyah bar çıkmasın.
+          // Sadece seçilince göster; kendi inşaat barı ise inşaat boyunca görünsün.
+          let show = GAME.selection.includes(b) || (!b.constructed && b.team===myTeam);
+          b.ui.style.display = show ? 'block' : 'none';
           if(show){
             b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
             b.ui.querySelector('.hp-fill').setAttribute('width', Math.max(0, (b.hp/b.def.hp)*b.w));
@@ -902,7 +952,9 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   GAME.dom.layers.build.appendChild(el);
 
   const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/>
+                  <rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/>
+                  <rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
@@ -1041,7 +1093,6 @@ function queueUnit(b, type){
         b.queue.push({type, def:DB.UNIT[type], prog:0, forcedId: newUid});
         updatePanel(true);
 
-        // Online için: bid yanında bina konumu + tipi de gönder (fallback lookup)
         sendAction({
           type:'TRAIN',
           bid: b.id,
