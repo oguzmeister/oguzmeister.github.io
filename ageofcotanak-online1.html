@@ -879,7 +879,9 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   GAME.dom.layers.build.appendChild(el);
 
   const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  ui.innerHTML = `
+  <rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/>
+  <rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
