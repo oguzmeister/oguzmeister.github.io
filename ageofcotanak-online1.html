@@ -205,7 +205,7 @@ const ICONS = {
     WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
     HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
     UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
-    SWORD: `<svg viewBox="0 0 24 24" classclass="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
+    SWORD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
     BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
     HORSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-horse-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#7c2d12"/></linearGradient></defs><path d="M6 19c-.7 0-1.2-.5-1.2-1.2 0-.4.2-.8.5-1l2.2-1.7 1.7-2.9c.2-.4.7-.6 1.1-.4l1.9.8 2.1-1.2c.3-.2.7-.2 1 0l2.2 1.4c.4.2.5.8.2 1.2l-1.3 2.1.8 2.5c.2.6-.2 1.1-.8 1.1h-1.6c-.4 0-.7-.2-.9-.6l-.6-1.1-1.9.9c-.3.1-.7.1-1-.1l-1.3-1-1 1.2c-.2.3-.6.5-1 .5H6z" fill="url(#grad-horse-1)" stroke="#1f2937" stroke-width="1" filter="url(#shadow)"/><path d="M13.8 9.5l1.1-2.4c.2-.5.7-.7 1.2-.5l1.9.8c.4.2.6.7.4 1.1l-.8 2.1" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-linecap="round"/><circle cx="16.9" cy="7.9" r="0.9" fill="#0f172a"/></svg>`,
     SHIELD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 4 L20 4 L18 16 Q12 22 6 16 Z" fill="#15803d" stroke="#fff" stroke-width="1"/></svg>`,
@@ -223,8 +223,6 @@ const DB = {
     ARCHER:   { name: 'Okçu', hp: 80, atk: 9, range: 240, spd: 110, cost: {wood:50, gold:40}, buildTime: 10, role: 'soldier', type:'ranged', proj: true, visual:'BOW' },
     KNIGHT:   { name: 'Süvari', hp: 280, atk: 18, range: 30, spd: 190, cost: {wood:40, gold:90}, buildTime: 15, role: 'soldier', type:'cav', visual:'HORSE' },
     F_KNIGHT: { name: 'Muhafız', hp: 600, atk: 45, range: 35, spd: 140, cost: {gold:100, hazel:150}, buildTime: 25, role: 'soldier', type:'heavy', visual:'SHIELD' },
-
-    /* (EK) Mancınık: Okçu Alanı'ndan üretilecek */
     CATAPULT: { name: 'Mancınık', hp: 260, atk: 40, range: 420, spd: 70, cost: {wood:140, gold:80}, buildTime: 22, role: 'soldier', type:'siege', proj: true, visual:'CATAPULT' }
   },
   BUILD: {
@@ -232,10 +230,7 @@ const DB = {
     BARRACKS: { name: 'Kışla', hp: 1200, w: 140, h: 140, cost: {wood:150, gold:20}, buildTime: 20, visual:'BARRACKS', desc:'Piyade' },
     ARCHERY:  { name: 'Okçu Alanı', hp: 1000, w: 130, h: 130, cost: {wood:150, gold:20}, buildTime: 20, visual:'TOWER', desc:'Okçu / Mancınık' },
     STABLE:   { name: 'Ahır', hp: 1500, w: 160, h: 150, cost: {wood:200, gold:100}, buildTime: 25, visual:'HORSE', desc:'Süvari' },
-
-    /* (EK) Okçu Kulesi: İnşa edilebilir savunma binası */
     ARROW_TOWER: { name: 'Okçu Kulesi', hp: 900, w: 90, h: 140, cost: {wood:170, gold:40}, buildTime: 18, visual:'TOWER', desc:'Savunma', atk: 10, range: 320, proj: true, fireRate: 1.05 },
-
     TOWN:     { name: 'Kale', hp: 5000, w: 220, h: 200, cost: {wood:9999}, cap: 10, buildTime: 999, visual:'TOWN', unique:true }
   }
 };
@@ -506,39 +501,24 @@ function getBuildingSVG(type, team){
     let svg = '';
 
     if(type === 'TOWN'){
-        /* (DÜZELTME) Kale çatısı/üst kısım: negatif Y kullanmadan hizalı çizim */
         const W = def.w, H = def.h;
         const wallY = Math.floor(H*0.34);
         const keepW = 90, keepH = Math.floor(H*0.38);
         const keepX = Math.floor(W/2 - keepW/2);
-
-        // Dış sur
         svg += `<rect x="8" y="${wallY}" width="${W-16}" height="${H-wallY-6}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-
-        // Mazgallar
         for(let i=0;i<10;i++){
           const bx = 16 + i*((W-32)/10);
           svg += `<rect x="${bx}" y="${wallY-10}" width="12" height="12" fill="#475569" stroke="#1e293b" stroke-width="1"/>`;
         }
-
-        // Kapı
         svg += `<rect x="${Math.floor(W/2-28)}" y="${H-64}" width="56" height="58" rx="6" fill="#1e293b"/>`;
         svg += `<path d="M${Math.floor(W/2-28)},${H-64} L${Math.floor(W/2+28)},${H-64}" stroke="#475569" stroke-width="2"/>`;
         svg += `<circle cx="${Math.floor(W/2-10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
         svg += `<circle cx="${Math.floor(W/2+10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
-
-        // İç kule (keep)
         svg += `<rect x="${keepX}" y="${Math.floor(wallY-keepH+10)}" width="${keepW}" height="${keepH}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-
-        // Keep üst çatısı (tam hizalı)
         const roofTopY = Math.floor(wallY-keepH+10);
         svg += `<path d="M${keepX-10},${roofTopY+10} L${Math.floor(W/2)},${roofTopY-18} L${keepX+keepW+10},${roofTopY+10} Z" fill="${roof}" stroke="#1e293b" stroke-width="1.5"/>`;
-
-        // Bayrak direği + bayrak (negatif yok)
         svg += `<line x1="${Math.floor(W/2)}" y1="${roofTopY-18}" x2="${Math.floor(W/2)}" y2="${roofTopY-48}" stroke="#0b1220" stroke-width="3"/>`;
         svg += `<path d="M${Math.floor(W/2)} ${roofTopY-48} L${Math.floor(W/2)+34} ${roofTopY-40} L${Math.floor(W/2)} ${roofTopY-32} Z" fill="${c1}" stroke="#0b1220" stroke-width="1"/>`;
-
-        // Pencere detayları
         svg += `<rect x="${keepX+14}" y="${roofTopY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
         svg += `<rect x="${keepX+keepW-26}" y="${roofTopY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
     }
@@ -554,42 +534,23 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'STABLE'){
-        /* (GELİŞTİRME) Ahır görselleştirmesi */
         const W = def.w, H = def.h;
         const baseY = Math.floor(H*0.42);
-
-        // gölge
         svg += `<ellipse cx="${Math.floor(W/2)}" cy="${H-6}" rx="${Math.floor(W*0.42)}" ry="${Math.floor(H*0.10)}" fill="rgba(0,0,0,0.25)"/>`;
-
-        // taban
         svg += `<rect x="8" y="${baseY}" width="${W-16}" height="${H-baseY-10}" rx="6" fill="#5c2e08" stroke="#2e1402" stroke-width="2"/>`;
-
-        // ahşap çizgiler
         for(let i=0;i<6;i++){
           const y = baseY + 12 + i*18;
           svg += `<line x1="10" y1="${y}" x2="${W-10}" y2="${y}" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>`;
         }
-
-        // çatı
         svg += `<path d="M0,${baseY} L${Math.floor(W/2)},10 L${W},${baseY} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
         svg += `<path d="M${Math.floor(W*0.1)},${baseY-2} L${Math.floor(W/2)},22 L${Math.floor(W*0.9)},${baseY-2}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3" stroke-linecap="round"/>`;
-
-        // kapılar (kemerli)
         const dW = 36, dH = 46;
         const d1x = 24, d2x = W - 24 - dW;
         const dy = H - dH - 16;
-        const door = (x)=>(
-          `<path d="M${x},${dy+dH} L${x},${dy+14} Q${x + dW/2},${dy-8} ${x+dW},${dy+14} L${x+dW},${dy+dH} Z"
-            fill="#0b1220" opacity="0.55" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>`
-        );
-        svg += door(d1x);
-        svg += door(d2x);
-
-        // saman balyası detayı
+        const door = (x)=>( `<path d="M${x},${dy+dH} L${x},${dy+14} Q${x + dW/2},${dy-8} ${x+dW},${dy+14} L${x+dW},${dy+dH} Z" fill="#0b1220" opacity="0.55" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>` );
+        svg += door(d1x); svg += door(d2x);
         svg += `<rect x="${Math.floor(W/2-20)}" y="${H-44}" width="40" height="22" rx="4" fill="#d97706" opacity="0.9" stroke="#78350f" stroke-width="2"/>`;
         svg += `<line x1="${Math.floor(W/2-18)}" y1="${H-33}" x2="${Math.floor(W/2+18)}" y2="${H-33}" stroke="#78350f" stroke-width="2"/>`;
-
-        // küçük bayrak/arma
         svg += `<circle cx="${Math.floor(W/2)}" cy="${baseY-18}" r="10" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'ARCHERY'){
@@ -600,18 +561,14 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="35" cy="${def.h*0.7}" r="3" fill="#b91c1c"/>`;
     }
     else if(type === 'ARROW_TOWER'){
-        /* (EK) Okçu Kulesi görünümü */
         const W = def.w, H = def.h;
         svg += `<rect x="10" y="${Math.floor(H*0.3)}" width="${W-20}" height="${Math.floor(H*0.7)-8}" rx="6" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        // mazgallar
         svg += `<rect x="14" y="${Math.floor(H*0.28)}" width="${W-28}" height="16" rx="4" fill="#475569" stroke="#1e293b" stroke-width="2"/>`;
         for(let i=0;i<4;i++){
           const x = 18 + i*((W-36)/4);
           svg += `<rect x="${x}" y="${Math.floor(H*0.28)+3}" width="10" height="10" rx="2" fill="#1e293b" opacity="0.9"/>`;
         }
-        // üst platform
         svg += `<path d="M6 ${Math.floor(H*0.3)} L${Math.floor(W/2)} 8 L${W-6} ${Math.floor(H*0.3)} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
-        // arma
         svg += `<circle cx="${Math.floor(W/2)}" cy="${Math.floor(H*0.55)}" r="10" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
 
@@ -656,7 +613,6 @@ function getUnitSVG(type, team){
   return `<g filter="url(#shadow)"><ellipse cx="0" cy="8" rx="8" ry="4" fill="rgba(0,0,0,0.5)"/>${b}${w}</g>`;
 }
 
-/* (EK) Proj hedef merkezini düzelten yardımcı */
 function getTargetCenter(t){
   const tx = t.x + (t.w ? t.w/2 : 0);
   const ty = t.y + (t.h ? t.h/2 : 0);
@@ -705,7 +661,14 @@ function updateLogic(dt){
         }
     }
 
-    // (EK) Okçu Kulesi savunması (atk/range tanımlıysa)
+    // İNŞAAT TAMAMLAMA DÜZELTMESİ (BUG FIX)
+    // Eğer bina canı %99 üzerindeyse ve hala inşaat bitmemiş gözüküyorsa (siyah bar sorunu), zorla bitir.
+    if(!b.constructed && b.hp >= b.def.hp * 0.99){
+         b.hp = b.def.hp;
+         b.constructed = true;
+    }
+
+    // Okçu Kulesi savunması
     if(b.constructed && !b.dead && b.def && b.def.atk && b.def.range){
       if(b.cd === undefined) b.cd = 0;
       const enemyTeam = b.team === 1 ? 2 : 1;
@@ -719,7 +682,6 @@ function updateLogic(dt){
         const d = Math.hypot((u.x) - bx, (u.y) - by);
         if(d < bestD){ bestD = d; best = u; }
       }
-      // (istersen binaları da vurabilir)
       for(let bb of GAME.entities.buildings){
         if(bb.dead || bb.team !== enemyTeam) continue;
         const cx = bb.x + bb.w/2, cy = bb.y + bb.h/2;
@@ -769,7 +731,6 @@ function updateLogic(dt){
       let p = GAME.entities.proj[i];
       if(!p.target || p.target.dead) { p.el.remove(); GAME.entities.proj.splice(i,1); continue; }
 
-      // (DÜZELTME) hedef merkezine git (bina için)
       const {tx, ty} = getTargetCenter(p.target);
       let d = Math.hypot(tx-p.x, ty-p.y);
 
@@ -906,7 +867,11 @@ function render(dt){
   GAME.entities.buildings.forEach(b => {
       if(b.dead) return;
       if(b.ui){
-          let show = GAME.selection.includes(b) || !b.constructed; b.ui.style.display = show ? 'block' : 'none';
+          // GÖRÜNÜRLÜK MANTIĞI DÜZELTİLDİ:
+          // Eğer seçili değilse VE (inşaat bitmemişse VEYA canı full değilse) göster.
+          // Bu, inşaat bittiğinde barın otomatik kaybolmasını garantiler.
+          let show = GAME.selection.includes(b) || (!b.constructed && b.hp < b.def.hp);
+          b.ui.style.display = show ? 'block' : 'none';
           if(show){
             b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
             b.ui.querySelector('.hp-fill').setAttribute('width', Math.max(0, (b.hp/b.def.hp)*b.w));
@@ -963,7 +928,7 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   GAME.dom.layers.build.appendChild(el);
 
   const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000" fill-opacity="0.6"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
@@ -985,7 +950,6 @@ function spawnProj(u, t, dmg){
     GAME.entities.proj.push({x:u.x, y:u.y, target:t, dmg, el});
 }
 
-/* (EK) Kule projeksiyonu */
 function spawnProjFromBuilding(b, t, dmg){
     const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 3); el.setAttribute('fill', '#000');
     GAME.dom.layers.fx.appendChild(el);
@@ -1013,14 +977,12 @@ function updatePanel(forceFull = false){
         addBtn(pa, DB.BUILD.BARRACKS, ()=>prepBuild('BARRACKS'));
         addBtn(pa, DB.BUILD.ARCHERY, ()=>prepBuild('ARCHERY'));
         addBtn(pa, DB.BUILD.STABLE, ()=>prepBuild('STABLE'));
-        /* (EK) Okçu Kulesi inşası */
         addBtn(pa, DB.BUILD.ARROW_TOWER, ()=>prepBuild('ARROW_TOWER'));
     } else if(h.queue){
         if(h.type === 'HOUSE') addBtn(pa, DB.UNIT.VILLAGER, ()=>queueUnit(h, 'VILLAGER'));
         if(h.type === 'BARRACKS') addBtn(pa, DB.UNIT.PIKEMAN, ()=>queueUnit(h, 'PIKEMAN'));
         if(h.type === 'ARCHERY') {
           addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
-          /* (EK) Mancınık üretimi */
           addBtn(pa, DB.UNIT.CATAPULT, ()=>queueUnit(h, 'CATAPULT'));
         }
         if(h.type === 'STABLE') {
