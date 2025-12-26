@@ -245,14 +245,12 @@ let GAME = {
   cam: { x: 0, y: 0, w: window.innerWidth, h: window.innerHeight },
   mouse: { wx: 0, wy: 0, screenX:0, screenY:0, down: false, dragStart: null },
   keys: {},
-  entities: { units: [], buildings: [], props: [], proj: [], particles: [], fxlines: [] },
+  entities: { units: [], buildings: [], props: [], proj: [], particles: [] },
   selection: [], lastSelectionId: null,
   player: { gold: 300, wood: 300, hazel: 0 },
   ghost: { active: false, type: null, el: null, valid: false },
   dom: {}
 };
-
-function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
 window.onload = function() {
     const intro = document.getElementById('intro-screen');
@@ -282,16 +280,14 @@ function showLobby(){
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('lobby-screen').style.display = 'flex';
 }
-
 function backToMenu(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'flex';
 }
-
 function createRoom(){
     myRoomId = Math.floor(1000 + Math.random() * 9000).toString();
     amIHost = true;
-    mapSeed = Math.floor(Math.random() * 100000); // Host haritayı belirler
+    mapSeed = Math.floor(Math.random() * 100000);
 
     db.ref('rooms/' + myRoomId).set({
         host: myPlayerId,
@@ -305,7 +301,6 @@ function createRoom(){
     document.getElementById('display-room-code').innerText = myRoomId;
     listenForGameStart();
 }
-
 function joinRoom(){
     const inputCode = document.getElementById('room-code-input').value;
     if(!inputCode || inputCode.length !== 4) { alert("Lütfen 4 haneli kodu girin."); return; }
@@ -321,21 +316,19 @@ function joinRoom(){
             if(data.status !== 'waiting'){ alert("Bu oda dolu veya başlamış!"); return; }
 
             roomRef.update({ guest: myPlayerId, status: 'starting' });
-            mapSeed = data.seed; // Host'un haritasını al
+            mapSeed = data.seed;
 
             showToast("Odaya Katıldın! Başlıyor...");
             listenForGameStart();
         } else { alert("Böyle bir oda bulunamadı."); }
     }).catch((error) => { console.error(error); alert("Bağlantı hatası."); });
 }
-
 function listenForGameStart(){
     db.ref('rooms/' + myRoomId + '/status').on('value', (snapshot) => {
         const status = snapshot.val();
         if(status === 'starting'){
             isOnline = true;
             document.getElementById('lobby-screen').style.display = 'none';
-            // Host Mavi(1), Guest Kırmızı(2)
             myTeam = amIHost ? 1 : 2;
             showToast(`BAĞLANDI! SEN ${myTeam === 1 ? 'MAVİ' : 'KIRMIZI'} TAKIMSIN.`);
 
@@ -345,31 +338,25 @@ function listenForGameStart(){
     });
 }
 
-/* --- ACTION SYNC (AKSİYON PAYLAŞIMI) --- */
+/* --- ACTION SYNC --- */
 function sendAction(data){
     if(!isOnline) return;
-    // küçük timestamp: debug + sıralama
     db.ref('rooms/' + myRoomId + '/actions').push({ ...data, senderTeam: myTeam, ts: Date.now() });
 }
-
 function listenForActions(){
     db.ref('rooms/' + myRoomId + '/actions').on('child_added', (snapshot) => {
         const action = snapshot.val();
-
-        // Gecikmeyi azaltmak için host, işlenen action'ları DB'den temizler (node şişmesin).
-        // (silme sadece host'ta: diğer tarafın okuması daha güvenli)
-        const shouldCleanup = amIHost;
 
         if(action.senderTeam !== myTeam){
           handleRemoteAction(action);
         }
 
-        if(shouldCleanup){
+        // gecikme + şişme azaltma (host temizler)
+        if(amIHost){
           snapshot.ref.remove().catch(()=>{});
         }
     });
 }
-
 function handleRemoteAction(act){
     if(act.type === 'MOVE'){
         act.uids.forEach(id => {
@@ -417,39 +404,7 @@ function handleRemoteAction(act){
     }
 }
 
-/* --- FX: KISA OK İBARESİ (KULE ATIŞI) --- */
-function spawnFxLine(x1,y1,x2,y2,life=0.12){
-  const el = document.createElementNS(NS, 'line');
-  el.setAttribute('x1', x1); el.setAttribute('y1', y1);
-  el.setAttribute('x2', x2); el.setAttribute('y2', y2);
-  el.setAttribute('stroke', '#e2e8f0');
-  el.setAttribute('stroke-width', '2');
-  el.setAttribute('stroke-linecap', 'round');
-  el.setAttribute('opacity', '0.95');
-  GAME.dom.layers.fx.appendChild(el);
-
-  // küçük ok başı (mini V)
-  const ang = Math.atan2(y2-y1, x2-x1);
-  const L = 10;
-  const a1 = ang + Math.PI * 0.80;
-  const a2 = ang - Math.PI * 0.80;
-  const hx1 = x2 + Math.cos(a1)*L, hy1 = y2 + Math.sin(a1)*L;
-  const hx2 = x2 + Math.cos(a2)*L, hy2 = y2 + Math.sin(a2)*L;
-
-  const head = document.createElementNS(NS, 'path');
-  head.setAttribute('d', `M ${hx1} ${hy1} L ${x2} ${y2} L ${hx2} ${hy2}`);
-  head.setAttribute('fill','none');
-  head.setAttribute('stroke','#e2e8f0');
-  head.setAttribute('stroke-width','2');
-  head.setAttribute('stroke-linecap','round');
-  head.setAttribute('stroke-linejoin','round');
-  head.setAttribute('opacity','0.95');
-  GAME.dom.layers.fx.appendChild(head);
-
-  GAME.entities.fxlines.push({life, el, head});
-}
-
-/* --- PROJEKTİL (GENEL) --- */
+/* --- PROJEKTİL (KULE/UNIT ORTAK) --- */
 function spawnProjAt(x, y, t, dmg, color='#000'){
     const el = document.createElementNS(NS, 'circle');
     el.setAttribute('r', 3);
@@ -458,6 +413,7 @@ function spawnProjAt(x, y, t, dmg, color='#000'){
     GAME.entities.proj.push({x, y, target:t, dmg, el});
 }
 
+/* --- OYUN --- */
 function startGame(){
   const bgm = document.getElementById('bgm');
   if(bgm){
@@ -598,13 +554,26 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="35" cy="${def.h*0.7}" r="3" fill="#b91c1c"/>`;
     }
     else if(type === 'ATOWER'){
+        // kule gövde
         svg += `<rect x="${def.w*0.25}" y="20" width="${def.w*0.5}" height="${def.h-30}" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
         svg += `<path d="M${def.w*0.22},20 L${def.w*0.5},0 L${def.w*0.78},20 Z" fill="${roof}" stroke="#1e293b" stroke-width="1.5"/>`;
         svg += `<rect x="${def.w*0.30}" y="${def.h*0.45}" width="${def.w*0.4}" height="${def.h*0.25}" fill="#0f172a" opacity="0.35"/>`;
-        svg += `<circle cx="${def.w*0.5}" cy="10" r="6" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
+        // bayrak
         svg += `<path d="M${def.w*0.5},-4 L${def.w*0.5},-30" stroke="#000" stroke-width="2"/>`;
         svg += `<path d="M${def.w*0.5},-30 L${def.w*0.5+24},-22 L${def.w*0.5},-14 Z" fill="${c1}"/>`;
+        // İSTEDİĞİN: kulenin üzerinde “ok atıyor” görseli (sabit)
+        // küçük yay + ok, kulenin tepesinde
+        const ax = def.w*0.5, ay = 14;
+        svg += `
+          <g opacity="0.95">
+            <path d="M${ax+18} ${ay-10} Q ${ax+4} ${ay} ${ax+18} ${ay+10}" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${ax+18}" y1="${ay-10}" x2="${ax+18}" y2="${ay+10}" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="${ax-2}" y1="${ay}" x2="${ax+18}" y2="${ay}" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M${ax+18} ${ay} L${ax+12} ${ay-4} L${ax+12} ${ay+4} Z" fill="#e2e8f0"/>
+          </g>
+        `;
     }
+
     return `<g filter="url(#shadow)">${svg}</g>`;
 }
 
@@ -653,9 +622,6 @@ function loop(t){
   try {
       updateCamera(dt);
       updateLogic(dt);
-
-      if(!isOnline) updateFairAI(dt);
-
       updateLiveUI();
       render(dt);
   } catch(e) { console.error(e); }
@@ -689,14 +655,16 @@ function updateLogic(dt){
     }
   });
 
-  /* OKÇU KULESİ SAVUNMASI */
+  /* OKÇU KULESİ: ATEŞLEME SİSTEMİ (ESKİSİ GİBİ) */
+  // - otomatik hedef seçer
+  // - siyah projectile (eskisi gibi) gönderir
   GAME.entities.buildings.forEach(b => {
     if(b.dead || !b.constructed) return;
     if(b.type !== 'ATOWER') return;
     if(GAME.t < (b.cd || 0)) return;
 
     const enemyTeam = (b.team === 1 ? 2 : 1);
-    const bx = b.x + b.w/2, by = b.y + 18; // kule ucu gibi
+    const bx = b.x + b.w/2, by = b.y + 18;
     const range = 360;
     let best = null, bestD = range;
 
@@ -708,10 +676,9 @@ function updateLogic(dt){
 
     if(best){
       b.cd = GAME.t + 1.2;
-      // ok ibaresi + açık renk projectile
-      spawnFxLine(bx, by, best.x, best.y, 0.10);
-      spawnProjAt(bx, by, best, 14, '#e2e8f0');
-      spawnParticle(bx, by, '#e2e8f0', 0.25);
+      // sadece normal projectile: “eskisi gibi”
+      spawnProjAt(bx, by, best, 14, '#000');
+      if(Math.random() < 0.4) spawnParticle(bx, by, '#fff', 0.25);
     }
   });
 
@@ -762,20 +729,6 @@ function updateLogic(dt){
       if(p.life<=0){ p.el.remove(); GAME.entities.particles[i]=null; }
   });
   GAME.entities.particles = GAME.entities.particles.filter(x=>x);
-
-  /* FX LINES */
-  GAME.entities.fxlines.forEach((f,i)=>{
-    f.life -= dt;
-    const op = Math.max(0, Math.min(1, f.life/0.12));
-    if(f.el) f.el.setAttribute('opacity', op);
-    if(f.head) f.head.setAttribute('opacity', op);
-    if(f.life<=0){
-      if(f.el) f.el.remove();
-      if(f.head) f.head.remove();
-      GAME.entities.fxlines[i]=null;
-    }
-  });
-  GAME.entities.fxlines = GAME.entities.fxlines.filter(x=>x);
 }
 
 function scanForThreats(u){
@@ -892,8 +845,9 @@ function render(dt){
   GAME.entities.buildings.forEach(b => {
       if(b.dead) return;
       if(b.ui){
-          // FIX: Rakip yeni bina (constructed=false) üzerinde sürekli siyah bar çıkmasın.
-          // Sadece seçilince göster; kendi inşaat barı ise inşaat boyunca görünsün.
+          // Rakip yeni bina siyah barı sabit görünmesin:
+          // - seçilince: göster
+          // - kendi takımın inşaatı: inşaat boyunca göster
           let show = GAME.selection.includes(b) || (!b.constructed && b.team===myTeam);
           b.ui.style.display = show ? 'block' : 'none';
           if(show){
@@ -1115,7 +1069,6 @@ function updateUI(){
       .reduce((a,x)=>a+x.def.cap,0);
 
     let curPop = GAME.entities.units.filter(u=>u.team===myTeam && !u.dead).length;
-
     document.getElementById('ui-pop').innerText = `${curPop}/${houseCap}`;
 }
 
