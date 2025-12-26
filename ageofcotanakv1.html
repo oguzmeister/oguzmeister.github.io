@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Age of Çotanak: Single Player</title>
+<title>Age of Çotanak: Warlords</title>
 <link rel="icon" type="image/png" href="aoclogo.png">
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
   :root{
@@ -22,10 +25,26 @@
   .interactive { pointer-events: auto; }
 
   /* --- INTRO EKRANI --- */
-  #intro-screen { position: fixed; inset: 0; z-index: 300; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease-in-out; }
-  .intro-logo { font-size: 60px; font-weight: 900; color: #d97706; text-transform: uppercase; letter-spacing: 10px; text-shadow: 0 0 20px rgba(217, 119, 6, 0.5); opacity: 0; transform: scale(0.8); transition: all 1.5s ease-out; display: flex; flex-direction: column; align-items: center; }
-  .intro-sub { margin-top: 10px; font-size: 16px; color: #64748b; letter-spacing: 5px; opacity: 0; transition: opacity 1.5s ease 0.5s; }
-  .intro-active .intro-logo { opacity: 1; transform: scale(1.1); } .intro-active .intro-sub { opacity: 1; }
+  #intro-screen {
+    position: fixed; inset: 0; z-index: 300;
+    background: #000;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 1s ease-in-out;
+  }
+  .intro-logo {
+    font-size: 60px; font-weight: 900; color: #d97706;
+    text-transform: uppercase; letter-spacing: 10px;
+    text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+    opacity: 0; transform: scale(0.8);
+    transition: all 1.5s ease-out;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .intro-sub {
+    margin-top: 10px; font-size: 16px; color: #64748b; letter-spacing: 5px;
+    opacity: 0; transition: opacity 1.5s ease 0.5s;
+  }
+  .intro-active .intro-logo { opacity: 1; transform: scale(1.1); }
+  .intro-active .intro-sub { opacity: 1; }
 
   /* UI ELEMENTLERİ */
   .top-hud { display: flex; gap: 15px; justify-content: center; padding: 12px; background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%); pointer-events: none; }
@@ -57,14 +76,19 @@
   .toast { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 12px 30px; border-radius: 4px; border-bottom: 2px solid var(--accent); color: #fbbf24; font-weight: bold; opacity: 0; transition: .3s; pointer-events: none; z-index: 100; font-family: monospace; letter-spacing: 1px; font-size: 16px; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-  /* MENÜLER & LOBİ */
+  /* MENÜLER */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; }
   .modal { background: #0f172a; padding: 40px; border-radius: 4px; border: 1px solid #334155; text-align: center; width: 400px; color: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
   .btn-start { width: 100%; margin: 15px 0; padding: 15px; background: #b45309; color: white; font-weight: bold; border: none; border-radius: 2px; cursor: pointer; font-size: 16px; transition: .2s; text-transform: uppercase; letter-spacing: 2px; pointer-events: auto; }
   .btn-start:hover { background: #d97706; }
+  
+  /* LOBİ ELEMANLARI */
   .diff-select { display:flex; gap:10px; margin-bottom:20px; }
   .diff-btn { flex:1; padding:10px; background:#1e293b; border:1px solid #334155; color:#94a3b8; cursor:pointer; border-radius:2px; font-weight: bold; }
   .diff-btn.active { background:var(--accent); color:#000; border-color:var(--accent); }
+  
+  .menu-btn { width: 100%; margin: 10px 0; padding: 15px; background: #1e293b; color: #e2e8f0; font-weight: bold; border: 1px solid #334155; border-radius: 2px; cursor: pointer; font-size: 16px; transition: .2s; text-transform: uppercase; letter-spacing: 1px; }
+  .menu-btn:hover { background: #334155; border-color: #94a3b8; }
 
   .game-over-title { font-size: 42px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 5px; font-family: monospace; opacity: 0; transform: scale(0.5); transition: all 1s; }
   .game-over-show .game-over-title { opacity: 1; transform: scale(1); }
@@ -125,39 +149,96 @@
     </div>
   </div>
 
-  <div id="start-screen" class="modal-overlay interactive" style="display:none;">
+  <div id="main-menu" class="modal-overlay interactive" style="display:none;">
+      <div class="modal">
+        <h1 style="color:#d97706; margin:0 0 20px 0; text-shadow:0 3px 0 #000;">AGE OF ÇOTANAK</h1>
+        <button class="menu-btn" onclick="showSPMenu()">TEK OYUNCULU</button>
+        <button class="menu-btn" onclick="showMPMenu()">ONLINE (1v1)</button>
+      </div>
+  </div>
+
+  <div id="sp-screen" class="modal-overlay interactive" style="display:none;">
     <div class="modal">
-      <h1 style="color:#d97706; margin:0 0 10px 0; text-shadow:0 3px 0 #000;">AGE OF ÇOTANAK</h1>
-      <p style="color:#94a3b8; font-size:12px; margin-bottom:20px; letter-spacing:3px;">WARLORDS</p>
-      <div style="text-align:left; color:#ccc; font-size:12px; margin-bottom:5px;">ZORLUK:</div>
+      <h2 style="color:#d97706;">TEK OYUNCULU</h2>
+      <p style="color:#94a3b8; font-size:12px; margin-bottom:20px;">ZORLUK SEÇİMİ</p>
       <div class="diff-select">
           <button class="diff-btn" onclick="setDiff('EASY')" id="btn-easy">KOLAY</button>
           <button class="diff-btn active" onclick="setDiff('NORMAL')" id="btn-norm">ORTA</button>
           <button class="diff-btn" onclick="setDiff('HARD')" id="btn-hard">ZOR</button>
       </div>
-      <button class="btn-start" id="btn-start-game">SAVAŞA KATIL</button>
+      <button class="btn-start" onclick="startLocalGame()">BAŞLA</button>
+      <button class="diff-btn" style="margin-top:10px; width:100%; border:none;" onclick="backToMain()">GERİ</button>
+    </div>
+  </div>
+
+  <div id="lobby-screen" class="modal-overlay interactive" style="display:none;">
+    <div class="modal">
+      <h2 style="color:#2563eb;">ONLINE LOBİ</h2>
+      <div id="lobby-controls">
+          <button class="btn-start" style="background:#0f766e;" onclick="createRoom()">ODA OLUŞTUR</button>
+          <div style="margin: 15px 0; color:#64748b;">- VEYA -</div>
+          <input type="text" id="room-code-input" placeholder="Oda Kodunu Gir" style="width:90%; padding:10px; background:#1e293b; border:1px solid #334155; color:#fff; text-align:center; font-weight:bold; margin-bottom:10px;">
+          <button class="btn-start" style="background:#4338ca;" onclick="joinRoom()">ODAYA KATIL</button>
+      </div>
+      <div id="lobby-waiting" style="display:none; flex-direction:column; gap:15px;">
+          <h2 style="color:#fbbf24;">ODA: <span id="display-room-code" style="color:#fff;">...</span></h2>
+          <p class="blink">Rakip Bekleniyor...</p>
+      </div>
+      <button class="diff-btn" style="margin-top:20px; width:100%; border-color:transparent;" onclick="backToMain()">GERİ DÖN</button>
     </div>
   </div>
 
   <div id="end-screen" class="modal-overlay interactive" style="display:none;">
       <div class="modal">
           <h1 id="end-title" class="game-over-title"></h1>
-          <button class="btn-start" onclick="location.reload()">TEKRAR OYNA</button>
+          <button class="btn-start" onclick="location.reload()">MENÜYE DÖN</button>
       </div>
   </div>
 </div>
 
 <script>
+/* --- FIREBASE --- */
+const firebaseConfig = {
+  apiKey: "AIzaSyDqQhq2QiG8PDR_ieoyfGiHsB3F-Ryd94E",
+  authDomain: "ageofcotanakonline.firebaseapp.com",
+  databaseURL: "https://ageofcotanakonline-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "ageofcotanakonline",
+  storageBucket: "ageofcotanakonline.firebasestorage.app",
+  messagingSenderId: "129139800724",
+  appId: "1:129139800724:web:39b490070eae07b5405281"
+};
+try { firebase.initializeApp(firebaseConfig); } catch(e){ console.log("Firebase Error", e); }
+const db = firebase.database();
+
+/* --- GLOBAL VARS --- */
+let isOnline = false;
+let myRoomId = null;
+let myPlayerId = 'p_' + Math.floor(Math.random() * 100000);
+let amIHost = false;
+let myTeam = 1; // SP'de hep 1, MP'de değişir
+let mapSeed = Math.random() * 100000;
+
+/* --- SEEDED RNG --- */
+let rng = Math.random; 
+function seededRandom(a) {
+    return function() {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+}
+
 /* --- SABİTLER --- */
 const CFG = { w: 2400, h: 2000 };
 const COLORS = { p1: '#2563eb', p2: '#dc2626', p1Dark: '#1e3a8a', p2Dark: '#7f1d1d' };
 const NS = "http://www.w3.org/2000/svg";
 
-/* --- SVG İKONLAR --- */
+/* --- ICONS --- */
 const ICONS = {
     GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
     WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
-    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
+    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="url(#grad-hazel)" stroke="#3f1d04" stroke-width="1.5"/><path d="M12 2 L12 8" stroke="#3f1d04"/></svg>`,
     UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
     SWORD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
     BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
@@ -166,8 +247,7 @@ const ICONS = {
     WORKER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M4 20 L20 4 M4 4 L8 8" stroke="#cbd5e1" stroke-width="3"/></svg>`,
     HOUSE: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-house-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient><linearGradient id="grad-roof-1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M4 11.5L12 4l8 7.5" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 10.8V20h11V10.8" fill="url(#grad-house-1)" stroke="#1f2937" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M12 4l8 7.5H4L12 4z" fill="url(#grad-roof-1)" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/><rect x="11" y="14" width="3" height="6" rx="1" fill="#0f172a" opacity="0.75"/><rect x="8" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/><rect x="14.2" y="13" width="2.5" height="2.5" rx="0.6" fill="#fde68a" opacity="0.85"/></svg>`,
     BARRACKS: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-barr-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64748b"/><stop offset="100%" stop-color="#1e293b"/></linearGradient><linearGradient id="grad-flag-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs><path d="M5 10.5l7-5 7 5" fill="#0f172a" opacity="0.35"/><path d="M6 11v9h12v-9" fill="url(#grad-barr-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6 11l6-4.5L18 11" fill="#334155" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><rect x="9" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="12.8" y="14" width="2.4" height="2.4" rx="0.6" fill="#cbd5e1" opacity="0.75"/><rect x="11" y="17" width="3" height="3" rx="0.8" fill="#0f172a" opacity="0.75"/><path d="M12 6.2V3.8" stroke="#e2e8f0" stroke-width="1.6" stroke-linecap="round"/><path d="M12 4.2h5l-1.2 1.4L17 7h-5" fill="url(#grad-flag-1)" stroke="#0b1220" stroke-width="1" stroke-linejoin="round"/></svg>`,
-    TOWER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-tower-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient><linearGradient id="grad-stone-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient></defs><path d="M7 20V9.5L12 6l5 3.5V20" fill="url(#grad-stone-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6.2 9.8L12 5.7l5.8 4.1" fill="#475569" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><path d="M9.2 12.5l2.8-1.8 2.8 1.8-2.8 1.8-2.8-1.8z" fill="url(#grad-tower-1)" stroke="#0b1220" stroke-width="1"/><circle cx="12" cy="12.5" r="1.1" fill="#0f172a" opacity="0.55"/><path d="M8.5 20l3.5-6 3.5 6" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/></svg>`,
-    CATAPULT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="14" width="16" height="5" rx="2" fill="#6b4f2a" stroke="#2e1402"/><circle cx="8" cy="20" r="2" fill="#334155"/><circle cx="16" cy="20" r="2" fill="#334155"/><path d="M7 14 L12 6 L17 14" fill="none" stroke="#cbd5e1" stroke-width="2"/><circle cx="12" cy="6" r="2" fill="#94a3b8"/></svg>`
+    TOWER: `<svg viewBox="0 0 24 24" class="card-icon-svg"><defs><linearGradient id="grad-tower-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient><linearGradient id="grad-stone-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#334155"/></linearGradient></defs><path d="M7 20V9.5L12 6l5 3.5V20" fill="url(#grad-stone-1)" stroke="#0b1220" stroke-width="1.5" stroke-linejoin="round" filter="url(#shadow)"/><path d="M6.2 9.8L12 5.7l5.8 4.1" fill="#475569" stroke="#0b1220" stroke-width="1.2" stroke-linejoin="round"/><path d="M9.2 12.5l2.8-1.8 2.8 1.8-2.8 1.8-2.8-1.8z" fill="url(#grad-tower-1)" stroke="#0b1220" stroke-width="1"/><circle cx="12" cy="12.5" r="1.1" fill="#0f172a" opacity="0.55"/><path d="M8.5 20l3.5-6 3.5 6" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/></svg>`
 };
 
 const DB = {
@@ -176,15 +256,13 @@ const DB = {
     PIKEMAN:  { name: 'Mızraklı', hp: 140, atk: 12, range: 35, spd: 100, cost: {wood:60, gold:20}, buildTime: 8, role: 'soldier', type:'inf', bonus:'cav', visual:'SWORD' },
     ARCHER:   { name: 'Okçu', hp: 80, atk: 9, range: 240, spd: 110, cost: {wood:50, gold:40}, buildTime: 10, role: 'soldier', type:'ranged', proj: true, visual:'BOW' },
     KNIGHT:   { name: 'Süvari', hp: 280, atk: 18, range: 30, spd: 190, cost: {wood:40, gold:90}, buildTime: 15, role: 'soldier', type:'cav', visual:'HORSE' },
-    F_KNIGHT: { name: 'Muhafız', hp: 600, atk: 45, range: 35, spd: 140, cost: {gold:100, hazel:150}, buildTime: 25, role: 'soldier', type:'heavy', visual:'SHIELD' },
-    CATAPULT: { name: 'Mancınık', hp: 260, atk: 40, range: 420, spd: 70, cost: {wood:140, gold:80}, buildTime: 22, role: 'soldier', type:'siege', proj: true, visual:'CATAPULT' }
+    F_KNIGHT: { name: 'Muhafız', hp: 600, atk: 45, range: 35, spd: 140, cost: {gold:100, hazel:150}, buildTime: 25, role: 'soldier', type:'heavy', visual:'SHIELD' }
   },
   BUILD: {
     HOUSE:    { name: 'Barınak', hp: 500, w: 90, h: 90, cost: {wood:40}, cap: 5, buildTime: 10, visual:'HOUSE', desc:'Nüfus: +5' },
     BARRACKS: { name: 'Kışla', hp: 1200, w: 140, h: 140, cost: {wood:150, gold:20}, buildTime: 20, visual:'BARRACKS', desc:'Piyade' },
-    ARCHERY:  { name: 'Okçu Alanı', hp: 1000, w: 130, h: 130, cost: {wood:150, gold:20}, buildTime: 20, visual:'TOWER', desc:'Okçu / Mancınık' },
+    ARCHERY:  { name: 'Okçu Alanı', hp: 1000, w: 130, h: 130, cost: {wood:150, gold:20}, buildTime: 20, visual:'TOWER', desc:'Okçu' },
     STABLE:   { name: 'Ahır', hp: 1500, w: 160, h: 150, cost: {wood:200, gold:100}, buildTime: 25, visual:'HORSE', desc:'Süvari' },
-    ARROW_TOWER: { name: 'Okçu Kulesi', hp: 900, w: 90, h: 140, cost: {wood:170, gold:40}, buildTime: 18, visual:'TOWER', desc:'Savunma', atk: 10, range: 320, proj: true, fireRate: 1.05 },
     TOWN:     { name: 'Kale', hp: 5000, w: 220, h: 200, cost: {wood:9999}, cap: 10, buildTime: 999, visual:'TOWN', unique:true }
   }
 };
@@ -210,7 +288,7 @@ function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
 window.onload = function() {
     const intro = document.getElementById('intro-screen');
-    const start = document.getElementById('start-screen');
+    const menu = document.getElementById('main-menu');
     const svg = document.getElementById('game-svg');
 
     if(svg) { svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%'); }
@@ -222,87 +300,232 @@ window.onload = function() {
                 intro.style.opacity = '0';
                 setTimeout(() => {
                     intro.style.display = 'none';
-                    if(start) start.style.display = 'flex';
+                    if(menu) menu.style.display = 'flex';
                 }, 1000);
             }, 2500);
         }, 100);
     } else {
-        if(start) start.style.display = 'flex';
+        if(menu) menu.style.display = 'flex';
     }
-
-    document.getElementById('btn-start-game').addEventListener('click', startGame);
 };
 
-/* --- FONKSİYONLAR --- */
+/* --- MENÜ FONKSİYONLARI --- */
+function showSPMenu(){
+    document.getElementById('main-menu').style.display='none';
+    document.getElementById('sp-screen').style.display='flex';
+}
+function showMPMenu(){
+    document.getElementById('main-menu').style.display='none';
+    document.getElementById('lobby-screen').style.display='flex';
+}
+function backToMain(){
+    document.getElementById('sp-screen').style.display='none';
+    document.getElementById('lobby-screen').style.display='none';
+    document.getElementById('main-menu').style.display='flex';
+}
+
 function setDiff(d){
     GAME.difficulty = d;
     document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(d==='EASY'?'btn-easy':d==='NORMAL'?'btn-norm':'btn-hard').classList.add('active');
 }
 
-function startGame(){
-  const bgm = document.getElementById('bgm');
-  if(bgm){
-    bgm.volume = 0.35; // 0.0 - 1.0
-    bgm.play().catch(()=>{});
-  }
+/* --- ONLINE LOBİ --- */
+function createRoom(){
+    myRoomId = Math.floor(1000 + Math.random() * 9000).toString();
+    amIHost = true;
+    mapSeed = Math.floor(Math.random() * 100000); 
 
-  GAME.dom = {
-    svg: document.getElementById('game-svg'),
-    layers: {
-      units: document.getElementById('layer-units'),
-      build: document.getElementById('layer-buildings'),
-      props: document.getElementById('layer-props'),
-      fx: document.getElementById('layer-fx'),
-      ui: document.getElementById('layer-ui-world')
-    }
-  };
+    db.ref('rooms/' + myRoomId).set({
+        host: myPlayerId,
+        guest: null,
+        status: 'waiting',
+        seed: mapSeed
+    });
 
-  // brain reset
-  GAME.ai.brain = { state:'BOOM', lastStateChange:0, lastAttackCall:0, threatEMA:0, ecoEMA:0 };
-
-  document.getElementById('start-screen').style.display = 'none';
-  document.getElementById('bg-rect').setAttribute('width', CFG.w);
-  document.getElementById('bg-rect').setAttribute('height', CFG.h);
-
-  generateMap();
-
-  spawnBuilding('TOWN', 1, 300, 300, true);
-  spawnBuilding('HOUSE', 1, 550, 350, true);
-  spawnUnit('VILLAGER', 1, 450, 500);
-  spawnUnit('VILLAGER', 1, 500, 550);
-
-  const ex = CFG.w-400, ey = CFG.h-400;
-  spawnBuilding('TOWN', 2, ex, ey, true);
-
-  if(GAME.difficulty === 'EASY'){
-      spawnBuilding('HOUSE', 2, ex-200, ey, true);
-      spawnUnit('VILLAGER', 2, ex-100, ey+100);
-      GAME.ai.gold=100; GAME.ai.wood=100; GAME.ai.hazel=0;
-  } else if(GAME.difficulty === 'NORMAL'){
-      spawnBuilding('HOUSE', 2, ex-200, ey, true);
-      spawnUnit('VILLAGER', 2, ex-100, ey+100);
-      spawnUnit('VILLAGER', 2, ex+50, ey+150);
-      GAME.ai.gold=300; GAME.ai.wood=300; GAME.ai.hazel=0;
-  } else {
-      spawnBuilding('HOUSE', 2, ex-200, ey, true);
-      spawnUnit('VILLAGER', 2, ex-100, ey+100);
-      spawnUnit('VILLAGER', 2, ex+50, ey+150);
-      spawnUnit('VILLAGER', 2, ex-50, ey+120);
-      GAME.ai.gold=420; GAME.ai.wood=420; GAME.ai.hazel=40;
-  }
-
-  setupInputs();
-  requestAnimationFrame(loop);
+    document.getElementById('lobby-controls').style.display = 'none';
+    document.getElementById('lobby-waiting').style.display = 'flex';
+    document.getElementById('display-room-code').innerText = myRoomId;
+    listenForGameStart();
 }
 
+function joinRoom(){
+    const inputCode = document.getElementById('room-code-input').value;
+    if(!inputCode || inputCode.length !== 4) { alert("Lütfen 4 haneli kodu girin."); return; }
+
+    myRoomId = inputCode;
+    amIHost = false;
+
+    const roomRef = db.ref('rooms/' + myRoomId);
+    roomRef.get().then((snapshot) => {
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            if(data.status !== 'waiting'){ alert("Bu oda dolu veya başlamış!"); return; }
+            roomRef.update({ guest: myPlayerId, status: 'starting' });
+            mapSeed = data.seed; 
+            showToast("Odaya Katıldın! Başlıyor...");
+            listenForGameStart();
+        } else { alert("Böyle bir oda bulunamadı."); }
+    }).catch((error) => { console.error(error); alert("Bağlantı hatası."); });
+}
+
+function listenForGameStart(){
+    db.ref('rooms/' + myRoomId + '/status').on('value', (snapshot) => {
+        const status = snapshot.val();
+        if(status === 'starting'){
+            startOnlineGame();
+        }
+    });
+}
+
+function startLocalGame(){
+    isOnline = false;
+    myTeam = 1;
+    GAME.difficulty = GAME.difficulty || 'NORMAL';
+    document.getElementById('sp-screen').style.display = 'none';
+    initGame();
+}
+
+function startOnlineGame(){
+    isOnline = true;
+    myTeam = amIHost ? 1 : 2; 
+    document.getElementById('lobby-screen').style.display = 'none';
+    showToast(`BAĞLANDI! SEN ${myTeam === 1 ? 'MAVİ' : 'KIRMIZI'} TAKIMSIN.`);
+    initGame();
+    listenForActions();
+}
+
+/* --- ORTAK BAŞLANGIÇ --- */
+function initGame(){
+    const bgm = document.getElementById('bgm');
+    if(bgm){ bgm.volume = 0.35; bgm.play().catch(()=>{}); }
+
+    GAME.dom = {
+        svg: document.getElementById('game-svg'),
+        layers: {
+            units: document.getElementById('layer-units'),
+            build: document.getElementById('layer-buildings'),
+            props: document.getElementById('layer-props'),
+            fx: document.getElementById('layer-fx'),
+            ui: document.getElementById('layer-ui-world')
+        }
+    };
+    
+    // Reset
+    GAME.ai.brain = { state:'BOOM', lastStateChange:0, lastAttackCall:0, threatEMA:0, ecoEMA:0 };
+    document.getElementById('bg-rect').setAttribute('width', CFG.w);
+    document.getElementById('bg-rect').setAttribute('height', CFG.h);
+    
+    // RNG Setup
+    if(isOnline) rng = seededRandom(mapSeed);
+    else rng = Math.random;
+
+    generateMap();
+
+    // Mavi (Host/Player)
+    spawnBuilding('TOWN', 1, 300, 300, true);
+    spawnBuilding('HOUSE', 1, 550, 350, true);
+    spawnUnit('VILLAGER', 1, 450, 500);
+    spawnUnit('VILLAGER', 1, 500, 550);
+
+    // Kırmızı (Guest/AI)
+    const ex = CFG.w-400, ey = CFG.h-400;
+    spawnBuilding('TOWN', 2, ex, ey, true);
+
+    if(!isOnline){
+        // AI Kurulumu
+        if(GAME.difficulty === 'EASY'){
+            spawnBuilding('HOUSE', 2, ex-200, ey, true);
+            spawnUnit('VILLAGER', 2, ex-100, ey+100);
+            GAME.ai.gold=100; GAME.ai.wood=100; GAME.ai.hazel=0;
+        } else if(GAME.difficulty === 'NORMAL'){
+            spawnBuilding('HOUSE', 2, ex-200, ey, true);
+            spawnUnit('VILLAGER', 2, ex-100, ey+100);
+            spawnUnit('VILLAGER', 2, ex+50, ey+150);
+            GAME.ai.gold=300; GAME.ai.wood=300; GAME.ai.hazel=0;
+        } else {
+            spawnBuilding('HOUSE', 2, ex-200, ey, true);
+            spawnUnit('VILLAGER', 2, ex-100, ey+100);
+            spawnUnit('VILLAGER', 2, ex+50, ey+150);
+            spawnUnit('VILLAGER', 2, ex-50, ey+120);
+            GAME.ai.gold=420; GAME.ai.wood=420; GAME.ai.hazel=40; 
+        }
+    } else {
+        // Online 2. Oyuncu Kurulumu (Eşit Başlangıç)
+        spawnBuilding('HOUSE', 2, ex-200, ey, true);
+        spawnUnit('VILLAGER', 2, ex-100, ey+100);
+        spawnUnit('VILLAGER', 2, ex+50, ey+150);
+        // Kırmızıysam kamerayı oraya çek
+        if(myTeam === 2){
+            GAME.cam.x = CFG.w - GAME.cam.w;
+            GAME.cam.y = CFG.h - GAME.cam.h;
+        }
+    }
+
+    setupInputs();
+    requestAnimationFrame(loop);
+}
+
+/* --- SYNC LOGIC --- */
+function sendAction(data){
+    if(!isOnline) return;
+    db.ref('rooms/' + myRoomId + '/actions').push({ ...data, senderTeam: myTeam });
+}
+function listenForActions(){
+    db.ref('rooms/' + myRoomId + '/actions').on('child_added', (snapshot) => {
+        const action = snapshot.val();
+        if(action.senderTeam === myTeam) return; 
+        handleRemoteAction(action);
+    });
+}
+function handleRemoteAction(act){
+    if(act.type === 'MOVE'){
+        act.uids.forEach(id => {
+            const u = GAME.entities.units.find(x => x.id === id);
+            if(u) { u.dest = {x:act.x, y:act.y}; u.target=null; u.task=null; u.manualTarget=false; }
+        });
+    }
+    else if(act.type === 'ATTACK'){
+        const t = GAME.entities.units.find(x => x.id === act.tid) || GAME.entities.buildings.find(x => x.id === act.tid);
+        if(t){
+            act.uids.forEach(id => {
+                const u = GAME.entities.units.find(x => x.id === id);
+                if(u) { u.target = t; u.manualTarget=true; u.task=null; u.dest=null; }
+            });
+        }
+    }
+    else if(act.type === 'GATHER'){
+        const t = GAME.entities.props.find(x => x.id === act.tid);
+        if(t){
+            act.uids.forEach(id => {
+                const u = GAME.entities.units.find(x => x.id === id);
+                if(u) { u.task = {type:'gather', id:t.id}; u.manualTarget=false; u.dest=null; }
+            });
+        }
+    }
+    else if(act.type === 'BUILD'){
+        let b = spawnBuilding(act.bType, act.senderTeam, act.x, act.y, false, act.bid);
+        act.uids.forEach(id => {
+            const u = GAME.entities.units.find(x => x.id === id);
+            if(u) u.task = {type:'build', id:b.id};
+        });
+    }
+    else if(act.type === 'TRAIN'){
+        const b = GAME.entities.buildings.find(x => x.id === act.bid);
+        if(b){
+            b.queue.push({type: act.uType, def:DB.UNIT[act.uType], prog:0, forcedId: act.newUid});
+        }
+    }
+}
+
+/* --- MAP --- */
 function generateMap(){
   const spawnPropSafe = (type, count, r) => {
     let attempts = 0, placed = 0;
     while(placed < count && attempts < count * 20){
         attempts++;
-        const x = Math.random() * (CFG.w - 300) + 150;
-        const y = Math.random() * (CFG.h - 300) + 150;
+        const x = rng() * (CFG.w - 300) + 150;
+        const y = rng() * (CFG.h - 300) + 150;
         if(Math.hypot(x-300, y-300) < 400 || Math.hypot(x-(CFG.w-400), y-(CFG.h-400)) < 400) continue;
         if(checkPlacement(x, y, r*2, r*2)){ createProp(type, x, y, r); placed++; }
     }
@@ -316,7 +539,7 @@ function createProp(type, x, y, r){
     const el = document.createElementNS(NS, 'g');
     let svg = `<ellipse cx="0" cy="${r/2}" rx="${r}" ry="${r/2}" fill="rgba(0,0,0,0.3)"/>`;
     if(type === 'wood'){
-       const s = 0.8 + Math.random()*0.4;
+       const s = 0.8 + rng()*0.4;
        svg += `<g transform="scale(${s})"><path d="M-5,0 L-8,15 L8,15 L5,0 Z" fill="url(#grad-wood)"/>
                <circle cx="0" cy="-20" r="22" fill="#14532d"/><circle cx="-12" cy="-12" r="14" fill="#166534"/>
                <circle cx="12" cy="-12" r="14" fill="#15803d"/><circle cx="0" cy="-30" r="16" fill="#16a34a"/></g>`;
@@ -330,18 +553,16 @@ function createProp(type, x, y, r){
     el.innerHTML = svg;
     el.setAttribute('transform', `translate(${x},${y})`);
     GAME.dom.layers.props.appendChild(el);
-    GAME.entities.props.push({id:Math.random(), type, x, y, amt: type==='wood'?300:600, r:r, el});
+    GAME.entities.props.push({id:rng(), type, x, y, amt: type==='wood'?300:600, r:r, el});
 }
 
 function checkPlacement(x, y, w, h, ignoreSelfId=null){
     if(x - w/2 < 0 || x + w/2 > CFG.w || y - h/2 < 0 || y + h/2 > CFG.h) return false;
     const bx = x - w/2, by = y - h/2;
-
     for(let b of GAME.entities.buildings){
         if(b.id === ignoreSelfId || b.dead) continue;
         if(bx < b.x + b.w && bx + w > b.x && by < b.y + b.h && by + h > b.y) return false;
     }
-
     for(let p of GAME.entities.props){
         if(p.dead || (p.amt !== undefined && p.amt <= 0)) continue;
         if(Math.hypot(x - p.x, y - p.y) < (Math.max(w,h)/2 + p.r)) return false;
@@ -349,6 +570,7 @@ function checkPlacement(x, y, w, h, ignoreSelfId=null){
     return true;
 }
 
+/* --- SVG HELPERS --- */
 function getBuildingSVG(type, team){
     const def = DB.BUILD[type];
     const c1 = team===1 ? '#2563eb' : '#dc2626';
@@ -356,26 +578,13 @@ function getBuildingSVG(type, team){
     let svg = '';
 
     if(type === 'TOWN'){
-        const W = def.w, H = def.h;
-        const wallY = Math.floor(H*0.34);
-        const keepW = 90, keepH = Math.floor(H*0.38);
-        const keepX = Math.floor(W/2 - keepW/2);
-        svg += `<rect x="8" y="${wallY}" width="${W-16}" height="${H-wallY-6}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        for(let i=0;i<10;i++){
-          const bx = 16 + i*((W-32)/10);
-          svg += `<rect x="${bx}" y="${wallY-10}" width="12" height="12" fill="#475569" stroke="#1e293b" stroke-width="1"/>`;
-        }
-        svg += `<rect x="${Math.floor(W/2-28)}" y="${H-64}" width="56" height="58" rx="6" fill="#1e293b"/>`;
-        svg += `<path d="M${Math.floor(W/2-28)},${H-64} L${Math.floor(W/2+28)},${H-64}" stroke="#475569" stroke-width="2"/>`;
-        svg += `<circle cx="${Math.floor(W/2-10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
-        svg += `<circle cx="${Math.floor(W/2+10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
-        svg += `<rect x="${keepX}" y="${Math.floor(wallY-keepH+10)}" width="${keepW}" height="${keepH}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        const roofBaseY = Math.floor(wallY-keepH+10);
-        svg += `<path d="M${keepX-8},${roofBaseY+10} L${Math.floor(W/2)},${roofBaseY-25} L${keepX+keepW+8},${roofBaseY+10} Z" fill="${roof}" stroke="#1e293b" stroke-width="1.5"/>`;
-        svg += `<line x1="${Math.floor(W/2)}" y1="${roofBaseY-25}" x2="${Math.floor(W/2)}" y2="${roofBaseY-55}" stroke="#0b1220" stroke-width="3"/>`;
-        svg += `<path d="M${Math.floor(W/2)} ${roofBaseY-55} L${Math.floor(W/2)+34} ${roofBaseY-45} L${Math.floor(W/2)} ${roofBaseY-35} Z" fill="${c1}" stroke="#0b1220" stroke-width="1"/>`;
-        svg += `<rect x="${keepX+14}" y="${roofBaseY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
-        svg += `<rect x="${keepX+keepW-26}" y="${roofBaseY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
+        svg += `<rect x="10" y="${def.h*0.3}" width="${def.w-20}" height="${def.h*0.7}" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
+        svg += `<rect x="${def.w/2-30}" y="${def.h-60}" width="60" height="60" fill="#1e293b"/>`;
+        svg += `<path d="M${def.w/2-30},${def.h-60} L${def.w/2-30},${def.h} M${def.w/2-10},${def.h-60} L${def.w/2-10},${def.h} M${def.w/2+10},${def.h-60} L${def.w/2+10},${def.h} M${def.w/2+30},${def.h-60} L${def.w/2+30},${def.h}" stroke="#475569" stroke-width="2"/>`;
+        svg += `<rect x="${def.w/2-40}" y="0" width="80" height="${def.h*0.3}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
+        svg += `<path d="M${def.w/2-50},${def.h*0.1} L${def.w/2},-20 L${def.w/2+50},${def.h*0.1} Z" fill="${roof}"/>`;
+        svg += `<line x1="${def.w/2}" y1="-20" x2="${def.w/2}" y2="-50" stroke="#000" stroke-width="2"/>`;
+        svg += `<path d="M${def.w/2},-50 L${def.w/2+30},-40 L${def.w/2},-30 Z" fill="${c1}"/>`;
     }
     else if(type === 'HOUSE'){
         svg += `<rect x="10" y="${def.h*0.4}" width="${def.w-20}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
@@ -389,13 +598,10 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'STABLE'){
-        const W = def.w, H = def.h;
-        svg += `<rect x="5" y="${H*0.4}" width="${W-10}" height="${H*0.6}" fill="#5c2e08" stroke="#2e1402" stroke-width="2"/>`;
-        svg += `<path d="M0,${H*0.4} L${W/2},0 L${W},${H*0.4} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
-        for(let i=1; i<4; i++){ let x = 5 + i*((W-10)/4); svg += `<line x1="${x}" y1="${H*0.4}" x2="${x}" y2="${H}" stroke="#3f2e20" stroke-width="2"/>`; }
-        svg += `<rect x="5" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
-        svg += `<rect x="${W-13}" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
-        svg += `<circle cx="${W/2}" cy="${H*0.3}" r="8" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
+        svg += `<rect x="5" y="${def.h*0.4}" width="${def.w-10}" height="${def.h*0.6}" fill="#5c2e08" stroke="#2e1402"/>`;
+        svg += `<path d="M0,${def.h*0.4} L${def.w/2},0 L${def.w},${def.h*0.4} Z" fill="${roof}"/>`;
+        svg += `<rect x="20" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
+        svg += `<rect x="${def.w-50}" y="${def.h-40}" width="30" height="40" fill="#000" opacity="0.6"/>`;
     }
     else if(type === 'ARCHERY'){
         svg += `<rect x="${def.w*0.6}" y="10" width="${def.w*0.3}" height="${def.h-10}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
@@ -404,15 +610,6 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="35" cy="${def.h*0.7}" r="10" fill="#fff" stroke="#b91c1c" stroke-width="3"/>`;
         svg += `<circle cx="35" cy="${def.h*0.7}" r="3" fill="#b91c1c"/>`;
     }
-    else if(type === 'ARROW_TOWER'){
-        const W = def.w, H = def.h;
-        svg += `<rect x="10" y="${Math.floor(H*0.3)}" width="${W-20}" height="${Math.floor(H*0.7)-8}" rx="6" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        svg += `<rect x="14" y="${Math.floor(H*0.28)}" width="${W-28}" height="16" rx="4" fill="#475569" stroke="#1e293b" stroke-width="2"/>`;
-        for(let i=0;i<4;i++){ const x = 18 + i*((W-36)/4); svg += `<rect x="${x}" y="${Math.floor(H*0.28)+3}" width="10" height="10" rx="2" fill="#1e293b" opacity="0.9"/>`; }
-        svg += `<path d="M6 ${Math.floor(H*0.3)} L${Math.floor(W/2)} 8 L${W-6} ${Math.floor(H*0.3)} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
-        svg += `<circle cx="${Math.floor(W/2)}" cy="${Math.floor(H*0.55)}" r="10" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
-    }
-
     return `<g filter="url(#shadow)">${svg}</g>`;
 }
 
@@ -443,431 +640,11 @@ function getUnitSVG(type, team){
     b += `<circle cx="3" cy="-26" r="6" fill="#365314"/><path d="M-2,-32 L8,-32 L3,-38 Z" fill="#ecfccb"/>`;
     w = `<g class="w-grp" transform="translate(10, -15)"><line x1="0" y1="0" x2="15" y2="-10" stroke="#57534e" stroke-width="3"/><circle cx="15" cy="-10" r="6" fill="#78350f"/></g>`;
   }
-  else if(type === 'CATAPULT'){
-    b = `<rect x="-14" y="-4" width="28" height="10" rx="3" fill="#6b4f2a" stroke="#2e1402" stroke-width="2"/>`;
-    b += `<circle cx="-8" cy="8" r="4" fill="#334155"/><circle cx="8" cy="8" r="4" fill="#334155"/>`;
-    b += `<path d="M-10,-4 L0,-22 L10,-4" fill="none" stroke="#cbd5e1" stroke-width="3"/>`;
-    b += `<circle cx="0" cy="-22" r="4" fill="#94a3b8" stroke="#334155" stroke-width="2"/>`;
-    w = `<g class="w-grp"><line x1="0" y1="-22" x2="0" y2="-30" stroke="#94a3b8" stroke-width="2"/></g>`;
-  }
 
   return `<g filter="url(#shadow)"><ellipse cx="0" cy="8" rx="8" ry="4" fill="rgba(0,0,0,0.5)"/>${b}${w}</g>`;
 }
 
-function aiParams(diff){
-  if(diff === 'EASY'){
-    return {
-      reaction: 1.5,
-      gatherMult: 0.65,
-      microSkill: 0.40,
-      aggroBias: 0.25,
-      riskTolerance: 0.25,
-      minAttackTime: 200,
-      expandBias: 0.90,
-      barracksLimit: 1,
-      archeryTime: 140,
-      stableTime: 220,
-      trickle: 0
-    };
-  }
-  if(diff === 'HARD'){
-    return {
-      reaction: 0.25,
-      gatherMult: 1.60,
-      microSkill: 0.92,
-      aggroBias: 0.95,
-      riskTolerance: 0.80,
-      minAttackTime: 25,
-      expandBias: 0.45,
-      barracksLimit: 4,
-      archeryTime: 45,
-      stableTime: 75,
-      trickle: 1
-    };
-  }
-  return {
-    reaction: 0.75,
-    gatherMult: 1.10,
-    microSkill: 0.70,
-    aggroBias: 0.65,
-    riskTolerance: 0.55,
-    minAttackTime: 65,
-    expandBias: 0.70,
-    barracksLimit: 2,
-    archeryTime: 90,
-    stableTime: 140,
-    trickle: 0
-  };
-}
-
-function aiCount(team){
-  const buildings = GAME.entities.buildings.filter(b=>b.team===team && !b.dead);
-  const units = GAME.entities.units.filter(u=>u.team===team && !u.dead);
-
-  const town = buildings.find(b=>b.type==='TOWN');
-  const houses = buildings.filter(b=>b.type==='HOUSE');
-  const barracks = buildings.filter(b=>b.type==='BARRACKS');
-  const archery = buildings.filter(b=>b.type==='ARCHERY');
-  const stable = buildings.filter(b=>b.type==='STABLE');
-
-  const workers = units.filter(u=>u.def.role==='worker');
-  const soldiers = units.filter(u=>u.def.role!=='worker');
-
-  const cap = buildings
-    .filter(b=>b.constructed && (b.type==='HOUSE' || b.type==='TOWN'))
-    .reduce((a,x)=>a+(x.def.cap||0),0);
-
-  return { buildings, units, town, houses, barracks, archery, stable, workers, soldiers, cap };
-}
-
-function enemyCompositionEstimate(){
-  const enemy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker');
-  if(enemy.length === 0) return {inf:0.6, cav:0.2, ranged:0.2, heavy:0.0};
-  let inf=0, cav=0, ranged=0, heavy=0;
-  enemy.forEach(u=>{
-    if(u.def.type==='cav') cav++;
-    else if(u.def.type==='ranged') ranged++;
-    else if(u.def.type==='heavy') heavy++;
-    else inf++;
-  });
-  const n = enemy.length;
-  return { inf:inf/n, cav:cav/n, ranged:ranged/n, heavy:heavy/n };
-}
-
-function estimateThreatToAITown(town){
-  if(!town) return 0;
-  const ex = town.x + town.w/2, ey = town.y + town.h/2;
-  const enemy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker');
-  if(enemy.length === 0) return 0;
-
-  let score = 0;
-  for(const u of enemy){
-    const d = Math.hypot(u.x-ex, u.y-ey);
-    if(d < 900){
-      const w = (1 - clamp01(d/900));
-      score += w;
-    }
-  }
-  return clamp01(score / 10);
-}
-
-function estimateEcoPower(){
-  const my = aiCount(2);
-  const e = aiCount(1);
-  const myVal = (GAME.ai.wood*0.8 + GAME.ai.gold*1.0 + GAME.ai.hazel*1.3) + my.workers.length*120 + my.buildings.length*220;
-  const eVal  = (GAME.player.wood*0.8 + GAME.player.gold*1.0 + GAME.player.hazel*1.3) + e.workers.length*120 + e.buildings.length*220;
-  if(eVal <= 1) return 0.5;
-  return clamp01(myVal / eVal);
-}
-
-function aiTryQueueFromBuilding(b, unitType){
-  if(!b || b.dead || !b.constructed || !b.queue) return false;
-
-  const def = DB.UNIT[unitType];
-  if(!def) return false;
-
-  const c = def.cost || {};
-  if(GAME.ai.wood < (c.wood||0)) return false;
-  if(GAME.ai.gold < (c.gold||0)) return false;
-  if(GAME.ai.hazel < (c.hazel||0)) return false;
-
-  const my = aiCount(2);
-  const curPop = my.units.length + b.queue.length;
-  if(curPop >= my.cap && my.cap > 0) return false;
-
-  if(b.queue.length >= 4) return false;
-
-  b.queue.push({type: unitType, def, prog:0});
-  GAME.ai.wood -= (c.wood||0);
-  GAME.ai.gold -= (c.gold||0);
-  GAME.ai.hazel -= (c.hazel||0);
-  return true;
-}
-
-function aiTryBuild(type, town){
-  const def = DB.BUILD[type];
-  if(!def || !town) return false;
-
-  const c = def.cost || {};
-  if(GAME.ai.wood < (c.wood||0)) return false;
-  if(GAME.ai.gold < (c.gold||0)) return false;
-
-  for(let i=0; i<40; i++){
-    const range = 220 + Math.random()*420;
-    const ang = Math.random()*Math.PI*2;
-    let ax = (town.x + town.w/2) + Math.cos(ang)*range;
-    let ay = (town.y + town.h/2) + Math.sin(ang)*range;
-    ax = Math.max(80, Math.min(CFG.w - def.w - 80, ax));
-    ay = Math.max(80, Math.min(CFG.h - def.h - 80, ay));
-    const cx = ax + def.w/2, cy = ay + def.h/2;
-    if(checkPlacement(cx, cy, def.w, def.h)){
-      spawnBuilding(type, 2, ax, ay, true);
-      GAME.ai.wood -= (c.wood||0);
-      GAME.ai.gold -= (c.gold||0);
-      return true;
-    }
-  }
-  return false;
-}
-
-function pickAttackTarget(params){
-  const town = GAME.entities.buildings.find(b=>b.team===1 && b.type==='TOWN' && !b.dead);
-  if(town) return town;
-  const enemyB = GAME.entities.buildings.filter(b=>b.team===1 && !b.dead);
-  if(enemyB.length) return enemyB[Math.floor(Math.random()*enemyB.length)];
-  const enemyU = GAME.entities.units.filter(u=>u.team===1 && !u.dead);
-  if(enemyU.length) return enemyU[Math.floor(Math.random()*enemyU.length)];
-  return null;
-}
-
-function callArmyToAttack(target){
-  if(!target) return;
-  const soldiers = aiCount(2).soldiers;
-  soldiers.forEach(u=>{
-    u.state='ATTACK';
-    u.target=target;
-    u.manualTarget=true;
-    u.task=null;
-    u.dest=null;
-  });
-}
-
-function callArmyToDefend(town){
-  if(!town) return;
-  const cx = town.x + town.w/2, cy = town.y + town.h/2;
-  const soldiers = aiCount(2).soldiers;
-  soldiers.forEach(u=>{
-    u.target = null;
-    u.manualTarget = false;
-    u.task = null;
-    u.dest = { x: cx + (Math.random()-0.5)*120, y: cy + (Math.random()-0.5)*120 };
-    u.state = 'DEFEND';
-  });
-}
-
-function aiAssignIdleWorkers(params){
-  const my = aiCount(2);
-  const workers = my.workers;
-  const props = GAME.entities.props.filter(p=>!p.dead && (p.amt===undefined || p.amt>0));
-  if(props.length === 0) return;
-
-  let want = { wood: 0.45, gold: 0.40, hazel: 0.15 };
-  if(GAME.difficulty === 'EASY')    want = { wood: 0.70, gold: 0.25, hazel: 0.05 };
-  if(GAME.difficulty === 'NORMAL')  want = { wood: 0.55, gold: 0.35, hazel: 0.10 };
-
-  const cur = { wood: 0, gold: 0, hazel: 0 };
-  workers.forEach(w=>{
-    if(w.task && w.task.type==='gather'){
-      const pr = GAME.entities.props.find(p=>p.id===w.task.id);
-      if(pr && cur[pr.type] !== undefined) cur[pr.type]++;
-    }
-  });
-
-  const total = Math.max(1, workers.length);
-  const need = {
-    wood: Math.max(0, Math.floor(total*want.wood) - cur.wood),
-    gold: Math.max(0, Math.floor(total*want.gold) - cur.gold),
-    hazel: Math.max(0, Math.floor(total*want.hazel) - cur.hazel),
-  };
-
-  const bestPropOfType = (u, type) => {
-    let best=null, bestScore=-1;
-    for(const p of props){
-      if(p.type !== type) continue;
-      const d = Math.hypot(u.x-p.x, u.y-p.y);
-      const score = (1/Math.max(1,d)) * (0.6 + clamp01((p.amt||1)/600)*0.4);
-      if(score > bestScore){ bestScore=score; best=p; }
-    }
-    return best;
-  };
-
-  for(const u of workers){
-    if(u.task || u.target || u.dest) continue;
-
-    let chosenType = null;
-    if(need.gold > 0) chosenType = 'gold';
-    else if(need.wood > 0) chosenType = 'wood';
-    else if(need.hazel > 0) chosenType = 'hazel';
-    else {
-      chosenType = (GAME.difficulty==='HARD')
-        ? (Math.random()<0.55 ? 'gold' : 'wood')
-        : (Math.random()<0.65 ? 'wood' : 'gold');
-    }
-
-    const p = bestPropOfType(u, chosenType)
-      || bestPropOfType(u, 'wood')
-      || bestPropOfType(u, 'gold')
-      || bestPropOfType(u, 'hazel');
-
-    if(p){
-      u.task = { type:'gather', id: p.id };
-      if(need[p.type] !== undefined && need[p.type] > 0) need[p.type]--;
-    }
-  }
-}
-
-function updateFairAI(dt){
-  const params = aiParams(GAME.difficulty);
-
-  if(params.trickle){
-    GAME.ai.wood += dt * 2.2;
-    GAME.ai.gold += dt * 1.4;
-    GAME.ai.hazel += dt * 0.35;
-  }
-
-  GAME.ai.timer += dt;
-  if(GAME.ai.timer < params.reaction) return;
-  GAME.ai.timer = 0;
-
-  const my = aiCount(2);
-  if(!my.town) return;
-
-  const brain = GAME.ai.brain;
-
-  const threat = estimateThreatToAITown(my.town);
-  const ecoPow = estimateEcoPower();
-  brain.threatEMA = brain.threatEMA*0.70 + threat*0.30;
-  brain.ecoEMA    = brain.ecoEMA*0.80 + ecoPow*0.20;
-
-  const myArmy = my.soldiers.length;
-  const enemyArmy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker').length;
-  const armyAdv = clamp01((myArmy - enemyArmy + 8) / 14);
-
-  const timeOk = (GAME.t > params.minAttackTime);
-  const tE = brain.threatEMA;
-
-  const U_BOOM    = (1 - tE) * (0.55 + params.expandBias*0.45) + (1 - armyAdv)*0.10;
-  const U_DEFEND  = (tE) * 0.95 + (1 - armyAdv)*0.25;
-  const U_PRESS   = (timeOk?1:0) * (0.55 + params.aggroBias*0.45) * (0.45 + armyAdv*0.55) * (1 - tE*0.35);
-  const U_ALLIN   = (timeOk?1:0) * (params.riskTolerance) * (0.45 + armyAdv*0.55) * (0.45 + (1 - tE)*0.55);
-
-  let best = [
-    ['BOOM', U_BOOM],
-    ['DEFEND', U_DEFEND],
-    ['PRESSURE', U_PRESS],
-    ['ALL_IN', U_ALLIN]
-  ].sort((a,b)=>b[1]-a[1])[0][0];
-
-  if(GAME.difficulty==='HARD' && timeOk && best==='BOOM' && myArmy>=6) best='PRESSURE';
-
-  if(best !== brain.state && (GAME.t - brain.lastStateChange) > 6){
-    brain.state = best;
-    brain.lastStateChange = GAME.t;
-  }
-
-  aiAssignIdleWorkers(params);
-
-  const currentPop = my.units.length + my.buildings.reduce((a,x)=>a+(x.queue?x.queue.length:0),0);
-  if(my.cap > 0 && currentPop + 3 >= my.cap){
-    aiTryBuild('HOUSE', my.town);
-  }
-  if(my.houses.length === 0 && GAME.ai.wood >= 40) aiTryBuild('HOUSE', my.town);
-
-  if(my.barracks.length < 1 && GAME.ai.wood >= 150) aiTryBuild('BARRACKS', my.town);
-  if(GAME.t > params.archeryTime && my.archery.length < 1 && GAME.ai.wood >= 150) aiTryBuild('ARCHERY', my.town);
-  if(GAME.t > params.stableTime && my.stable.length < 1 && GAME.ai.wood >= 200 && GAME.ai.gold >= 100) aiTryBuild('STABLE', my.town);
-
-  if(GAME.difficulty==='HARD' && GAME.t > 55 && my.barracks.length < 2 && GAME.ai.wood >= 150){
-    aiTryBuild('BARRACKS', my.town);
-  }
-
-  const workerCap = (GAME.difficulty==='EASY'? 8 : GAME.difficulty==='NORMAL'? 14 : 24);
-  if(my.workers.length < workerCap){
-    if(my.town.queue.length < 1) aiTryQueueFromBuilding(my.town, 'VILLAGER');
-  }
-
-  const enemyEst = enemyCompositionEstimate();
-
-  const wantKnight = (GAME.difficulty==='HARD' && GAME.ai.gold > 220 && my.stable.find(s=>s.constructed));
-  const wantArcher = (my.archery.find(a=>a.constructed) && (enemyEst.inf > 0.35 || enemyEst.heavy > 0.15));
-  const wantPike   = (enemyEst.cav > 0.22 || !wantArcher);
-
-  const st = my.stable.find(x=>x.constructed);
-  const ar = my.archery.find(x=>x.constructed);
-  const brs = my.barracks.filter(x=>x.constructed);
-
-  if(brain.state === 'DEFEND'){
-    if(brs.length){
-      for(const b of brs) aiTryQueueFromBuilding(b, 'PIKEMAN');
-    } else {
-      aiTryQueueFromBuilding(my.town, 'PIKEMAN');
-    }
-    if(ar && wantArcher) aiTryQueueFromBuilding(ar, 'ARCHER');
-    if(st && wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT');
-    callArmyToDefend(my.town);
-    return;
-  }
-
-  if(brain.state === 'BOOM'){
-    if(brs.length){
-      for(const b of brs){
-        if(Math.random()<0.55) aiTryQueueFromBuilding(b, 'PIKEMAN');
-        else if(ar) aiTryQueueFromBuilding(ar, 'ARCHER');
-        else aiTryQueueFromBuilding(b, 'PIKEMAN');
-      }
-    } else {
-      aiTryQueueFromBuilding(my.town, 'PIKEMAN');
-    }
-  }
-
-  if(brain.state === 'PRESSURE' || brain.state === 'ALL_IN'){
-    const maxB = params.barracksLimit;
-    if(brs.length < maxB && GAME.ai.wood >= 150 && (GAME.difficulty!=='EASY')){
-      aiTryBuild('BARRACKS', my.town);
-    }
-
-    for(const b of brs){
-      if(wantPike) aiTryQueueFromBuilding(b, 'PIKEMAN');
-      else aiTryQueueFromBuilding(b, 'PIKEMAN');
-    }
-    if(ar) aiTryQueueFromBuilding(ar, 'ARCHER');
-    if(st){
-      if(GAME.difficulty==='HARD' && GAME.ai.hazel >= 150 && GAME.ai.gold >= 100) aiTryQueueFromBuilding(st, 'F_KNIGHT');
-      else if(wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT');
-    }
-
-    const cooldown = (GAME.difficulty==='HARD' ? 6 : GAME.difficulty==='NORMAL' ? 12 : 20);
-    if(timeOk && (GAME.t - brain.lastAttackCall) > cooldown){
-      const target = pickAttackTarget(params);
-      if(target){
-        const soldiers = aiCount(2).soldiers;
-        let ratio = (brain.state==='ALL_IN') ? 0.85 : 0.70;
-        if(GAME.difficulty!=='HARD') ratio = (brain.state==='ALL_IN') ? 0.75 : 0.55;
-
-        const sendCount = Math.max(5, Math.floor(soldiers.length * ratio));
-        soldiers.slice(0, sendCount).forEach(u=>{
-          u.state='ATTACK';
-          u.target=target;
-          u.manualTarget=true;
-          u.task=null;
-          u.dest=null;
-        });
-
-        if(GAME.difficulty==='HARD') GAME.ai.waveLevel += 2;
-        else GAME.ai.waveLevel += 1;
-
-        brain.lastAttackCall = GAME.t;
-        showToast(`Düşman Baskısı! (${sendCount} Birim)`);
-      }
-    }
-  }
-
-  if(GAME.difficulty==='HARD' && timeOk && myArmy >= 8 && tE < 0.35){
-    const target = pickAttackTarget(params);
-    if(target && (GAME.t - brain.lastAttackCall) > 10){
-      callArmyToAttack(target);
-      brain.lastAttackCall = GAME.t;
-      showToast(`Düşman Saldırısı! (${myArmy} Birim)`);
-    }
-  }
-}
-
-function getTargetCenter(t){
-  const tx = t.x + (t.w ? t.w/2 : 0);
-  const ty = t.y + (t.h ? t.h/2 : 0);
-  return {tx, ty};
-}
-
+/* --- GAME LOOP --- */
 function loop(t){
   if(GAME.over) return;
   const dt = Math.min((t - GAME.last) / 1000, 0.1);
@@ -875,7 +652,7 @@ function loop(t){
   try {
       updateCamera(dt);
       updateLogic(dt);
-      updateFairAI(dt);
+      if(!isOnline) updateFairAI(dt);
       updateLiveUI();
       render(dt);
   } catch(e) { console.error(e); }
@@ -901,39 +678,10 @@ function updateLogic(dt){
         if(Math.random()<0.1) spawnParticle(b.x+b.w/2, b.y, '#fff', 1);
         if(b.queue[0].prog >= b.queue[0].def.buildTime){
             const q = b.queue[0];
-            spawnUnit(q.type, b.team, b.x+b.w/2, b.y+b.h+10, q.forcedId || null);
+            spawnUnit(q.type, b.team, b.x+b.w/2, b.y+b.h+10, q.forcedId||null);
             b.queue.shift();
-            if(b.team===1) { showToast("Birim Hazır!"); updatePanel(true); }
+            if(b.team===myTeam) { showToast("Birim Hazır!"); updatePanel(true); }
         }
-    }
-    
-    if(!b.constructed && b.hp >= b.def.hp * 0.99){
-         b.hp = b.def.hp;
-         b.constructed = true;
-    }
-
-    if(b.constructed && !b.dead && b.def && b.def.atk && b.def.range){
-      if(b.cd === undefined) b.cd = 0;
-      const enemyTeam = b.team === 1 ? 2 : 1;
-      let best = null, bestD = b.def.range;
-      const bx = b.x + b.w/2, by = b.y + b.h/2;
-      for(let u of GAME.entities.units){
-        if(u.dead || u.team !== enemyTeam) continue;
-        const d = Math.hypot((u.x) - bx, (u.y) - by);
-        if(d < bestD){ bestD = d; best = u; }
-      }
-      for(let bb of GAME.entities.buildings){
-        if(bb.dead || bb.team !== enemyTeam) continue;
-        const cx = bb.x + bb.w/2, cy = bb.y + bb.h/2;
-        const d = Math.hypot(cx - bx, cy - by);
-        if(d < bestD){ bestD = d; best = bb; }
-      }
-      if(best && GAME.t > b.cd){
-        const fr = b.def.fireRate || 1.1;
-        b.cd = GAME.t + fr;
-        if(b.def.proj) spawnProjFromBuilding(b, best, b.def.atk);
-        else damage(best, b.def.atk);
-      }
     }
   });
 
@@ -969,19 +717,9 @@ function updateLogic(dt){
   for(let i=GAME.entities.proj.length-1; i>=0; i--){
       let p = GAME.entities.proj[i];
       if(!p.target || p.target.dead) { p.el.remove(); GAME.entities.proj.splice(i,1); continue; }
-      const {tx, ty} = getTargetCenter(p.target);
-      let d = Math.hypot(tx-p.x, ty-p.y);
-      if(d < 10){
-        damage(p.target, p.dmg);
-        p.el.remove(); GAME.entities.proj.splice(i,1);
-      }
-      else {
-        let spd = 400*dt;
-        p.x += ((tx-p.x)/d)*spd;
-        p.y += ((ty-p.y)/d)*spd;
-        p.el.setAttribute('cx', p.x);
-        p.el.setAttribute('cy', p.y);
-      }
+      let d = Math.hypot(p.target.x-p.x, p.target.y-p.y);
+      if(d < 10){ damage(p.target, p.dmg); p.el.remove(); GAME.entities.proj.splice(i,1); }
+      else { let spd = 400*dt; p.x += ((p.target.x-p.x)/d)*spd; p.y += ((p.target.y-p.y)/d)*spd; p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); }
   }
 
   GAME.entities.particles.forEach((p,i) => {
@@ -1012,7 +750,7 @@ function doCombat(u, dt){
     if(dist <= range){
         u.dest = null; u.face = t.x > u.x ? 1 : -1; u.atkAnim = 0.5;
         if(GAME.t > u.cd){
-            u.cd = GAME.t + (u.def.type==='heavy'? 1.5 : (u.def.type==='siege'? 1.6 : 1.1));
+            u.cd = GAME.t + (u.def.type==='heavy'? 1.5 : 1.1);
             if(u.def.proj) spawnProj(u, t, u.def.atk); else damage(t, u.def.atk);
         }
     } else { moveTo(u, t.x+(t.w||0)/2, t.y+(t.h||0)/2, dt); }
@@ -1029,7 +767,7 @@ function doTask(u, dt){
         u.atkAnim = 0.5;
         if(GAME.t > u.cd){
             let factor = 1.0;
-            if(u.team === 2){
+            if(!isOnline && u.team === 2){
               if(GAME.difficulty === 'EASY') factor = 0.5;
               else if(GAME.difficulty === 'HARD') factor = 1.25;
             }
@@ -1037,13 +775,11 @@ function doTask(u, dt){
 
             if(u.task.type==='gather'){
                 let amt = 10; t.amt -= amt; spawnParticle(u.x, u.y-10, '#fbbf24', 0.5);
-                if(u.team===1){
+                if(u.team===myTeam){
                     if(t.type==='wood') GAME.player.wood+=amt; else if(t.type==='gold') GAME.player.gold+=amt; else GAME.player.hazel+=amt;
                     updateUI();
-                } else {
-                    if(t.type==='wood') GAME.ai.wood+=amt;
-                    else if(t.type==='gold') GAME.ai.gold+=amt;
-                    else GAME.ai.hazel+=amt;
+                } else if(!isOnline) {
+                    if(t.type==='wood') GAME.ai.wood+=amt; else if(t.type==='gold') GAME.ai.gold+=amt; else GAME.ai.hazel+=amt;
                 }
                 if(t.amt<=0) { t.el.remove(); t.dead=true; }
             } else {
@@ -1067,7 +803,7 @@ function damage(e, val){
       e.dead = true;
       if(e.el) e.el.remove();
       if(e.ui) e.ui.remove();
-      if(e.type === 'TOWN') gameOver(e.team === 2);
+      if(e.type === 'TOWN') gameOver(e.team !== myTeam);
     }
 }
 
@@ -1090,76 +826,14 @@ function gameOver(win){
   setTimeout(() => scr.classList.add('game-over-show'), 50);
 }
 
-function render(dt){
-  const vx=GAME.cam.x, vy=GAME.cam.y;
-  GAME.dom.svg.setAttribute('viewBox', `${vx} ${vy} ${GAME.cam.w} ${GAME.cam.h}`);
-
-  GAME.entities.units.forEach(u => {
-    if(u.dead) return;
-    const grp = u.el.querySelector('.w-grp');
-    if(grp){
-      if(u.atkAnim > 0) {
-        let speed = u.type === 'F_KNIGHT' ? 10 : 20;
-        grp.setAttribute('transform', `rotate(${-45 * Math.sin(GAME.t * speed)}, 5, 5)`);
-      } else { grp.setAttribute('transform', 'none'); }
-    }
-    u.el.setAttribute('transform', `translate(${u.x},${u.y}) scale(${u.face},1)`);
-    let showHp = GAME.selection.includes(u);
-    u.el.querySelector('.hp-fill').style.display = showHp ? 'block' : 'none';
-    if(showHp) u.el.querySelector('.hp-fill').setAttribute('width', Math.max(0,(u.hp/u.def.hp)*20));
-  });
-
-  GAME.entities.buildings.forEach(b => {
-      if(b.dead) return;
-      if(b.ui){
-          let show = GAME.selection.includes(b) || (b.team === 1 && !b.constructed);
-          b.ui.style.display = show ? 'block' : 'none';
-          if(show){
-            b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
-            b.ui.querySelector('.hp-fill').setAttribute('width', Math.max(0, (b.hp/b.def.hp)*b.w));
-            b.ui.querySelector('.prod-fill').setAttribute('width', b.queue.length ? (b.queue[0].prog/b.queue[0].def.buildTime)*b.w : 0);
-          }
-      }
-  });
-
-  if(GAME.ghost.active && GAME.ghost.el){
-      let gx = GAME.mouse.wx - GAME.ghost.w/2, gy = GAME.mouse.wy - GAME.ghost.h/2;
-      GAME.ghost.el.setAttribute('transform', `translate(${gx},${gy})`);
-      GAME.ghost.valid = checkPlacement(gx+GAME.ghost.w/2, gy+GAME.ghost.h/2, GAME.ghost.w, GAME.ghost.h);
-      GAME.ghost.el.setAttribute('stroke', GAME.ghost.valid ? '#22c55e':'#ef4444');
-  }
-
-  if(GAME.mouse.down){
-      let w = GAME.mouse.wx - GAME.mouse.dragStart.wx, h = GAME.mouse.wy - GAME.mouse.dragStart.wy;
-      let sb = document.getElementById('selection-box');
-      sb.style.left = (w<0?GAME.mouse.wx:GAME.mouse.dragStart.wx)-vx+'px';
-      sb.style.top = (h<0?GAME.mouse.wy:GAME.mouse.dragStart.wy)-vy+'px';
-      sb.style.width=Math.abs(w)+'px'; sb.style.height=Math.abs(h)+'px';
-      sb.style.display='block';
-  } else document.getElementById('selection-box').style.display='none';
-
-  updateMiniMap();
-}
-
-function updateMiniMap(){
-    const canvas = document.getElementById('minimap');
-    if(canvas.width !== canvas.offsetWidth) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    const ctx = canvas.getContext('2d'); const cw = canvas.width, ch = canvas.height;
-    ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,cw,ch); const sx = cw/CFG.w, sy = ch/CFG.h;
-    GAME.entities.props.forEach(p => { ctx.fillStyle = p.type==='hazel'?'#65a30d' : p.type==='gold'?'#fbbf24':'#15803d'; ctx.fillRect(p.x*sx, p.y*sy, 3, 3); });
-    GAME.entities.buildings.forEach(b => { if(b.dead) return; ctx.fillStyle = b.team===1?'#3b82f6':'#ef4444'; ctx.fillRect(b.x*sx, b.y*sy, 6, 6); });
-    GAME.entities.units.forEach(u => { if(u.dead) return; ctx.fillStyle = u.team===1?'#93c5fd':'#fca5a5'; ctx.fillRect(u.x*sx, u.y*sy, 3, 3); });
-    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.strokeRect(GAME.cam.x*sx, GAME.cam.y*sy, GAME.cam.w*sx, GAME.cam.h*sy);
-}
-
 function spawnUnit(type, team, x, y, forcedId=null){
   const def = DB.UNIT[type];
   const el = document.createElementNS(NS, 'g'); el.innerHTML = getUnitSVG(type, team);
   el.innerHTML += `<rect class="hp-fill" x="-10" y="-25" width="20" height="3" fill="${team===1?'#0f0':'#f00'}" style="display:none"/>`;
   GAME.dom.layers.units.appendChild(el);
-  const u = {id: forcedId || rng(), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
+  const u = {id:forcedId||rng(), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
   GAME.entities.units.push(u);
-  if(team===1) updateUI();
+  if(team===myTeam) updateUI();
   return u;
 }
 
@@ -1169,15 +843,15 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   el.setAttribute('transform', `translate(${x},${y})`);
   GAME.dom.layers.build.appendChild(el);
 
-  const hpColor = team === 1 ? COLORS.p1 : COLORS.p2;
   const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000" fill-opacity="0.6"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${hpColor}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  const hpC = team===1 ? '#0f0' : '#f00';
+  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${hpC}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
-  const b = {id: forcedId || rng(), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false, cd:0};
+  const b = {id:forcedId||rng(), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false};
   GAME.entities.buildings.push(b);
-  if(team===1) updateUI();
+  if(team===myTeam) updateUI();
   return b;
 }
 
@@ -1193,12 +867,6 @@ function spawnProj(u, t, dmg){
     GAME.entities.proj.push({x:u.x, y:u.y, target:t, dmg, el});
 }
 
-function spawnProjFromBuilding(b, t, dmg){
-    const el = document.createElementNS(NS, 'circle'); el.setAttribute('r', 3); el.setAttribute('fill', '#000');
-    GAME.dom.layers.fx.appendChild(el);
-    GAME.entities.proj.push({x:b.x + b.w/2, y:b.y + 18, target:t, dmg, el});
-}
-
 function updatePanel(forceFull = false){
     const pi = document.getElementById('panel-info');
     const pa = document.getElementById('panel-actions');
@@ -1210,24 +878,20 @@ function updatePanel(forceFull = false){
       return;
     }
     GAME.lastSelectionId = h.id;
-    let color = h.team===1 ? '#22c55e' : '#ef4444';
+    let color = h.team===myTeam ? '#22c55e' : '#ef4444'; // myTeam dinamik
     pi.innerHTML = `<div style="color:${color};font-weight:bold;font-size:16px;">${h.def.name}</div><div style="font-size:12px; color:#94a3b8;">${h.def.desc || ''}</div><div style="margin-top:5px;">HP: <span id="ui-hp-val" style="color:#fff; font-weight:bold;">${Math.floor(h.hp)}</span> / ${h.def.hp}</div>`;
     pa.innerHTML = '';
-    if(h.team !== 1) return;
+    if(h.team !== myTeam) return; // Sadece kendi takımın
 
     if(h.def.role === 'worker'){
         addBtn(pa, DB.BUILD.HOUSE, ()=>prepBuild('HOUSE'));
         addBtn(pa, DB.BUILD.BARRACKS, ()=>prepBuild('BARRACKS'));
         addBtn(pa, DB.BUILD.ARCHERY, ()=>prepBuild('ARCHERY'));
         addBtn(pa, DB.BUILD.STABLE, ()=>prepBuild('STABLE'));
-        addBtn(pa, DB.BUILD.ARROW_TOWER, ()=>prepBuild('ARROW_TOWER'));
     } else if(h.queue){
         if(h.type === 'HOUSE') addBtn(pa, DB.UNIT.VILLAGER, ()=>queueUnit(h, 'VILLAGER'));
         if(h.type === 'BARRACKS') addBtn(pa, DB.UNIT.PIKEMAN, ()=>queueUnit(h, 'PIKEMAN'));
-        if(h.type === 'ARCHERY') {
-          addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
-          addBtn(pa, DB.UNIT.CATAPULT, ()=>queueUnit(h, 'CATAPULT'));
-        }
+        if(h.type === 'ARCHERY') addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
         if(h.type === 'STABLE') {
           addBtn(pa, DB.UNIT.KNIGHT, ()=>queueUnit(h, 'KNIGHT'));
           addBtn(pa, DB.UNIT.F_KNIGHT, ()=>queueUnit(h, 'F_KNIGHT'));
@@ -1239,18 +903,14 @@ function updateLiveUI(){ if(GAME.selection.length > 0) updatePanel(false); }
 
 function addBtn(p, def, cb){
     const d = document.createElement('div'); d.className='card';
-
     let titleHtml = `<div class="card-title" title="${def.name}">${def.name}</div>`;
     let iconSvg = ICONS.WOOD;
     if(def.visual && ICONS[def.visual]) iconSvg = ICONS[def.visual];
-    else if(def.icon && def.icon.length > 3) iconSvg = def.icon;
-
     let costHtml = '<div class="card-cost">';
     if(def.cost.gold) costHtml += `<div class="cost-row" style="color:#fbbf24"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.GOLD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.gold}</div>`;
     if(def.cost.wood) costHtml += `<div class="cost-row wood"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.WOOD.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.wood}</div>`;
     if(def.cost.hazel) costHtml += `<div class="cost-row hazel"><svg class="mini-icon" viewBox="0 0 24 24">${ICONS.HAZEL.match(/<svg.*?>(.*?)<\/svg>/)[1]}</svg> ${def.cost.hazel}</div>`;
     costHtml += '</div>';
-
     d.innerHTML = `${titleHtml}${iconSvg}${costHtml}`;
     d.onclick = cb; p.appendChild(d);
 }
@@ -1264,45 +924,53 @@ function prepBuild(type){
     GAME.dom.layers.ui.appendChild(GAME.ghost.el);
 }
 
-function cancelBuild(){
-    if(GAME.ghost.el) GAME.ghost.el.remove();
-    GAME.ghost = { active: false, type: null, el: null, valid: false };
-}
-
 function tryBuild(){
     if(!GAME.ghost.valid) {
         showToast("Geçersiz Konum");
-        cancelBuild();
-        return;
+        if(GAME.ghost.el) GAME.ghost.el.remove();
+        GAME.ghost.active = false; return;
     }
     const c = DB.BUILD[GAME.ghost.type].cost;
     if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0)){
-        GAME.player.wood-=(c.wood||0);
-        GAME.player.gold-=(c.gold||0);
-        updateUI();
-
-        let b = spawnBuilding(GAME.ghost.type, 1, GAME.mouse.wx-GAME.ghost.w/2, GAME.mouse.wy-GAME.ghost.h/2);
-        GAME.selection.forEach(u => { if(u.def.role==='worker') u.task={type:'build', id:b.id}; });
+        GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); updateUI();
         
-        cancelBuild();
-    } else {
-        showToast("Yetersiz Kaynak");
-        cancelBuild();
-    }
+        const bx = GAME.mouse.wx-GAME.ghost.w/2;
+        const by = GAME.mouse.wy-GAME.ghost.h/2;
+        
+        // ONLINE ACTION
+        if(isOnline){
+             const bid = 'b_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+             const workers = GAME.selection.filter(u => u.team===myTeam && u.def.role==='worker' && !u.dead);
+             let b = spawnBuilding(GAME.ghost.type, myTeam, bx, by, false, bid);
+             workers.forEach(u => u.task={type:'build', id:b.id});
+             sendAction({ type:'BUILD', bType: GAME.ghost.type, x: bx, y: by, bid, uids: workers.map(u=>u.id) });
+        } else {
+             // LOCAL ACTION
+             let b = spawnBuilding(GAME.ghost.type, myTeam, bx, by);
+             GAME.selection.forEach(u => { if(u.def.role==='worker') u.task={type:'build', id:b.id}; });
+        }
+        
+        GAME.ghost.el.remove(); GAME.ghost.active=false;
+    } else showToast("Yetersiz Kaynak");
 }
 
 function queueUnit(b, type){
     const c = DB.UNIT[type].cost;
     let houseCap = GAME.entities.buildings
-      .filter(x=>x.team===1 && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
+      .filter(x=>x.team===myTeam && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
       .reduce((a,x)=>a+x.def.cap,0);
-
-    let curPop = GAME.entities.units.filter(u=>u.team===1 && !u.dead).length + b.queue.length;
+    let curPop = GAME.entities.units.filter(u=>u.team===myTeam && !u.dead).length + b.queue.length;
     if(curPop >= houseCap) { showToast("Nüfus Limiti Dolu! Ev Yap."); return; }
-
     if(GAME.player.wood >= (c.wood||0) && GAME.player.gold >= (c.gold||0) && GAME.player.hazel >= (c.hazel||0)){
         GAME.player.wood-=(c.wood||0); GAME.player.gold-=(c.gold||0); GAME.player.hazel-=(c.hazel||0); updateUI();
-        b.queue.push({type, def:DB.UNIT[type], prog:0}); updatePanel(true);
+        
+        if(isOnline){
+             const newUid = 'u_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+             b.queue.push({type, def:DB.UNIT[type], prog:0, forcedId:newUid}); updatePanel(true);
+             sendAction({ type:'TRAIN', bid: b.id, uType: type, newUid });
+        } else {
+             b.queue.push({type, def:DB.UNIT[type], prog:0}); updatePanel(true);
+        }
     } else showToast("Yetersiz Kaynak");
 }
 
@@ -1310,13 +978,10 @@ function updateUI(){
     document.getElementById('ui-gold').innerText = Math.floor(GAME.player.gold);
     document.getElementById('ui-wood').innerText = Math.floor(GAME.player.wood);
     document.getElementById('ui-hazel').innerText = Math.floor(GAME.player.hazel);
-
     let houseCap = GAME.entities.buildings
-      .filter(x=>x.team===1 && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
+      .filter(x=>x.team===myTeam && x.constructed && (x.type==='HOUSE'||x.type==='TOWN'))
       .reduce((a,x)=>a+x.def.cap,0);
-
-    let curPop = GAME.entities.units.filter(u=>u.team===1 && !u.dead).length;
-
+    let curPop = GAME.entities.units.filter(u=>u.team===myTeam && !u.dead).length;
     document.getElementById('ui-pop').innerText = `${curPop}/${houseCap}`;
 }
 
@@ -1340,7 +1005,6 @@ function setupInputs(){
         if(GAME.ghost.active) tryBuild();
         else { GAME.mouse.down=true; GAME.mouse.dragStart={wx:GAME.mouse.wx, wy:GAME.mouse.wy}; }
       } else if(e.button===2){
-        if(GAME.ghost.active) { cancelBuild(); return; }
         e.preventDefault(); handleRightClick();
       }
     };
@@ -1352,7 +1016,6 @@ function setupInputs(){
       }
     };
     stg.oncontextmenu = e => e.preventDefault();
-
     const mm = document.querySelector('.minimap-wrapper');
     const onMinimap = (e) => {
         const rect = mm.getBoundingClientRect();
@@ -1386,29 +1049,218 @@ function selectPoint(){
 function selectBox(){
     const x1 = Math.min(GAME.mouse.dragStart.wx, GAME.mouse.wx), x2 = Math.max(GAME.mouse.dragStart.wx, GAME.mouse.wx);
     const y1 = Math.min(GAME.mouse.dragStart.wy, GAME.mouse.wy), y2 = Math.max(GAME.mouse.dragStart.wy, GAME.mouse.wy);
-    GAME.selection = GAME.entities.units.filter(u => !u.dead && u.team===1 && u.x>x1 && u.x<x2 && u.y>y1 && u.y<y2);
+    GAME.selection = GAME.entities.units.filter(u => !u.dead && u.team===myTeam && u.x>x1 && u.x<x2 && u.y>y1 && u.y<y2);
     updatePanel(true);
 }
 
 function handleRightClick(){
     const mx = GAME.mouse.wx, my = GAME.mouse.wy;
-    let t = GAME.entities.units.find(u => !u.dead && u.team!==1 && Math.hypot(u.x-mx, u.y-my)<30)
-      || GAME.entities.buildings.find(b => !b.dead && b.team!==1 && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h)
-      || GAME.entities.props.find(p => !p.dead && Math.hypot(p.x-mx, p.y-my)<30)
-      || GAME.entities.buildings.find(b => !b.dead && b.team===1 && !b.constructed && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h);
+    // Online için enemyTeam dinamik
+    const enemyTeam = (myTeam === 1 ? 2 : 1);
 
-    GAME.selection.forEach(u => {
-        if(u.team !== 1) return;
+    let t = GAME.entities.units.find(u => !u.dead && u.team===enemyTeam && Math.hypot(u.x-mx, u.y-my)<30)
+      || GAME.entities.buildings.find(b => !b.dead && b.team===enemyTeam && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h)
+      || GAME.entities.props.find(p => !p.dead && Math.hypot(p.x-mx, p.y-my)<30)
+      || GAME.entities.buildings.find(b => !b.dead && b.team===myTeam && !b.constructed && mx>b.x && mx<b.x+b.w && my>b.y && my<b.y+b.h);
+
+    const mySelected = GAME.selection.filter(u => u.team === myTeam);
+    if(!mySelected.length) return;
+
+    // 1) LOCAL GÖRSEL (Anında Tepki)
+    mySelected.forEach(u => {
         if(u.def.role === 'worker'){
-            if(t && t.amt) { u.task={type:'gather', id:t.id}; u.manualTarget=false; }
-            else if(t && t.team===1 && !t.constructed) { u.task={type:'build', id:t.id}; u.manualTarget=false; }
-            else if(t && t.team!==1) { u.task=null; u.target=t; u.manualTarget=true; }
+            if(t && t.amt) { u.task={type:'gather', id:t.id}; u.manualTarget=false; u.target=null; u.dest=null; }
+            else if(t && t.team===myTeam && !t.constructed) { u.task={type:'build', id:t.id}; u.manualTarget=false; u.target=null; u.dest=null; }
+            else if(t && t.team===enemyTeam) { u.task=null; u.target=t; u.manualTarget=true; u.dest=null; }
             else { u.task=null; u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
         } else {
-            if(t && t.team!==1) { u.target=t; u.manualTarget=true; }
+            if(t && t.team===enemyTeam) { u.target=t; u.manualTarget=true; u.dest=null; }
             else { u.target=null; u.manualTarget=false; u.dest={x:mx, y:my}; }
         }
     });
+
+    // 2) ONLINE SYNC
+    if(isOnline){
+        const uids = mySelected.map(u => u.id);
+        if(t && t.team === enemyTeam){
+             sendAction({ type:'ATTACK', uids, tid: t.id });
+        } else if(t && t.amt){
+             sendAction({ type:'GATHER', uids, tid: t.id });
+        } else if(t && t.team === myTeam && !t.constructed){
+             sendAction({ type:'BUILD', uids, bid: t.id, bType: t.type, x: t.x, y: t.y });
+        } else {
+             sendAction({ type:'MOVE', uids, x: mx, y: my });
+        }
+    }
+}
+
+/* --- AI LOGIC (SADECE SP) --- */
+function aiParams(diff){
+  if(diff === 'EASY'){ return { reaction: 1.5, gatherMult: 0.65, microSkill: 0.40, aggroBias: 0.25, riskTolerance: 0.25, minAttackTime: 200, expandBias: 0.90, barracksLimit: 1, archeryTime: 140, stableTime: 220, trickle: 0 }; }
+  if(diff === 'HARD'){ return { reaction: 0.25, gatherMult: 1.60, microSkill: 0.92, aggroBias: 0.95, riskTolerance: 0.80, minAttackTime: 25, expandBias: 0.45, barracksLimit: 4, archeryTime: 45, stableTime: 75, trickle: 1 }; }
+  return { reaction: 0.75, gatherMult: 1.10, microSkill: 0.70, aggroBias: 0.65, riskTolerance: 0.55, minAttackTime: 65, expandBias: 0.70, barracksLimit: 2, archeryTime: 90, stableTime: 140, trickle: 0 };
+}
+function aiCount(team){
+  const buildings = GAME.entities.buildings.filter(b=>b.team===team && !b.dead);
+  const units = GAME.entities.units.filter(u=>u.team===team && !u.dead);
+  const town = buildings.find(b=>b.type==='TOWN');
+  const houses = buildings.filter(b=>b.type==='HOUSE');
+  const barracks = buildings.filter(b=>b.type==='BARRACKS');
+  const archery = buildings.filter(b=>b.type==='ARCHERY');
+  const stable = buildings.filter(b=>b.type==='STABLE');
+  const workers = units.filter(u=>u.def.role==='worker');
+  const soldiers = units.filter(u=>u.def.role!=='worker');
+  const cap = buildings.filter(b=>b.constructed && (b.type==='HOUSE' || b.type==='TOWN')).reduce((a,x)=>a+(x.def.cap||0),0);
+  return { buildings, units, town, houses, barracks, archery, stable, workers, soldiers, cap };
+}
+function estimateThreatToAITown(town){
+  if(!town) return 0;
+  const ex = town.x + town.w/2, ey = town.y + town.h/2;
+  const enemy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker');
+  if(enemy.length === 0) return 0;
+  let score = 0;
+  for(const u of enemy){
+    const d = Math.hypot(u.x-ex, u.y-ey);
+    if(d < 900){ const w = (1 - clamp01(d/900)); score += w; }
+  }
+  return clamp01(score / 10);
+}
+function estimateEcoPower(){
+  const my = aiCount(2); const e = aiCount(1);
+  const myVal = (GAME.ai.wood*0.8 + GAME.ai.gold*1.0 + GAME.ai.hazel*1.3) + my.workers.length*120 + my.buildings.length*220;
+  const eVal  = (GAME.player.wood*0.8 + GAME.player.gold*1.0 + GAME.player.hazel*1.3) + e.workers.length*120 + e.buildings.length*220;
+  if(eVal <= 1) return 0.5;
+  return clamp01(myVal / eVal);
+}
+function aiTryQueueFromBuilding(b, unitType){
+  if(!b || b.dead || !b.constructed || !b.queue) return false;
+  const def = DB.UNIT[unitType]; if(!def) return false;
+  const c = def.cost || {};
+  if(GAME.ai.wood < (c.wood||0) || GAME.ai.gold < (c.gold||0) || GAME.ai.hazel < (c.hazel||0)) return false;
+  const my = aiCount(2); const curPop = my.units.length + b.queue.length;
+  if(curPop >= my.cap && my.cap > 0) return false;
+  if(b.queue.length >= 4) return false;
+  b.queue.push({type: unitType, def, prog:0});
+  GAME.ai.wood -= (c.wood||0); GAME.ai.gold -= (c.gold||0); GAME.ai.hazel -= (c.hazel||0);
+  return true;
+}
+function aiTryBuild(type, town){
+  const def = DB.BUILD[type]; if(!def || !town) return false;
+  const c = def.cost || {};
+  if(GAME.ai.wood < (c.wood||0) || GAME.ai.gold < (c.gold||0)) return false;
+  for(let i=0; i<40; i++){
+    const range = 220 + Math.random()*420; const ang = Math.random()*Math.PI*2;
+    let ax = (town.x + town.w/2) + Math.cos(ang)*range; let ay = (town.y + town.h/2) + Math.sin(ang)*range;
+    ax = Math.max(80, Math.min(CFG.w - def.w - 80, ax)); ay = Math.max(80, Math.min(CFG.h - def.h - 80, ay));
+    const cx = ax + def.w/2, cy = ay + def.h/2;
+    if(checkPlacement(cx, cy, def.w, def.h)){ spawnBuilding(type, 2, ax, ay, true); GAME.ai.wood -= (c.wood||0); GAME.ai.gold -= (c.gold||0); return true; }
+  }
+  return false;
+}
+function pickAttackTarget(params){
+  const town = GAME.entities.buildings.find(b=>b.team===1 && b.type==='TOWN' && !b.dead); if(town) return town;
+  const enemyB = GAME.entities.buildings.filter(b=>b.team===1 && !b.dead); if(enemyB.length) return enemyB[Math.floor(Math.random()*enemyB.length)];
+  const enemyU = GAME.entities.units.filter(u=>u.team===1 && !u.dead); if(enemyU.length) return enemyU[Math.floor(Math.random()*enemyU.length)];
+  return null;
+}
+function callArmyToAttack(target){
+  if(!target) return;
+  aiCount(2).soldiers.forEach(u=>{ u.state='ATTACK'; u.target=target; u.manualTarget=true; u.task=null; u.dest=null; });
+}
+function callArmyToDefend(town){
+  if(!town) return; const cx = town.x + town.w/2, cy = town.y + town.h/2;
+  aiCount(2).soldiers.forEach(u=>{ u.target = null; u.manualTarget = false; u.task = null; u.dest = { x: cx + (Math.random()-0.5)*120, y: cy + (Math.random()-0.5)*120 }; u.state = 'DEFEND'; });
+}
+function aiAssignIdleWorkers(params){
+  const my = aiCount(2); const workers = my.workers;
+  const props = GAME.entities.props.filter(p=>!p.dead && (p.amt===undefined || p.amt>0));
+  if(props.length === 0) return;
+  let want = { wood: 0.45, gold: 0.40, hazel: 0.15 };
+  if(GAME.difficulty === 'EASY') want = { wood: 0.70, gold: 0.25, hazel: 0.05 };
+  if(GAME.difficulty === 'NORMAL') want = { wood: 0.55, gold: 0.35, hazel: 0.10 };
+  const cur = { wood: 0, gold: 0, hazel: 0 };
+  workers.forEach(w=>{ if(w.task && w.task.type==='gather'){ const pr = GAME.entities.props.find(p=>p.id===w.task.id); if(pr && cur[pr.type] !== undefined) cur[pr.type]++; } });
+  const total = Math.max(1, workers.length);
+  const need = { wood: Math.max(0, Math.floor(total*want.wood) - cur.wood), gold: Math.max(0, Math.floor(total*want.gold) - cur.gold), hazel: Math.max(0, Math.floor(total*want.hazel) - cur.hazel) };
+  const bestPropOfType = (u, type) => {
+    let best=null, bestScore=-1;
+    for(const p of props){
+      if(p.type !== type) continue;
+      const d = Math.hypot(u.x-p.x, u.y-p.y);
+      const score = (1/Math.max(1,d)) * (0.6 + clamp01((p.amt||1)/600)*0.4);
+      if(score > bestScore){ bestScore=score; best=p; }
+    }
+    return best;
+  };
+  for(const u of workers){
+    if(u.task || u.target || u.dest) continue;
+    let chosenType = null;
+    if(need.gold > 0) chosenType = 'gold'; else if(need.wood > 0) chosenType = 'wood'; else if(need.hazel > 0) chosenType = 'hazel';
+    else { chosenType = (GAME.difficulty==='HARD') ? (Math.random()<0.55 ? 'gold' : 'wood') : (Math.random()<0.65 ? 'wood' : 'gold'); }
+    const p = bestPropOfType(u, chosenType) || bestPropOfType(u, 'wood') || bestPropOfType(u, 'gold') || bestPropOfType(u, 'hazel');
+    if(p){ u.task = { type:'gather', id: p.id }; if(need[p.type] !== undefined && need[p.type] > 0) need[p.type]--; }
+  }
+}
+function updateFairAI(dt){
+  const params = aiParams(GAME.difficulty);
+  if(params.trickle){ GAME.ai.wood += dt * 2.2; GAME.ai.gold += dt * 1.4; GAME.ai.hazel += dt * 0.35; }
+  GAME.ai.timer += dt; if(GAME.ai.timer < params.reaction) return; GAME.ai.timer = 0;
+  const my = aiCount(2); if(!my.town) return;
+  const brain = GAME.ai.brain;
+  const threat = estimateThreatToAITown(my.town); const ecoPow = estimateEcoPower();
+  brain.threatEMA = brain.threatEMA*0.70 + threat*0.30; brain.ecoEMA = brain.ecoEMA*0.80 + ecoPow*0.20;
+  const myArmy = my.soldiers.length; const enemyArmy = GAME.entities.units.filter(u=>u.team===1 && !u.dead && u.def.role!=='worker').length;
+  const armyAdv = clamp01((myArmy - enemyArmy + 8) / 14);
+  const timeOk = (GAME.t > params.minAttackTime); const tE = brain.threatEMA;
+  const U_BOOM = (1 - tE) * (0.55 + params.expandBias*0.45) + (1 - armyAdv)*0.10;
+  const U_DEFEND = (tE) * 0.95 + (1 - armyAdv)*0.25;
+  const U_PRESS = (timeOk?1:0) * (0.55 + params.aggroBias*0.45) * (0.45 + armyAdv*0.55) * (1 - tE*0.35);
+  const U_ALLIN = (timeOk?1:0) * (params.riskTolerance) * (0.45 + armyAdv*0.55) * (0.45 + (1 - tE)*0.55);
+  let best = [['BOOM', U_BOOM], ['DEFEND', U_DEFEND], ['PRESSURE', U_PRESS], ['ALL_IN', U_ALLIN]].sort((a,b)=>b[1]-a[1])[0][0];
+  if(GAME.difficulty==='HARD' && timeOk && best==='BOOM' && myArmy>=6) best='PRESSURE';
+  if(best !== brain.state && (GAME.t - brain.lastStateChange) > 6){ brain.state = best; brain.lastStateChange = GAME.t; }
+  aiAssignIdleWorkers(params);
+  const currentPop = my.units.length + my.buildings.reduce((a,x)=>a+(x.queue?x.queue.length:0),0);
+  if(my.cap > 0 && currentPop + 3 >= my.cap){ aiTryBuild('HOUSE', my.town); }
+  if(my.houses.length === 0 && GAME.ai.wood >= 40) aiTryBuild('HOUSE', my.town);
+  if(my.barracks.length < 1 && GAME.ai.wood >= 150) aiTryBuild('BARRACKS', my.town);
+  if(GAME.t > params.archeryTime && my.archery.length < 1 && GAME.ai.wood >= 150) aiTryBuild('ARCHERY', my.town);
+  if(GAME.t > params.stableTime && my.stable.length < 1 && GAME.ai.wood >= 200 && GAME.ai.gold >= 100) aiTryBuild('STABLE', my.town);
+  if(GAME.difficulty==='HARD' && GAME.t > 55 && my.barracks.length < 2 && GAME.ai.wood >= 150){ aiTryBuild('BARRACKS', my.town); }
+  const workerCap = (GAME.difficulty==='EASY'? 8 : GAME.difficulty==='NORMAL'? 14 : 24);
+  if(my.workers.length < workerCap){ if(my.town.queue.length < 1) aiTryQueueFromBuilding(my.town, 'VILLAGER'); }
+  const wantKnight = (GAME.difficulty==='HARD' && GAME.ai.gold > 220 && my.stable.find(s=>s.constructed));
+  const wantArcher = (my.archery.find(a=>a.constructed));
+  const st = my.stable.find(x=>x.constructed); const ar = my.archery.find(x=>x.constructed); const brs = my.barracks.filter(x=>x.constructed);
+  if(brain.state === 'DEFEND'){
+    if(brs.length){ for(const b of brs) aiTryQueueFromBuilding(b, 'PIKEMAN'); } else { aiTryQueueFromBuilding(my.town, 'PIKEMAN'); }
+    if(ar && wantArcher) aiTryQueueFromBuilding(ar, 'ARCHER'); if(st && wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT');
+    callArmyToDefend(my.town); return;
+  }
+  if(brain.state === 'BOOM'){
+    if(brs.length){ for(const b of brs){ if(Math.random()<0.55) aiTryQueueFromBuilding(b, 'PIKEMAN'); else if(ar) aiTryQueueFromBuilding(ar, 'ARCHER'); else aiTryQueueFromBuilding(b, 'PIKEMAN'); } } else { aiTryQueueFromBuilding(my.town, 'PIKEMAN'); }
+  }
+  if(brain.state === 'PRESSURE' || brain.state === 'ALL_IN'){
+    if(brs.length < params.barracksLimit && GAME.ai.wood >= 150 && (GAME.difficulty!=='EASY')){ aiTryBuild('BARRACKS', my.town); }
+    for(const b of brs){ aiTryQueueFromBuilding(b, 'PIKEMAN'); }
+    if(ar) aiTryQueueFromBuilding(ar, 'ARCHER');
+    if(st){ if(GAME.difficulty==='HARD' && GAME.ai.hazel >= 150 && GAME.ai.gold >= 100) aiTryQueueFromBuilding(st, 'F_KNIGHT'); else if(wantKnight) aiTryQueueFromBuilding(st, 'KNIGHT'); }
+    const cooldown = (GAME.difficulty==='HARD' ? 6 : GAME.difficulty==='NORMAL' ? 12 : 20);
+    if(timeOk && (GAME.t - brain.lastAttackCall) > cooldown){
+      const target = pickAttackTarget(params);
+      if(target){
+        const soldiers = aiCount(2).soldiers;
+        let ratio = (brain.state==='ALL_IN') ? 0.85 : 0.70; if(GAME.difficulty!=='HARD') ratio = (brain.state==='ALL_IN') ? 0.75 : 0.55;
+        const sendCount = Math.max(5, Math.floor(soldiers.length * ratio));
+        soldiers.slice(0, sendCount).forEach(u=>{ u.state='ATTACK'; u.target=target; u.manualTarget=true; u.task=null; u.dest=null; });
+        brain.lastAttackCall = GAME.t; showToast(`Düşman Baskısı! (${sendCount} Birim)`);
+      }
+    }
+  }
+  if(GAME.difficulty==='HARD' && timeOk && myArmy >= 8 && tE < 0.35){
+    const target = pickAttackTarget(params);
+    if(target && (GAME.t - brain.lastAttackCall) > 10){ callArmyToAttack(target); brain.lastAttackCall = GAME.t; showToast(`Düşman Saldırısı! (${myArmy} Birim)`); }
+  }
 }
 </script>
 </body>
