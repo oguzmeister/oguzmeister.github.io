@@ -501,26 +501,40 @@ function getBuildingSVG(type, team){
     let svg = '';
 
     if(type === 'TOWN'){
+        // --- DÜZELTİLMİŞ KALE ÇATISI VE SİMETRİSİ ---
         const W = def.w, H = def.h;
         const wallY = Math.floor(H*0.34);
         const keepW = 90, keepH = Math.floor(H*0.38);
         const keepX = Math.floor(W/2 - keepW/2);
+
+        // Ana Duvarlar
         svg += `<rect x="8" y="${wallY}" width="${W-16}" height="${H-wallY-6}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
+        // Mazgallar
         for(let i=0;i<10;i++){
           const bx = 16 + i*((W-32)/10);
           svg += `<rect x="${bx}" y="${wallY-10}" width="12" height="12" fill="#475569" stroke="#1e293b" stroke-width="1"/>`;
         }
+        // Kapı
         svg += `<rect x="${Math.floor(W/2-28)}" y="${H-64}" width="56" height="58" rx="6" fill="#1e293b"/>`;
         svg += `<path d="M${Math.floor(W/2-28)},${H-64} L${Math.floor(W/2+28)},${H-64}" stroke="#475569" stroke-width="2"/>`;
         svg += `<circle cx="${Math.floor(W/2-10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
         svg += `<circle cx="${Math.floor(W/2+10)}" cy="${H-35}" r="3" fill="#94a3b8"/>`;
+
+        // Orta Kule (Keep)
         svg += `<rect x="${keepX}" y="${Math.floor(wallY-keepH+10)}" width="${keepW}" height="${keepH}" rx="4" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
-        const roofTopY = Math.floor(wallY-keepH+10);
-        svg += `<path d="M${keepX-10},${roofTopY+10} L${Math.floor(W/2)},${roofTopY-18} L${keepX+keepW+10},${roofTopY+10} Z" fill="${roof}" stroke="#1e293b" stroke-width="1.5"/>`;
-        svg += `<line x1="${Math.floor(W/2)}" y1="${roofTopY-18}" x2="${Math.floor(W/2)}" y2="${roofTopY-48}" stroke="#0b1220" stroke-width="3"/>`;
-        svg += `<path d="M${Math.floor(W/2)} ${roofTopY-48} L${Math.floor(W/2)+34} ${roofTopY-40} L${Math.floor(W/2)} ${roofTopY-32} Z" fill="${c1}" stroke="#0b1220" stroke-width="1"/>`;
-        svg += `<rect x="${keepX+14}" y="${roofTopY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
-        svg += `<rect x="${keepX+keepW-26}" y="${roofTopY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
+
+        // Kule Çatısı (Düzeltildi)
+        const roofBaseY = Math.floor(wallY-keepH+10);
+        svg += `<path d="M${keepX-8},${roofBaseY+10} L${Math.floor(W/2)},${roofBaseY-25} L${keepX+keepW+8},${roofBaseY+10} Z" fill="${roof}" stroke="#1e293b" stroke-width="1.5"/>`;
+
+        // Bayrak Direği
+        svg += `<line x1="${Math.floor(W/2)}" y1="${roofBaseY-25}" x2="${Math.floor(W/2)}" y2="${roofBaseY-55}" stroke="#0b1220" stroke-width="3"/>`;
+        // Bayrak
+        svg += `<path d="M${Math.floor(W/2)} ${roofBaseY-55} L${Math.floor(W/2)+34} ${roofBaseY-45} L${Math.floor(W/2)} ${roofBaseY-35} Z" fill="${c1}" stroke="#0b1220" stroke-width="1"/>`;
+
+        // Pencereler
+        svg += `<rect x="${keepX+14}" y="${roofBaseY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
+        svg += `<rect x="${keepX+keepW-26}" y="${roofBaseY+22}" width="12" height="18" rx="3" fill="#0f172a" opacity="0.7"/>`;
     }
     else if(type === 'HOUSE'){
         svg += `<rect x="10" y="${def.h*0.4}" width="${def.w-20}" height="${def.h*0.6}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
@@ -534,21 +548,12 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'STABLE'){
-        // --- GÜNCELLENMİŞ AHIR (TAŞMAYAN MODEL) ---
         const W = def.w, H = def.h;
-        // Taban Zemin
         svg += `<rect x="5" y="${H*0.4}" width="${W-10}" height="${H*0.6}" fill="#5c2e08" stroke="#2e1402" stroke-width="2"/>`;
-        // Çatı
         svg += `<path d="M0,${H*0.4} L${W/2},0 L${W},${H*0.4} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
-        // Ahır Bölmeleri (Dikey Çizgiler - İçeride)
-        for(let i=1; i<4; i++){
-            let x = 5 + i*((W-10)/4);
-            svg += `<line x1="${x}" y1="${H*0.4}" x2="${x}" y2="${H}" stroke="#3f2e20" stroke-width="2"/>`;
-        }
-        // Ön Direkler
+        for(let i=1; i<4; i++){ let x = 5 + i*((W-10)/4); svg += `<line x1="${x}" y1="${H*0.4}" x2="${x}" y2="${H}" stroke="#3f2e20" stroke-width="2"/>`; }
         svg += `<rect x="5" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
         svg += `<rect x="${W-13}" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
-        // Logo
         svg += `<circle cx="${W/2}" cy="${H*0.3}" r="8" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'ARCHERY'){
@@ -562,10 +567,7 @@ function getBuildingSVG(type, team){
         const W = def.w, H = def.h;
         svg += `<rect x="10" y="${Math.floor(H*0.3)}" width="${W-20}" height="${Math.floor(H*0.7)-8}" rx="6" fill="url(#pat-stone)" stroke="#1e293b" stroke-width="2"/>`;
         svg += `<rect x="14" y="${Math.floor(H*0.28)}" width="${W-28}" height="16" rx="4" fill="#475569" stroke="#1e293b" stroke-width="2"/>`;
-        for(let i=0;i<4;i++){
-          const x = 18 + i*((W-36)/4);
-          svg += `<rect x="${x}" y="${Math.floor(H*0.28)+3}" width="10" height="10" rx="2" fill="#1e293b" opacity="0.9"/>`;
-        }
+        for(let i=0;i<4;i++){ const x = 18 + i*((W-36)/4); svg += `<rect x="${x}" y="${Math.floor(H*0.28)+3}" width="10" height="10" rx="2" fill="#1e293b" opacity="0.9"/>`; }
         svg += `<path d="M6 ${Math.floor(H*0.3)} L${Math.floor(W/2)} 8 L${W-6} ${Math.floor(H*0.3)} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
         svg += `<circle cx="${Math.floor(W/2)}" cy="${Math.floor(H*0.55)}" r="10" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
@@ -657,10 +659,7 @@ function updateLogic(dt){
             if(b.team===myTeam) { showToast("Birim Hazır!"); updatePanel(true); }
         }
     }
-    if(!b.constructed && b.hp >= b.def.hp * 0.99){
-         b.hp = b.def.hp;
-         b.constructed = true;
-    }
+    if(!b.constructed && b.hp >= b.def.hp * 0.99){ b.hp = b.def.hp; b.constructed = true; }
     if(b.constructed && !b.dead && b.def && b.def.atk && b.def.range){
       if(b.cd === undefined) b.cd = 0;
       const enemyTeam = b.team === 1 ? 2 : 1;
@@ -853,11 +852,7 @@ function render(dt){
   GAME.entities.buildings.forEach(b => {
       if(b.dead) return;
       if(b.ui){
-          // GÖRÜNÜRLÜK GÜNCELLEMESİ:
-          // Sadece SEÇİLİ ise GÖSTER.
-          // (İstisna: Kendi binamız inşa halindeyse görmek isteriz)
           let show = GAME.selection.includes(b) || (b.team === myTeam && !b.constructed);
-          
           b.ui.style.display = show ? 'block' : 'none';
           if(show){
             b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
@@ -914,9 +909,7 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   el.setAttribute('transform', `translate(${x},${y})`);
   GAME.dom.layers.build.appendChild(el);
 
-  // RENK GÜNCELLEMESİ: Can barı rengi artık Takım Rengi ile aynı (Kale ile uyumlu)
   const hpColor = team === 1 ? COLORS.p1 : COLORS.p2;
-
   const ui = document.createElementNS(NS, 'g');
   ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000" fill-opacity="0.6"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${hpColor}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
@@ -1011,12 +1004,16 @@ function prepBuild(type){
     GAME.dom.layers.ui.appendChild(GAME.ghost.el);
 }
 
+// YENİ EKLENEN: İnşaatı güvenli bir şekilde iptal etme
+function cancelBuild(){
+    if(GAME.ghost.el) GAME.ghost.el.remove();
+    GAME.ghost = { active: false, type: null, el: null, valid: false };
+}
+
 function tryBuild(){
     if(!GAME.ghost.valid) {
         showToast("Geçersiz Konum");
-        if(GAME.ghost.el) GAME.ghost.el.remove();
-        GAME.ghost.active = false;
-        GAME.ghost.el = null;
+        cancelBuild(); // Ghost'u temizle
         return;
     }
     const c = DB.BUILD[GAME.ghost.type].cost;
@@ -1043,8 +1040,11 @@ function tryBuild(){
           uids: workers.map(u=>u.id)
         });
 
-        GAME.ghost.el.remove(); GAME.ghost.active=false;
-    } else showToast("Yetersiz Kaynak");
+        cancelBuild(); // Başarılı olsa da ghost'u temizle
+    } else {
+        showToast("Yetersiz Kaynak");
+        cancelBuild(); // Kaynak yoksa da temizle
+    }
 }
 
 function queueUnit(b, type){
@@ -1101,6 +1101,8 @@ function setupInputs(){
         if(GAME.ghost.active) tryBuild();
         else { GAME.mouse.down=true; GAME.mouse.dragStart={wx:GAME.mouse.wx, wy:GAME.mouse.wy}; }
       } else if(e.button===2){
+        // GÜNCELLEME: Sağ tıkta inşaatı iptal et
+        if(GAME.ghost.active) { cancelBuild(); return; }
         e.preventDefault(); handleRightClick();
       }
     };
