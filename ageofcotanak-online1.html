@@ -199,6 +199,14 @@ const CFG = { w: 2400, h: 2000 };
 const COLORS = { p1: '#2563eb', p2: '#dc2626', p1Dark: '#1e3a8a', p2Dark: '#7f1d1d' };
 const NS = "http://www.w3.org/2000/svg";
 
+/* --- ENTITY ID (ONLINE DESYNC ÖNLEME) ---
+   Daha önce rng() ile id üretimi, oyun içi efektler/particles rng'yi kaydırıp
+   iki tarafta farklı id'ler doğurabiliyordu (TRAIN/BUILD lookup kırılıyordu).
+   Bu yüzden entity id'leri deterministic bir sayaçtan üretiliyor.
+*/
+let ENTITY_SEQ = 1;
+function genEntityId(prefix){ return prefix + "_" + (ENTITY_SEQ++); }
+
 /* --- SVG İKONLAR --- */
 const ICONS = {
     GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
@@ -233,7 +241,7 @@ const DB = {
     ARCHERY:  { name: 'Okçu Alanı', hp: 1000, w: 130, h: 130, cost: {wood:150, gold:20}, buildTime: 20, visual:'TOWER', desc:'Okçu' },
     STABLE:   { name: 'Ahır', hp: 1500, w: 160, h: 150, cost: {wood:200, gold:100}, buildTime: 25, visual:'HORSE', desc:'Süvari' },
 
-    /* YENİ: OKÇU KULESİ (Savunma) */
+    /* YENİ: OKÇU KULESİ */
     ATOWER:   { name: 'Okçu Kulesi', hp: 1400, w: 110, h: 150, cost: {wood:220, gold:80}, buildTime: 22, visual:'TOWER', desc:'Otomatik savunma' },
 
     TOWN:     { name: 'Kale', hp: 5000, w: 220, h: 200, cost: {wood:9999}, cap: 10, buildTime: 999, visual:'TOWN', unique:true }
@@ -385,7 +393,7 @@ function handleRemoteAction(act){
         }
     }
     else if(act.type === 'BUILD'){
-        // act.bid / act.bType / act.x / act.y bekleniyor
+        // Yeni bina (id: act.bid)
         let b = spawnBuilding(act.bType, act.senderTeam, act.x, act.y, false, act.bid);
         act.uids.forEach(id => {
             const u = GAME.entities.units.find(x => x.id === id);
@@ -393,7 +401,15 @@ function handleRemoteAction(act){
         });
     }
     else if(act.type === 'TRAIN'){
-        const b = GAME.entities.buildings.find(x => x.id === act.bid);
+        // Bina id'leri iki tarafta kayabiliyorsa diye fallback ile bul
+        let b = GAME.entities.buildings.find(x => x.id === act.bid);
+        if(!b && act.bType && act.bx !== undefined && act.by !== undefined){
+            const near = GAME.entities.buildings
+              .filter(x => !x.dead && x.team === act.senderTeam && x.type === act.bType)
+              .map(x => ({b:x, d: Math.hypot((x.x + x.w/2) - act.bx, (x.y + x.h/2) - act.by)}))
+              .sort((a,b)=>a.d-b.d)[0];
+            if(near && near.d < 80) b = near.b;
+        }
         if(b){
             b.queue.push({type: act.uType, def:DB.UNIT[act.uType], prog:0, forcedId: act.newUid});
         }
@@ -416,6 +432,9 @@ function startGame(){
 
   rng = seededRandom(mapSeed);
 
+  // Entity id sayaçları her iki tarafta aynı sırada başlayabilsin diye reset
+  ENTITY_SEQ = 1;
+
   GAME.dom = {
     svg: document.getElementById('game-svg'),
     layers: {
@@ -433,6 +452,7 @@ function startGame(){
 
   generateMap();
 
+  // Başlangıç entity'leri: id'ler artık genEntityId ile deterministik
   spawnBuilding('TOWN', 1, 300, 300, true);
   spawnBuilding('HOUSE', 1, 550, 350, true);
   spawnUnit('VILLAGER', 1, 450, 500);
@@ -487,7 +507,7 @@ function createProp(type, x, y, r){
     el.innerHTML = svg;
     el.setAttribute('transform', `translate(${x},${y})`);
     GAME.dom.layers.props.appendChild(el);
-    GAME.entities.props.push({id:rng(), type, x, y, amt: type==='wood'?300:600, r:r, el});
+    GAME.entities.props.push({id: genEntityId("prop"), type, x, y, amt: type==='wood'?300:600, r:r, el});
 }
 
 function checkPlacement(x, y, w, h, ignoreSelfId=null){
@@ -637,14 +657,14 @@ function updateLogic(dt){
     }
   });
 
-  /* YENİ: OKÇU KULESİ SAVUNMASI */
+  /* OKÇU KULESİ SAVUNMASI */
   GAME.entities.buildings.forEach(b => {
     if(b.dead || !b.constructed) return;
     if(b.type !== 'ATOWER') return;
     if(GAME.t < (b.cd || 0)) return;
 
     const enemyTeam = (b.team === 1 ? 2 : 1);
-    const bx = b.x + b.w/2, by = b.y + 20; // kule üstü gibi
+    const bx = b.x + b.w/2, by = b.y + 20;
     const range = 360;
     let best = null, bestD = range;
 
@@ -655,13 +675,13 @@ function updateLogic(dt){
     }
 
     if(best){
-      b.cd = GAME.t + 1.2; // ateş hızı
-      spawnProjAt(bx, by, best, 14); // ok hasarı
+      b.cd = GAME.t + 1.2;
+      spawnProjAt(bx, by, best, 14);
       spawnParticle(bx, by, '#e2e8f0', 0.35);
     }
   });
 
-  /* ÇARPIŞMA (unit push) */
+  /* ÇARPIŞMA */
   const units = GAME.entities.units.filter(u => !u.dead);
   for(let i=0; i<units.length; i++){
       let u1 = units[i];
@@ -815,8 +835,11 @@ function render(dt){
     }
     u.el.setAttribute('transform', `translate(${u.x},${u.y}) scale(${u.face},1)`);
     let showHp = GAME.selection.includes(u);
-    u.el.querySelector('.hp-fill').style.display = showHp ? 'block' : 'none';
-    if(showHp) u.el.querySelector('.hp-fill').setAttribute('width', Math.max(0,(u.hp/u.def.hp)*20));
+    const hpEl = u.el.querySelector('.hp-fill');
+    if(hpEl){
+      hpEl.style.display = showHp ? 'block' : 'none';
+      if(showHp) hpEl.setAttribute('width', Math.max(0,(u.hp/u.def.hp)*20));
+    }
   });
 
   GAME.entities.buildings.forEach(b => {
@@ -866,7 +889,7 @@ function spawnUnit(type, team, x, y, forcedId=null){
   const el = document.createElementNS(NS, 'g'); el.innerHTML = getUnitSVG(type, team);
   el.innerHTML += `<rect class="hp-fill" x="-10" y="-25" width="20" height="3" fill="${team===1?'#0f0':'#f00'}" style="display:none"/>`;
   GAME.dom.layers.units.appendChild(el);
-  const u = {id: forcedId || rng(), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
+  const u = {id: forcedId || genEntityId("u"), type, def, team, x, y, hp:def.hp, cd:0, task:null, target:null, dest:null, el, face:1, atkAnim:0, manualTarget:false, state:'IDLE'};
   GAME.entities.units.push(u);
   if(team===myTeam) updateUI();
   return u;
@@ -883,7 +906,7 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
-  const b = {id: forcedId || rng(), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false, cd:0};
+  const b = {id: forcedId || genEntityId("b"), type, def, team, x, y, w:def.w, h:def.h, hp:built?def.hp:1, constructed:built, queue:[], el, ui, dead:false, cd:0};
   GAME.entities.buildings.push(b);
   if(team===myTeam) updateUI();
   return b;
@@ -922,15 +945,11 @@ function updatePanel(forceFull = false){
         addBtn(pa, DB.BUILD.BARRACKS, ()=>prepBuild('BARRACKS'));
         addBtn(pa, DB.BUILD.ARCHERY, ()=>prepBuild('ARCHERY'));
         addBtn(pa, DB.BUILD.STABLE, ()=>prepBuild('STABLE'));
-
-        /* YENİ: OKÇU KULESİ */
         addBtn(pa, DB.BUILD.ATOWER, ()=>prepBuild('ATOWER'));
-
     } else if(h.queue){
         if(h.type === 'HOUSE') addBtn(pa, DB.UNIT.VILLAGER, ()=>queueUnit(h, 'VILLAGER'));
         if(h.type === 'BARRACKS') {
           addBtn(pa, DB.UNIT.PIKEMAN, ()=>queueUnit(h, 'PIKEMAN'));
-          /* YENİ: MANCINIK */
           addBtn(pa, DB.UNIT.CATAPULT, ()=>queueUnit(h, 'CATAPULT'));
         }
         if(h.type === 'ARCHERY') addBtn(pa, DB.UNIT.ARCHER, ()=>queueUnit(h, 'ARCHER'));
@@ -1022,7 +1041,16 @@ function queueUnit(b, type){
         b.queue.push({type, def:DB.UNIT[type], prog:0, forcedId: newUid});
         updatePanel(true);
 
-        sendAction({ type:'TRAIN', bid: b.id, uType: type, newUid });
+        // Online için: bid yanında bina konumu + tipi de gönder (fallback lookup)
+        sendAction({
+          type:'TRAIN',
+          bid: b.id,
+          bType: b.type,
+          bx: b.x + b.w/2,
+          by: b.y + b.h/2,
+          uType: type,
+          newUid
+        });
     } else showToast("Yetersiz Kaynak");
 }
 
