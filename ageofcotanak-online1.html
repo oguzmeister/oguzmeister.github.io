@@ -203,7 +203,7 @@ const NS = "http://www.w3.org/2000/svg";
 const ICONS = {
     GOLD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="12" r="10" fill="url(#grad-gold)" stroke="#b45309" stroke-width="2"/><text x="12" y="17" font-size="14" text-anchor="middle" fill="#b45309" font-weight="bold">$</text></svg>`,
     WOOD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><rect x="4" y="4" width="16" height="16" fill="url(#grad-wood)" rx="2"/><path d="M4 8 L20 8 M4 16 L20 16" stroke="#451a03" stroke-width="2"/></svg>`,
-    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="#8b4513" stroke="#3f1d04"/></svg>`,
+    HAZEL: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M12 2 Q20 2 20 12 Q20 22 12 22 Q4 22 4 12 Q4 2 12 2" fill="url(#grad-hazel)" stroke="#3f1d04"/></svg>`,
     UNIT: `<svg viewBox="0 0 24 24" class="card-icon-svg"><circle cx="12" cy="8" r="5" fill="#cbd5e1"/><path d="M4 22 Q12 14 20 22" fill="#94a3b8"/></svg>`,
     SWORD: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M6 18 L18 6 M18 6 L20 8 M18 6 L16 4" stroke="#e2e8f0" stroke-width="3"/><path d="M6 18 L4 20" stroke="#94a3b8" stroke-width="3"/></svg>`,
     BOW: `<svg viewBox="0 0 24 24" class="card-icon-svg"><path d="M18 4 Q4 12 18 20" fill="none" stroke="#d97706" stroke-width="2"/><line x1="18" y1="4" x2="18" y2="20" stroke="#cbd5e1"/></svg>`,
@@ -534,24 +534,22 @@ function getBuildingSVG(type, team){
         svg += `<circle cx="${def.w/2}" cy="${def.h*0.25}" r="12" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'STABLE'){
+        // --- GÜNCELLENMİŞ AHIR (TAŞMAYAN MODEL) ---
         const W = def.w, H = def.h;
-        const baseY = Math.floor(H*0.42);
-        svg += `<ellipse cx="${Math.floor(W/2)}" cy="${H-6}" rx="${Math.floor(W*0.42)}" ry="${Math.floor(H*0.10)}" fill="rgba(0,0,0,0.25)"/>`;
-        svg += `<rect x="8" y="${baseY}" width="${W-16}" height="${H-baseY-10}" rx="6" fill="#5c2e08" stroke="#2e1402" stroke-width="2"/>`;
-        for(let i=0;i<6;i++){
-          const y = baseY + 12 + i*18;
-          svg += `<line x1="10" y1="${y}" x2="${W-10}" y2="${y}" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>`;
+        // Taban Zemin
+        svg += `<rect x="5" y="${H*0.4}" width="${W-10}" height="${H*0.6}" fill="#5c2e08" stroke="#2e1402" stroke-width="2"/>`;
+        // Çatı
+        svg += `<path d="M0,${H*0.4} L${W/2},0 L${W},${H*0.4} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
+        // Ahır Bölmeleri (Dikey Çizgiler - İçeride)
+        for(let i=1; i<4; i++){
+            let x = 5 + i*((W-10)/4);
+            svg += `<line x1="${x}" y1="${H*0.4}" x2="${x}" y2="${H}" stroke="#3f2e20" stroke-width="2"/>`;
         }
-        svg += `<path d="M0,${baseY} L${Math.floor(W/2)},10 L${W},${baseY} Z" fill="${roof}" stroke="#0b1220" stroke-width="2"/>`;
-        svg += `<path d="M${Math.floor(W*0.1)},${baseY-2} L${Math.floor(W/2)},22 L${Math.floor(W*0.9)},${baseY-2}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3" stroke-linecap="round"/>`;
-        const dW = 36, dH = 46;
-        const d1x = 24, d2x = W - 24 - dW;
-        const dy = H - dH - 16;
-        const door = (x)=>( `<path d="M${x},${dy+dH} L${x},${dy+14} Q${x + dW/2},${dy-8} ${x+dW},${dy+14} L${x+dW},${dy+dH} Z" fill="#0b1220" opacity="0.55" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>` );
-        svg += door(d1x); svg += door(d2x);
-        svg += `<rect x="${Math.floor(W/2-20)}" y="${H-44}" width="40" height="22" rx="4" fill="#d97706" opacity="0.9" stroke="#78350f" stroke-width="2"/>`;
-        svg += `<line x1="${Math.floor(W/2-18)}" y1="${H-33}" x2="${Math.floor(W/2+18)}" y2="${H-33}" stroke="#78350f" stroke-width="2"/>`;
-        svg += `<circle cx="${Math.floor(W/2)}" cy="${baseY-18}" r="10" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
+        // Ön Direkler
+        svg += `<rect x="5" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
+        svg += `<rect x="${W-13}" y="${H*0.4}" width="8" height="${H*0.6}" fill="#3f2e20"/>`;
+        // Logo
+        svg += `<circle cx="${W/2}" cy="${H*0.3}" r="8" fill="${c1}" stroke="#fff" stroke-width="2"/>`;
     }
     else if(type === 'ARCHERY'){
         svg += `<rect x="${def.w*0.6}" y="10" width="${def.w*0.3}" height="${def.h-10}" fill="url(#pat-stone)" stroke="#1e293b"/>`;
@@ -649,7 +647,6 @@ function updateCamera(dt){
 
 function updateLogic(dt){
   GAME.entities.buildings.forEach(b => {
-    // Üretim kuyruğu
     if(b.constructed && b.queue.length){
         b.queue[0].prog += dt;
         if(Math.random()<0.1) spawnParticle(b.x+b.w/2, b.y, '#fff', 1);
@@ -660,23 +657,15 @@ function updateLogic(dt){
             if(b.team===myTeam) { showToast("Birim Hazır!"); updatePanel(true); }
         }
     }
-
-    // İNŞAAT TAMAMLAMA DÜZELTMESİ (BUG FIX)
-    // Eğer bina canı %99 üzerindeyse ve hala inşaat bitmemiş gözüküyorsa (siyah bar sorunu), zorla bitir.
     if(!b.constructed && b.hp >= b.def.hp * 0.99){
          b.hp = b.def.hp;
          b.constructed = true;
     }
-
-    // Okçu Kulesi savunması
     if(b.constructed && !b.dead && b.def && b.def.atk && b.def.range){
       if(b.cd === undefined) b.cd = 0;
       const enemyTeam = b.team === 1 ? 2 : 1;
-
-      // hedef bul
       let best = null, bestD = b.def.range;
       const bx = b.x + b.w/2, by = b.y + b.h/2;
-
       for(let u of GAME.entities.units){
         if(u.dead || u.team !== enemyTeam) continue;
         const d = Math.hypot((u.x) - bx, (u.y) - by);
@@ -688,7 +677,6 @@ function updateLogic(dt){
         const d = Math.hypot(cx - bx, cy - by);
         if(d < bestD){ bestD = d; best = bb; }
       }
-
       if(best && GAME.t > b.cd){
         const fr = b.def.fireRate || 1.1;
         b.cd = GAME.t + fr;
@@ -730,10 +718,8 @@ function updateLogic(dt){
   for(let i=GAME.entities.proj.length-1; i>=0; i--){
       let p = GAME.entities.proj[i];
       if(!p.target || p.target.dead) { p.el.remove(); GAME.entities.proj.splice(i,1); continue; }
-
       const {tx, ty} = getTargetCenter(p.target);
       let d = Math.hypot(tx-p.x, ty-p.y);
-
       if(d < 10){
         damage(p.target, p.dmg);
         p.el.remove(); GAME.entities.proj.splice(i,1);
@@ -867,10 +853,11 @@ function render(dt){
   GAME.entities.buildings.forEach(b => {
       if(b.dead) return;
       if(b.ui){
-          // GÖRÜNÜRLÜK MANTIĞI DÜZELTİLDİ:
-          // Eğer seçili değilse VE (inşaat bitmemişse VEYA canı full değilse) göster.
-          // Bu, inşaat bittiğinde barın otomatik kaybolmasını garantiler.
-          let show = GAME.selection.includes(b) || (!b.constructed && b.hp < b.def.hp);
+          // GÖRÜNÜRLÜK GÜNCELLEMESİ:
+          // Sadece SEÇİLİ ise GÖSTER.
+          // (İstisna: Kendi binamız inşa halindeyse görmek isteriz)
+          let show = GAME.selection.includes(b) || (b.team === myTeam && !b.constructed);
+          
           b.ui.style.display = show ? 'block' : 'none';
           if(show){
             b.ui.setAttribute('transform', `translate(${b.x},${b.y})`);
@@ -927,8 +914,11 @@ function spawnBuilding(type, team, x, y, built=false, forcedId=null){
   el.setAttribute('transform', `translate(${x},${y})`);
   GAME.dom.layers.build.appendChild(el);
 
+  // RENK GÜNCELLEMESİ: Can barı rengi artık Takım Rengi ile aynı (Kale ile uyumlu)
+  const hpColor = team === 1 ? COLORS.p1 : COLORS.p2;
+
   const ui = document.createElementNS(NS, 'g');
-  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000" fill-opacity="0.6"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${team===1?'#0f0':'#f00'}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
+  ui.innerHTML = `<rect x="0" y="-15" width="${def.w}" height="6" fill="#000" fill-opacity="0.6"/><rect class="hp-fill" x="0" y="-15" width="${built?def.w:0}" height="6" fill="${hpColor}"/><rect class="prod-fill" x="0" y="-8" width="0" height="4" fill="#fbbf24"/>`;
   ui.style.display='none';
   GAME.dom.layers.ui.appendChild(ui);
 
